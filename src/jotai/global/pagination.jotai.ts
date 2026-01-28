@@ -1,7 +1,7 @@
-import { TPagination } from "@/types/global/pagination.type";
+// import { TPagination } from "@/types/global/pagination.type";
 import { atom } from "jotai";
 
-export const paginationAtom = atom<TPagination>({
+export const paginationAtom = atom<any>({
     data: [],
     totalPages: 1,
     totalCount: 100,
