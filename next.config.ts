@@ -2,11 +2,12 @@ import withPWAInit from "@ducanh2912/next-pwa";
 
 const withPWA = withPWAInit({
   dest: "public",
-  disable: process.env.NODE_ENV === "development",
+  // Remova o skipwaiting se o erro de TS persistir
 });
 
 export default withPWA({
-  basePath: "/aplicativo", 
+  basePath: "/aplicativo",
+  trailingSlash: true, // <--- ADICIONE ESTA LINHA
   images: {
     unoptimized: true,
   },
