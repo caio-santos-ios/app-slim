@@ -9,9 +9,7 @@ const withPWA = withPWAInit({
 
 export default withPWA({
   basePath: "/aplicativo",
-  trailingSlash: true, // Necessário para evitar o redirecionamento 308 que vimos no curl
-  images: {
-    unoptimized: true,
-  },
-  // Recomendo manter o standalone desativado até o 404 sumir para facilitar o debug
+  trailingSlash: true, 
+  // Remova o 'output: standalone' se ele ainda estiver lá, 
+  // pois ele exige uma configuração de servidor específica (server.js)
 });
