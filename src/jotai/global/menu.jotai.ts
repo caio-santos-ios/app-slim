@@ -1,8 +1,8 @@
-import { TMenuRoutine } from "@/types/global/menu.type";
+// import { TMenuRoutine } from "@/types/global/menu.type";
 import { atom } from "jotai";
 
 export const menuOpenAtom = atom<boolean>(false);
-export const menuRoutinesAtom = atom<TMenuRoutine[]>([
+export const menuRoutinesAtom = atom<any[]>([
     {
         code: '1',
         isOpen: true,
