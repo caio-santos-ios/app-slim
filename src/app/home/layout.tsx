@@ -13,8 +13,8 @@ export default function AdminLayout({
 }) {
   return (
     <div className="flex-1 relative h-dvh">
+      <Loading />
       <div className="p-4 mx-auto md:p-6">{children}</div>
-        <Loading />
         <Autorization />
         <ToastContainer
           position="top-right"

@@ -47,8 +47,8 @@ export const AppTab = () => {
             link: '#',
             code: 'forwarding',
             submenus: [
-                { label: 'Encaminhamentos', link: '/home/chat' },
-                { label: 'Histórico', link: '/home/ticket' }
+                { label: 'Encaminhamentos', link: '/home/forwardings' },
+                { label: 'Histórico', link: '/home/forwardings-historic' }
             ]
         },
         // {
@@ -74,12 +74,12 @@ export const AppTab = () => {
     ]);
 
     const handleTabClick = (tab: TTab) => {
+        localStorage.setItem("tab", tab.code);
+        setCurrentTab(tab.code);
+
         if (tab.submenus) {
-            setCurrentTab(tab.code);
             setOpenDropdown(openDropdown === tab.code ? null : tab.code);
         } else {
-            setCurrentTab(tab.code);
-            localStorage.setItem("tab", tab.code);
             setOpenDropdown(null);
         }
     };

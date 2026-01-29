@@ -3,6 +3,7 @@ export type TAppointment = {
     beneficiaryUuid: string;
     availabilityUuid: string;
     specialtyUuid: string;
+    beneficiaryMedicalReferralUuid: string;
     approveAdditionalPayment: boolean;
 
     date: string;
@@ -11,12 +12,14 @@ export type TAppointment = {
     specialistId: string;
     recipientName: string;
     specialistName: string;
+    specialtyName: string;
 }
 
 export const ResetAppointment: TAppointment = {
     id: "",
     beneficiaryUuid: "",
     availabilityUuid: "",
+    beneficiaryMedicalReferralUuid: "",
     specialtyUuid: "",
     approveAdditionalPayment: true,
     date: "",
@@ -24,6 +27,7 @@ export const ResetAppointment: TAppointment = {
     recipientName: "",
     specialistId: "",
     specialistName: "",
+    specialtyName: "",
     time: ""
 }
 

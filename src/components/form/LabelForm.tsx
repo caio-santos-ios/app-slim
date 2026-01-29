@@ -15,7 +15,7 @@ const Label: FC<LabelProps> = ({ htmlFor, label, required = true, className }) =
       {label}
       {
         required &&
-        <span className="text-error-500 ms-1">*</span>
+        <span className="text-red-500 ms-1 font-md">*</span>
       }
     </label>
   );

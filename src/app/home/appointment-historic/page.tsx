@@ -1,0 +1,18 @@
+import { AppointmentHistoricList } from "@/components/pages/appointment-historic/AppointmentHistoricList";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+    title: "Pasbem | Agendamentos",
+    description: "This is Next.js Home for TailAdmin Agendamentos Template",
+};
+
+export default function AppointmentHistoric() {
+    return (
+        <div className="grid grid-cols-12 gap-4 md:gap-6">
+            <div className="col-span-12 space-y-6 xl:col-span-7 h-[85dvh]">
+                <h1 className="mb-1.5 block text-md font-bold text-brand-400">Historico Agendamentos</h1>
+                <AppointmentHistoricList />
+            </div>
+        </div>
+    );
+}

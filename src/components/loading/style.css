@@ -20,7 +20,7 @@
   width: 90px;
   height: 90px;
   border: 6px solid #e5e7eb;      
-  border-top-color: var(--primary-color);      
+  border-top-color: var(--color-brand-600);      
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
   margin: auto;
@@ -35,5 +35,5 @@
 .title-loader {
   font-size: 1.3rem;
   font-weight: 800;
-  color: var(--primary-color);
+  color: var(--color-brand-600);
 }
