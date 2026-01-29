@@ -2,6 +2,7 @@
 
 import Input from "@/components/form/input/Input";
 import Label from "@/components/form/LabelForm";
+import { Logo } from "@/components/logo/Logo";
 import { loadingAtom } from "@/jotai/global/loading.jotai";
 import { api } from "@/service/api.service";
 import { resolveResponse } from "@/service/config.service";
@@ -31,8 +32,9 @@ export const LoginForm = () => {
             localStorage.setItem("refreshToken", result.refreshToken);
             localStorage.setItem("name", result.name);
             localStorage.setItem("photo", result.photo);
+            localStorage.setItem("rapidocId", result.rapidocId);
             localStorage.setItem("tab", "home");
-            router.push("aplicativo/dashboard");
+            router.push("/home");
         } catch (error) {
             resolveResponse(error);
         } finally {
@@ -42,10 +44,10 @@ export const LoginForm = () => {
     return (
         <div className="flex flex-col flex-1 lg:w-1/2 w-full">
             <div className="flex flex-col justify-center flex-1 w-full max-w-md mx-auto">
-                <div className="p-6">
-                    {/* <div className="mb-5 sm:mb-8 flex justify-center">
-                        <Logo width={150} height={150} darkWidth={250} darkHeight={250} />
-                    </div> */}
+                <div className="p-2">
+                    <div className="mb-5 sm:mb-8 flex justify-center">
+                        <Logo className="h-40"/>
+                    </div>
                     <div>            
                         <form className="grid grid-cols-1 gap-4" onSubmit={handleSubmit(login)}>
                             <div>

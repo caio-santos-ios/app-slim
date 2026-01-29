@@ -19,7 +19,7 @@
 }
 
 @theme inline {
-   --font-*: initial;
+  --font-*: initial;
   --font-outfit: Outfit, sans-serif;
 
   --breakpoint-*: initial;
@@ -79,4 +79,20 @@ body {
   /* background: var(--background);
   color: var(--foreground); */
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Customização para o calendário Pasbem */
+.rdp-day_available {
+  color: blue !important; /* Branco para disponíveis */
+  background-color: transparent;
+}
+
+.rdp-day:not(.rdp-day_available) {
+  /* color: #ef4444 !important; */
+}
+
+/* Estilo para o dia selecionado (Azul do seu botão Salvar) */
+.rdp-day_selected {
+  background-color: #a2bcce !important; /* Cor brand-500 */
+  color: white !important;
 }
