@@ -22,7 +22,8 @@ export const Autorization = () => {
         const token = localToken ? localToken : "";
         if(!token) {
             setUserLogger(false);
-            if(path != "reset-password") {
+
+            if(!["/reset-password", "/aplicativo/", "/"].includes(path)) {
                 router.push("/aplicativo");
             };
         } else {
