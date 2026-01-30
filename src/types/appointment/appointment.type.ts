@@ -11,8 +11,10 @@ export type TAppointment = {
     recipientId: string;
     specialistId: string;
     recipientName: string;
+    beneficiaryName: string;
     specialistName: string;
     specialtyName: string;
+    parentId: string;
 }
 
 export const ResetAppointment: TAppointment = {
@@ -28,7 +30,9 @@ export const ResetAppointment: TAppointment = {
     specialistId: "",
     specialistName: "",
     specialtyName: "",
-    time: ""
+    parentId: "",
+    time: "",
+    beneficiaryName: ""
 }
 
 export type TAppointmentSearch = {        

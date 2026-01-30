@@ -36,8 +36,11 @@ export const ForwardingList = () => {
 
     const save: SubmitHandler<TAppointment> = async (body: TAppointment) => {
         try {
+            const name = localStorage.getItem("name");
+            const form = {...body, beneficiaryName: name ? name : ""};
+
             setIsLoading(true);
-            const {data} = await api.post(`/forwardings`, body, configApi());
+            const {data} = await api.post(`/forwardings`, form, configApi());
             const result = data.result;  
             resolveResponse({status: 200, ...result});
             setModalCreate(false);
@@ -199,6 +202,7 @@ export const ForwardingList = () => {
                                                     <button onClick={async () => {
                                                         setModalCreate(true);
                                                         reset(ap);
+                                                        setValue("parentId", ap.id);
                                                         setValue("beneficiaryMedicalReferralUuid", ap.id);
                                                         setValue("beneficiaryUuid", ap.recipienId);
                                                         setValue("specialtyUuid", ap.specialtyId);
@@ -208,6 +212,13 @@ export const ForwardingList = () => {
                                                         <MdOutlineCheck />                                                   
                                                         Agendar
                                                     </button>
+                                                }
+                                                {
+                                                    ap.status == "SCHEDULED" &&
+                                                    <Link href={ap.beneficiaryUrl} className="bg-blue-500 shadow-theme-xs hover:bg-blue-600 text-white flex items-center gap-1 px-2 rounded-lg">
+                                                        <IoIosVideocam/>                                                   
+                                                        Consulta
+                                                    </Link>
                                                 }
                                             </div>
                                         </div>

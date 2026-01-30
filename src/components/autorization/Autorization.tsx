@@ -27,7 +27,7 @@ export const Autorization = () => {
             };
         } else {
             setUserLogger(true);
-            if(path == "login" || path == "reset-password") {
+            if(path == "/" || path == "reset-password") {
                 router.push("/home");
             };
         };

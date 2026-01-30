@@ -12,7 +12,7 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="flex-1 relative h-dvh">
+    <div className="flex-1 relative h-dvh bg-gray-100">
       <Loading />
       <div className="p-4 mx-auto md:p-6">{children}</div>
         <Autorization />

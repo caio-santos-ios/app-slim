@@ -30,7 +30,7 @@ export const AppTab = () => {
         },
         {
             icon: 'PiTreeBold',
-            link: '/vital',
+            link: '/home/vital',
             code: 'vital'
         },
         {
@@ -102,7 +102,7 @@ export const AppTab = () => {
                     return (
                         <li key={tab.code} className="relative flex flex-col items-center">
                             {tab.submenus && isDropdownOpen && (
-                                <div className="absolute bottom-14 bg-white dark:bg-gray-800 text-black dark:text-white rounded-xl shadow-lg p-2 min-w-[150px] flex flex-col gap-2 animate-in fade-in slide-in-from-bottom-2">
+                                <div className="absolute bottom-14 bg-white dark:bg-gray-800 text-black dark:text-white rounded-xl shadow-lg p-2 min-w-37.5 flex flex-col gap-2 animate-in fade-in slide-in-from-bottom-2">
                                     {tab.submenus.map((sub) => (
                                         <Link 
                                             key={sub.link} 

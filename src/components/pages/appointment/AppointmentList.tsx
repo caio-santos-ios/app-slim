@@ -22,9 +22,9 @@ export const AppointmentList = () => {
     const [modalCreate, setModalCreate] = useState<boolean>(false);
     const [modalCanceled, setModalCanceled] = useState<boolean>(false);
     const [appointments, setAppointments] = useState<any[]>([]);
-    const [specialties, setSpecialty] = useState<any[]>([]);
     const [specialtyAvailabilities, setSpecialtyAvailabilities] = useState<any[]>([]);
     const [selectedDay, setSelectedDay] = useState<Date | undefined>();
+    const [specialtyName, setSpecialtyName] = useState<string>("");
     
     const diasComHorario = specialtyAvailabilities.map(h => {
         const [dia, mes, ano] = h.date.split("/");
@@ -39,7 +39,7 @@ export const AppointmentList = () => {
             setIsLoading(true);
             const {data} = await api.post(`/appointments`, body, configApi());
             const result = data.result;  
-            resolveResponse({status: 200, ...result});
+            resolveResponse({status: 200, message: 'Agendado com sucesso!'});
         } catch (error) {
             resolveResponse(error);
         } finally {
@@ -49,10 +49,13 @@ export const AppointmentList = () => {
     
     const cancel: SubmitHandler<TAppointment> = async (body: TAppointment) => {
         try {
+            const name = localStorage.getItem("name");
+            const form = {...body, beneficiaryName: name ? name : "", specialtyName};
             setIsLoading(true);
-            const {data} = await api.put(`/appointments/cancel`, body, configApi());
+            const {data} = await api.put(`/appointments/cancel`, form, configApi());
             const result = data.result;  
-            resolveResponse({status: 200, ...result});
+
+            resolveResponse({status: 200, message: 'Cancelado com sucesso!'});
             setModalCanceled(false);
             setModalCreate(false);
             const rapidocId = localStorage.getItem("rapidocId");
@@ -163,7 +166,7 @@ export const AppointmentList = () => {
                             locale={ptBR}
                             modifiers={{ 
                                 available: diasComHorario,
-                                unavailable: { before: new Date() } // Exemplo: dias passados são indisponíveis
+                                unavailable: { before: new Date() } 
                             }}
                             modifiersClassNames={{
                                 available: "text-white font-bold bg-brand-600 rounded-full", 
@@ -239,6 +242,8 @@ export const AppointmentList = () => {
                                                 {
                                                     ap.status == "SCHEDULED" &&
                                                     <button onClick={() => {
+                                                        setSpecialtyName(ap.specialty);
+                                                        setValue("beneficiaryName", ap.recipientName);
                                                         setModalCanceled(true);
                                                         resetCancel(ap);
                                                     }} className="bg-red-500 shadow-theme-xs hover:bg-red-600 text-white flex items-center gap-1 px-2 rounded-lg">
