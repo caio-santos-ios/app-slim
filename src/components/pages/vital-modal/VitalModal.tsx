@@ -97,7 +97,7 @@ export default function VitalModal() {
                     Próximo
                     </Button>
                 ) : (
-                    <Button type="button" className="flex-1">Finalizar</Button>
+                    <Button type="submit" className="flex-1">Finalizar</Button>
                 )}
                 </div>
             </form>

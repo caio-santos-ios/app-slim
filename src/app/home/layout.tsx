@@ -3,6 +3,7 @@
 import { Autorization } from "@/components/autorization/Autorization";
 import { Loading } from "@/components/loading/Loading";
 import { AppTab } from "@/layout/AppTab";
+import { Header } from "@/layout/Header";
 import React from "react";
 import { Bounce, ToastContainer } from "react-toastify";
 
@@ -14,6 +15,7 @@ export default function AdminLayout({
   return (
     <div className="flex-1 relative h-dvh bg-gray-100">
       <Loading />
+      <Header />
       <div className="p-4 mx-auto md:p-6">{children}</div>
         <Autorization />
         <ToastContainer

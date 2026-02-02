@@ -32,15 +32,16 @@ export default function Home() {
     const [nextTelemedicine, setNextTelemedicine] = useState<any>({date: ""});
     const [metric, setMetric] = useState<any>({igs: 0, ign: 0, ies: 0, ipv: 0});
     const [metricWeek, setMetricWeek] = useState<any[]>([]);
+    const [ies, setIES] = useState<boolean>(false);
 
     const getBarColor = (value: number) => {
-        if (value < 60) return "oklch(70.4% 0.191 22.216)";
+        if (value <= 60) return "oklch(70.4% 0.191 22.216)";
         if (value > 60 && value < 85) return "oklch(85.2% 0.199 91.936)";
         return "oklch(70.4% 0.191 22.216)";
     };
     
     const getColorMetric = (metric: number) => {
-        if (metric < 60) return "text-red-400";
+        if (metric <= 60) return "text-red-400";
         if (metric > 60 && metric < 85) return "text-yellow-400";
         return "text-green-400";
     };
@@ -49,12 +50,13 @@ export default function Home() {
         try {
             const {data} = await api.get(`/vitals/beneficiary`, configApi());
             const result = data.result.data;
-            if(result == null) {
+            if(!result.id) {
                 setIsCheckIn(true);
             } else {
-                setMetricWeek(result.weekMetric);
                 setMetric(result.metric);
             };
+
+            setMetricWeek(result.weekMetric);
         } catch (error) {
             resolveResponse(error);
         }
@@ -89,11 +91,11 @@ export default function Home() {
                 <VitalModal />
                 :
                 <div>
-                    <h1 className="mb-1.5 block text-md font-bold text-brand-400">PasBem</h1>
-                    <div className="max-h-[calc(100dvh-9rem)] overflow-y-auto">
+                    {/* <h1 className="mb-1.5 block text-md font-bold text-brand-400">PasBem</h1> */}
+                    <div className="max-h-[calc(100dvh-13rem)] overflow-y-auto">
                         {
                             isCheckIn &&
-                            <div onClick={() => setModal(true)} className="mb-3 w-full p-5 bg-green-900/10 border border-green-800 rounded-3xl flex flex-col gap-2">
+                            <div onClick={() => setModal(true)} className="mb-3 w-full p-2 bg-green-900/10 border border-green-800 rounded-2xl flex flex-col gap-2">
                                 <div className="flex items-start gap-3">
                                     <div className="p-2 bg-green-800 rounded-xl">
                                         <HiOutlineLightBulb className="text-green-600 dark:text-green-400" size={24} />
@@ -109,7 +111,7 @@ export default function Home() {
                                     </div>
                                 </div>
 
-                                <div className="bg-green-700 border-green-800 mt-2 w-full py-3 rounded-2xl flex items-center justify-center gap-2 border shadow-sm">
+                                <div className="bg-green-700 border-green-800 mt-2 w-full py-2 rounded-2xl flex items-center justify-center gap-2 border shadow-sm">
                                     <span className="text-blue-950 dark:text-blue-100 font-bold text-sm">
                                         Fazer Check-in
                                     </span>
@@ -118,7 +120,7 @@ export default function Home() {
                         }
 
                         {
-                            !isCheckIn && !nextTelemedicine.date &&
+                            !isCheckIn && !nextTelemedicine.date && metric.ies <= 60 &&
                             <div className="mb-4 w-full p-2 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-400 rounded-2xl flex flex-col gap-3">
                                 <div className="flex items-center gap-2">
                                     <FiAlertTriangle className="text-red-400" size={20} />
@@ -136,25 +138,25 @@ export default function Home() {
                         
                         {
                             nextTelemedicine.date &&
-                            <div className="mb-4 w-full p-2 bg-blue-50 dark:bg-blue-900/10 border border-blue-200 dark:border-blue-400 rounded-2xl flex flex-col gap-3">
+                            <div className="mb-4 w-full p-2 bg-brand-50 dark:bg-brand-900/10 border border-brand-200 dark:border-brand-400 rounded-2xl flex flex-col gap-3">
                                 <div className="flex items-center gap-2">
-                                    <FaVideo className="text-blue-400" size={20} />
-                                    <span className="text-blue-400 font-bold text-sm">
+                                    <FaVideo className="text-brand-400" size={20} />
+                                    <span className="text-brand-400 font-bold text-sm">
                                         Próxima consulta - {maskDate(nextTelemedicine.date)}
                                     </span>
                                 </div>
                                 
-                                <span className="text-blue-400 font-bold text-sm">
+                                <span className="text-brand-400 font-bold text-sm">
                                     Horario: {nextTelemedicine.to} até {nextTelemedicine.from}
                                 </span>
-                                <span className="text-blue-400 font-bold text-sm">
+                                <span className="text-brand-400 font-bold text-sm">
                                     Especialidade: {nextTelemedicine.specialty}
                                 </span>
-                                <span className="text-blue-400 font-bold text-sm">
+                                <span className="text-brand-400 font-bold text-sm">
                                     Profissional: {nextTelemedicine.professional}
                                 </span>
 
-                                <a href={`${nextTelemedicine.beneficiaryUrl}`} className="w-full py-3 bg-blue-600 hover:bg-blue-700 active:scale-95 transition-all rounded-2xl flex items-center justify-center gap-3 text-white font-bold" >
+                                <a href={`${nextTelemedicine.beneficiaryUrl}`} className="bg-brand-700 border-brand-800 text-white mt-2 w-full py-2 rounded-2xl flex items-center justify-center gap-2 border shadow-sm">
                                     <FaExternalLinkAlt size={20} />
                                     <span>Acessar consulta</span>
                                 </a>

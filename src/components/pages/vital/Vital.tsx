@@ -6,44 +6,48 @@ import VitalModal from "../vital-modal/VitalModal";
 import { VitalModalAtom } from "@/jotai/vital/vital.jotai";
 import { configApi, resolveResponse } from "@/service/config.service";
 import { api } from "@/service/api.service";
-import { useEffect } from "react";
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell, PieChart, Pie, } from 'recharts';
-import { FiAlertTriangle, FiPhone } from "react-icons/fi";
-import { HiOutlineLightBulb } from "react-icons/hi";
-
-const data = [
-    { name: 'quarta', value: 75 },
-    { name: 'quarta', value: 50 },
-    { name: 'quarta', value: 72 },
-    { name: 'quinta', value: 73 },
-];
-
-const chartData = [
-    { value: 10 },
-    { value: 100 - 10 }
-];
+import { useEffect, useState } from "react";
+import { FaCircle, FaRegMoon } from "react-icons/fa";
+import { IoIosNutrition } from "react-icons/io";
+import { LuBrain } from "react-icons/lu";
 
 export default function Vital() {
     const [_, setIsLoading] = useAtom(loadingAtom);
     const [modal, setModal] = useAtom(VitalModalAtom);
+    const [historics, setHistoric] = useState<any[]>([]);
+    const [card, setCard] = useState<any>({id: ''});
 
     const getBarColor = (value: number) => {
-        if (value > 85) return "#4ade80"; // Verde
-        if (value >= 60) return "#f59e0b"; // Laranja
-        return "#ef4444"; // Vermelho
+        if (value > 85) return "#4ade80"; 
+        if (value >= 60) return "#f59e0b"; 
+        return "#ef4444"; 
     };
+
+    // const getLogged = async () => {
+    //     try {
+    //         setIsLoading(true);
+    //         const {data} = await api.get(`/vitals/beneficiary`, configApi());
+    //         const result = data.result.data;
+
+    //         if(!result.id) {
+    //             setModal(true);
+    //         } else {
+    //             console.log(result.weekMetric)
+    //         }
+    //     } catch (error) {
+    //         resolveResponse(error);
+    //     } finally {
+    //         setIsLoading(false);
+    //     }
+    // };
 
     const getAll = async () => {
         try {
             setIsLoading(true);
-            const {data} = await api.get(`/vitals/beneficiary`, configApi());
+            const {data} = await api.get(`/vitals/beneficiary-all`, configApi());
             const result = data.result.data;
-
-            if(result == null) {
-                setModal(true);
-            } else {
-                console.log(result.Metric)
-            }
+            console.log(result)
+            setHistoric(result);
         } catch (error) {
             resolveResponse(error);
         } finally {
@@ -51,12 +55,22 @@ export default function Vital() {
         }
     };
 
-    const getColor = (scoore: number) => {
-        // if(scoore < 60)
-        // abaixo de 60
-        // oklch(79.5% 0.184 86.047)
-        // oklch(57.7% 0.245 27.325)
-        // oklch(62.7% 0.194 149.214)
+    const getColor = (metric: number) => {
+        if (metric <= 60) return "text-red-400";
+        if (metric > 60 && metric < 85) return "text-yellow-400";
+        return "text-green-400";
+    };
+
+    const getColorText = (metric: number) => {
+        if (metric <= 60) return "text-red-800";
+        if (metric > 60 && metric < 85) return "text-yellow-800";
+        return "text-green-800";
+    };
+    
+    const getColorBorder = (metric: number) => {
+        if (metric <= 60) return "border-red-400 bg-red-100";
+        if (metric > 60 && metric < 85) return "border-yellow-400 bg-yellow-100";
+        return "border-green-400 bg-green-200";
     };
 
     useEffect(() => {
@@ -73,22 +87,85 @@ export default function Vital() {
                 <VitalModal />
                 :
                 <div>
-                    <h1 className="mb-1.5 block text-md font-bold text-brand-400">Bem Vital</h1>
-                    <div className="max-h-[calc(100dvh-9rem)] overflow-y-auto">
-                        <div className="mb-4 w-full p-2 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-400 rounded-2xl flex flex-col gap-3">
-                            <div className="flex items-center gap-2">
-                                <FiAlertTriangle className="text-red-400" size={20} />
-                                <span className="text-red-400 font-bold text-sm">
-                                Precisando de apoio?
-                                </span>
-                            </div>
+                    <h1 className="mb-1.5 block text-md font-bold text-brand-400">Bem Vital - Histórico</h1>
+                    <div className="max-h-[calc(100dvh-15rem)] overflow-y-auto">
+                        {
+                            historics.map((cardItem: any, i) => {
+                                return (
+                                    <li onClick={() => {
+                                        if(card.id == cardItem.id) {
+                                            setCard({id: ''});
+                                        } else {
+                                            if(!card.id) {
+                                                setCard(cardItem);
+                                            } else {
+                                                setCard({id: ''});
+                                            };
+                                        };
+                                    }} key={i} className="grid grid-cols-12 items-center bg-white p-6 rounded-2xl border border-gray-200 mb-4">
+                                        <div className="col-span-1">
+                                            <FaCircle className={`${getColor(cardItem.metric.ipv)}`}/>
+                                        </div>
+                                        <div className="col-span-8">
+                                            <p className="text-brand-500 text-sm font-medium">{cardItem.metric.day}</p>
+                                            <span className="text-brand-400 font-bold text-sm">{cardItem.sleepHours}h sono • {cardItem.waterAmount} ml água</span>
+                                        </div>
+                                        <div className="col-span-3 text-end">
+                                            <p className={`${getColor(cardItem.metric.ipv)} font-bold`}>{cardItem.metric.ipv}</p>
+                                        </div>
 
-                            <a href="tel:188" className="w-full py-3 bg-red-600 hover:bg-red-700 active:scale-95 transition-all rounded-2xl flex items-center justify-center gap-3 text-white font-bold" >
-                                <FiPhone size={20} />
-                                <span>Ligar 188 - CVV (24h)</span>
-                            </a>
-                        </div>
-                        <div className="bg-white p-6 rounded-2xl border border-gray-200 mb-4">
+                                        {
+                                            cardItem.id == card.id &&
+                                            <div className="col-span-12 flex">
+                                                <div className="flex justify-between w-full gap-2">
+
+                                                    <div className={`w-30 flex flex-col items-center rounded-lg border ${getColorBorder(cardItem.metric.igs)} ${getColorText(cardItem.metric.igs)}`}>
+                                                        <div className="p-4 rounded-lg">
+                                                            <FaRegMoon />
+                                                        </div>
+                                                        <h2 className="">Sono</h2>
+                                                        <span className="">{cardItem.metric.igs}</span>
+                                                    </div>
+
+                                                    <div className={`w-30 flex flex-col items-center rounded-lg border ${getColorBorder(cardItem.metric.ign)} ${getColorText(cardItem.metric.ign)}`}>
+                                                        <div className="p-4 rounded-lg">
+                                                            <IoIosNutrition />
+                                                        </div>
+                                                        <h2 className="">Nutrição</h2>
+                                                        <span className="">{cardItem.metric.ign}</span>
+                                                    </div>
+
+                                                    <div className={`w-30 flex flex-col items-center rounded-lg border ${getColorBorder(cardItem.metric.ies)} ${getColorText(cardItem.metric.ies)}`}>
+                                                        <div className="p-4 rounded-lg">
+                                                            <LuBrain />
+                                                        </div>
+                                                        <h2 className="">Mental</h2>
+                                                        <span className="">{cardItem.metric.ies}</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        }
+                                    </li>
+                                )
+                            })
+                        }
+                        {/* {
+                            ies &&
+                            <div className="mb-4 w-full p-2 bg-red-50 dark:bg-red-900/10 border border-red-200 dark:border-red-400 rounded-2xl flex flex-col gap-3">
+                                <div className="flex items-center gap-2">
+                                    <FiAlertTriangle className="text-red-400" size={20} />
+                                    <span className="text-red-400 font-bold text-sm">
+                                    Precisando de apoio?
+                                    </span>
+                                </div>
+
+                                <a href="tel:188" className="w-full py-3 bg-red-600 hover:bg-red-700 active:scale-95 transition-all rounded-2xl flex items-center justify-center gap-3 text-white font-bold" >
+                                    <FiPhone size={20} />
+                                    <span>Ligar 188 - CVV (24h)</span>
+                                </a>
+                            </div>
+                        } */}
+                        {/* <div className="bg-white p-6 rounded-2xl border border-gray-200 mb-4">
                             <div className="relative h-48 w-48 mx-auto mb-4">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <PieChart>
@@ -136,9 +213,9 @@ export default function Vital() {
                             <p className="text-[10px] text-gray-400 font-medium leading-tight text-center">
                                 Índice de Performance Vital<br/>Média de IGS + IGN + IES
                             </p>
-                        </div>
+                        </div> */}
 
-                        <div className="bg-white p-6 rounded-2xl border border-gray-200 mb-4">
+                        {/* <div className="bg-white p-6 rounded-2xl border border-gray-200 mb-4">
                             <div className="flex justify-between items-center mb-6">
                                 <h3 className="font-bold text-(--color-brand-400)">Evolução Semanal</h3>
                                 <div className="flex gap-2 text-[10px] font-medium text-gray-500">
@@ -159,17 +236,9 @@ export default function Vital() {
                                             ))}
                                         </Bar>
                                     </BarChart>
-                                    {/* <BarChart data={metricWeek}>
-                                        <XAxis dataKey="day" />
-                                        <Bar dataKey="ipv">
-                                            {metricWeek.map((entry, index) => (
-                                                <Cell key={`cell-${index}`} fill={entry.ipv > 85 ? '#4ade80' : '#ef4444'} />
-                                            ))}
-                                        </Bar>
-                                    </BarChart> */}
                                 </ResponsiveContainer>
                             </div>
-                        </div>
+                        </div> */}
 
                         {/* <div className="w-full p-5 bg-green-900/10 border border-green-800 rounded-3xl flex flex-col gap-2">
                             <div className="flex items-start gap-3">

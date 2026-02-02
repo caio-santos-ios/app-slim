@@ -60,7 +60,7 @@ export const VitalSono = ({ register, watch, setValue }: any) => {
                 <div className="mb-4">
                     <label className="block text-sm text-white mb-2">Fragmentação</label>
                     <div className="grid grid-cols-6 gap-2">
-                    {['Não', 1, 2, 3, 4].map((h) => (
+                    {['Não', '1', '2', '3', '4'].map((h) => (
                         <button
                         key={h} type="button"
                         onClick={() => setValue("sleepFragmentation", h)}

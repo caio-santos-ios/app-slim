@@ -8,4 +8,5 @@ export type TProfile = {
     weight: number;
     imc: number;
     agua: number;
+    image: any;
 }

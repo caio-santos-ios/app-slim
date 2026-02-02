@@ -226,7 +226,7 @@ export const AppointmentList = () => {
             {
                 !modalCreate &&
                 <div className="">
-                    <ul className={`${modalCanceled ? 'max-h-[calc(80dvh-10.5rem)]' : 'max-h-[calc(80dvh-4rem)]'} overflow-y-auto flex flex-col gap-4`}>
+                    <ul className={`${modalCanceled ? 'max-h-[calc(80dvh-16rem)]' : 'max-h-[calc(80dvh-10rem)]'} overflow-y-auto flex flex-col gap-4`}>
                         {
                             appointments.map((ap: any) => {
                                 return (
