@@ -10,6 +10,7 @@ import { useEffect, useState } from "react";
 import { FaCircle, FaRegMoon } from "react-icons/fa";
 import { IoIosNutrition } from "react-icons/io";
 import { LuBrain } from "react-icons/lu";
+import { NotData } from "@/components/not-data/NotData";
 
 export default function Vital() {
     const [_, setIsLoading] = useAtom(loadingAtom);
@@ -89,6 +90,10 @@ export default function Vital() {
                 <div>
                     <h1 className="mb-1.5 block text-md font-bold text-brand-400">Bem Vital - Histórico</h1>
                     <div className="max-h-[calc(100dvh-15rem)] overflow-y-auto">
+                        {
+                            historics.length == 0 &&
+                            <NotData />
+                        }
                         {
                             historics.map((cardItem: any, i) => {
                                 return (

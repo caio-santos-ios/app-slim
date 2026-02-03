@@ -66,6 +66,7 @@ export default function Home() {
         try {
             const {data} = await api.get(`/customer-recipients/logged`, configApi());
             const result = data.result.data;
+            console.log(result)
             if(result.telemedicine.date) {
                 setNextTelemedicine(result.telemedicine);
             };

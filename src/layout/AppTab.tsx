@@ -47,25 +47,11 @@ export const AppTab = () => {
             link: '#',
             code: 'forwarding',
             submenus: [
+                { label: 'Solicitar Atendimento', link: '/home/forwardings-atendimento' },
                 { label: 'Encaminhamentos', link: '/home/forwardings' },
                 { label: 'Histórico', link: '/home/forwardings-historic' }
             ]
         },
-        // {
-        //     icon: 'MdOutlineBadge',
-        //     link: 'forwarding',
-        //     code: 'forwarding'
-        // },
-        // {
-        //     icon: 'FaRegCalendarAlt',
-        //     link: 'appointment',
-        //     code: 'appointment'
-        // },
-        // {
-        //     icon: 'FaHistory',
-        //     link: 'historic',
-        //     code: 'historic'
-        // },
         {
             icon: 'BsPerson',
             link: '/home/profile',

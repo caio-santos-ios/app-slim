@@ -7,6 +7,14 @@ import { useEffect } from "react";
 
 export const Header = () => {
     const [photo, setPhoto] = useAtom(profileAtom);
+    
+    useEffect(() => {
+        const localPhoto = localStorage.getItem("photo");
+        console.log(localPhoto)
+        if(localPhoto) {
+            setPhoto(localPhoto);
+        }
+    }, []);
 
     useEffect(() => {
         if(photo) {
@@ -15,7 +23,7 @@ export const Header = () => {
     }, [photo]);
 
     return (
-        <header className="px-4 h-24 bg-brand-500">
+        <header className="px-4 h-24 bg-brand-500 flex justify-between items-center">
             <div className="h-auto">
                 <img
                     className="h-20"
@@ -28,9 +36,9 @@ export const Header = () => {
                 {
                     photo ?
                     <img
-                        className="h-20"
+                        className="h-20 w-20 rounded-full"
                         src={`${uriBase}/${photo}`}
-                        alt="Logo"
+                        alt="foto de perfil"
                     />
                     :
                     <>
