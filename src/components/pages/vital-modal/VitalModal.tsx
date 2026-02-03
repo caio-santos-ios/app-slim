@@ -84,7 +84,9 @@ export default function VitalModal() {
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)}>
-                {renderStep()}
+                <div className="max-h-[calc(100dvh-23rem)] overflow-y-auto">
+                    {renderStep()}
+                </div>
 
                 <div className="flex gap-4 mt-8">
                 {step > 1 && (
