@@ -25,36 +25,27 @@ export const ForwardingAten = () => {
     const getLogged = async () => {
         try {
             setIsLoading(true);
-            const {data} = await api.get(`/forwardings/atendimento`, configApi());
+            const {data} = await api.get(`/customer-recipients/atendimento`, configApi());
             const result = data.result.data;
-            setLink(result.link);
+            
+            if (result.link) {
+                setLink(result.link);
+                window.location.assign(result.link);
+            } else {
+                toast.info("Link de atendimento não disponível.");
+            }
         } catch (error) {
             resolveResponse(error);
         } finally {
             setIsLoading(false);
         }
     };
-
-    useEffect(() => {
-        const initial = async () => {
-            await getLogged();
-        }
-        initial();
-    }, [])
     
     return (
         <div>
-            {link &&
-                <div>
-                    <a 
-                        href={link} 
-                        rel="noopener noreferrer"
-                        style={{ color: '#007bff', textDecoration: 'underline' }}
-                    >
-                        Entrar na fila de atendimento
-                    </a>
-                </div>
-            }
+            <div className="mb-4 h-[80dvh] flex justify-center items-center">
+                <Button onClick={() => getLogged()} type="button" className="w-full h-8" size="sm">Solicitar atendimento</Button>
+            </div>
         </div>
     )
 }

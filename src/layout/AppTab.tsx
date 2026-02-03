@@ -47,7 +47,7 @@ export const AppTab = () => {
             link: '#',
             code: 'forwarding',
             submenus: [
-                { label: 'Solicitar Atendimento', link: '/home/forwardings-atendimento' },
+                { label: 'Atendimento', link: '/home/forwardings-atendimento' },
                 { label: 'Encaminhamentos', link: '/home/forwardings' },
                 { label: 'Histórico', link: '/home/forwardings-historic' }
             ]

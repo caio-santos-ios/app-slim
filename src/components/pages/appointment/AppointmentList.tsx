@@ -72,7 +72,7 @@ export const AppointmentList = () => {
             setIsLoading(true);
             const {data} = await api.get(`/appointments?beneficiaryUuid=${rapidocId}`, configApi());
             const result = data.result.data;
-            setAppointments(result);
+            await getSelectSpecialty(result);
         } catch (error) {
             resolveResponse(error);
         } finally {
@@ -80,7 +80,7 @@ export const AppointmentList = () => {
         }
     };
 
-    const getSelectSpecialty = async () => {
+    const getSelectSpecialty = async (listAppointments: any[]) => {
         try {
             setIsLoading(true);
             const {data} = await api.get(`/appointments/specialties`, configApi());
@@ -90,7 +90,8 @@ export const AppointmentList = () => {
             
             const name = localStorage.getItem("name");
             const rapidocId = localStorage.getItem("rapidocId");
-            
+            const newList = listAppointments.filter(x => x.specialistId == psicologia.id);
+            setAppointments(newList);
             setValue("specialtyUuid", psicologia.id);
             setValue("specialistId", psicologia.id);
             setValue("specialistName", psicologia.name);
@@ -138,7 +139,6 @@ export const AppointmentList = () => {
         const initial = async () => {
             const rapidocId = localStorage.getItem("rapidocId");
             await getAll(rapidocId ? rapidocId : "");
-            await getSelectSpecialty();
         }
         initial();
     }, [])
@@ -153,7 +153,7 @@ export const AppointmentList = () => {
             }
             {
                 modalCreate &&
-                <form onSubmit={handleSubmit(save)} className="grid grid-cols-4 gap-4 max-h-[calc(80dvh-4rem)] overflow-y-auto">                
+                <form onSubmit={handleSubmit(save)} className="grid grid-cols-4 gap-4 max-h-[calc(80dvh-6rem)] overflow-y-auto">                
                     <div className="col-span-4">
                         <Label label="Especialista" required={false}/>
                         <Input disabled {...register("specialistName")} placeholder="Especialista"/>
