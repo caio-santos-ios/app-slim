@@ -16,7 +16,7 @@ export default function VitalModal() {
     const [_, setIsLoading] = useAtom(loadingAtom);
     const [__, setModal] = useAtom(VitalModalAtom);
     const [step, setStep] = useState(1);
-    const { register, watch, setValue, handleSubmit } = useForm({
+    const { register, watch, setValue, getValues } = useForm({
         defaultValues: {
             sleepTime: "",
             sleepHours: 8,
@@ -26,7 +26,7 @@ export default function VitalModal() {
         }
     });
 
-    const onSubmit = async (body: any) => {
+    const save = async (body: any) => {
         try {
             setIsLoading(true);
             if(!body.id) {
@@ -83,7 +83,7 @@ export default function VitalModal() {
                 ))}
             </div>
 
-            <form onSubmit={handleSubmit(onSubmit)}>
+            <div>
                 <div className="max-h-[calc(100dvh-23rem)] overflow-y-auto">
                     {renderStep()}
                 </div>
@@ -99,10 +99,10 @@ export default function VitalModal() {
                     Próximo
                     </Button>
                 ) : (
-                    <Button type="submit" className="flex-1">Finalizar</Button>
+                    <Button onClick={() => save({...getValues()})} type="button" className="flex-1">Finalizar</Button>
                 )}
                 </div>
-            </form>
+            </div>
         </div>
     );
 }

@@ -76,6 +76,7 @@ export const ProfileForm = () => {
                 resolveResponse({status, message: "Foto atualizada com sucesso!"});
                 setValue("image", "");
             } catch (error) {
+                console.log(error)
                 resolveResponse(error);
             }
         };
@@ -127,7 +128,7 @@ export const ProfileForm = () => {
                     </div>
                     <div className="col-span-2">
                         <Label label="Altura" />
-                        <Input type="number" {...register("height")} />
+                        <Input step="0.01" type="number" {...register("height")} />
                     </div>
                     <div className="col-span-2">
                         <Label label="IMC" required={false}/>
