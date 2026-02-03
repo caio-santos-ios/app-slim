@@ -26,7 +26,7 @@ export const VitalSono = ({ register, watch, setValue }: any) => {
                         onClick={() => setValue("sleepHours", h)}
                         className={`py-1 px-0 w-10 rounded-xl border transition-all ${watch("sleepHours") === h ? 'bg-blue-600 text-white' : 'dark:bg-slate-800 dark:text-white'}`}
                         >
-                        {h}h
+                        {h}
                         </button>
                     ))}
                     </div>
