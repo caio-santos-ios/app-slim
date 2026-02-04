@@ -3,16 +3,13 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Autorization } from "@/components/autorization/Autorization";
 import { Bounce, ToastContainer } from "react-toastify";
+import { Montserrat } from 'next/font/google';
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const montserrat = Montserrat({
+  subsets: ['latin'],
+  weight: ['400', '500', '700'],
+  variable: '--font-montserrat', // Variável CSS personalizada
+})
 
 export const metadata: Metadata = {
   title: "App PasBem",
@@ -31,7 +28,7 @@ export default function RootLayout({
         <link rel="manifest" href="/aplicativo/manifest.json" />
         <meta name="theme-color" content="#000000" />
       </head>
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+      <body className={`${montserrat.variable} antialiased`}>
         <Autorization />
         <ToastContainer
           position="top-right"

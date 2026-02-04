@@ -39,6 +39,7 @@ export const AppTab = () => {
             code: 'appointment',
             submenus: [
                 { label: 'Agendamentos', link: '/home/appointment' },
+                { label: 'DASS-21', link: '/home/dass' },
                 { label: 'Histórico', link: '/home/appointment-historic' }
             ]
         },

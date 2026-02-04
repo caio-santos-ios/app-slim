@@ -32,7 +32,8 @@ export default function Home() {
     const [nextTelemedicine, setNextTelemedicine] = useState<any>({date: ""});
     const [metric, setMetric] = useState<any>({igs: 0, ign: 0, ies: 0, ipv: 0});
     const [metricWeek, setMetricWeek] = useState<any[]>([]);
-    const [ies, setIES] = useState<boolean>(false);
+    const [periodo, setPeriodo] = useState('Semana');
+    const periodos = ['Semana', 'Mês', 'Ano', 'Todo Período'];
 
     const getBarColor = (value: number) => {
         if (value <= 60) return "oklch(70.4% 0.191 22.216)";
@@ -50,12 +51,12 @@ export default function Home() {
         try {
             const {data} = await api.get(`/vitals/beneficiary`, configApi());
             const result = data.result.data;
+
             if(!result.id) {
                 setIsCheckIn(true);
-            } else {
-                setMetric(result.metric);
             };
-
+            
+            setMetric(result.metric);
             setMetricWeek(result.weekMetric);
         } catch (error) {
             resolveResponse(error);
@@ -66,7 +67,6 @@ export default function Home() {
         try {
             const {data} = await api.get(`/customer-recipients/logged`, configApi());
             const result = data.result.data;
-            console.log(result)
             if(result.telemedicine.date) {
                 setNextTelemedicine(result.telemedicine);
             };
@@ -231,7 +231,7 @@ export default function Home() {
 
                         <div className="bg-white p-6 rounded-2xl border border-gray-200 mb-4">
                             <div className="flex justify-between items-center mb-6">
-                                <h3 className="font-bold text-(--color-brand-400)">Evolução Semanal</h3>
+                                <h3 className="font-bold text-(--color-brand-400)">Evolução</h3>
                                 <div className="flex gap-2 text-[10px] font-medium text-gray-500">
                                     <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-green-400" /> &gt;85</span>
                                     <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-orange-400" /> 60-85</span>
@@ -239,7 +239,23 @@ export default function Home() {
                                 </div>
                             </div>
                             
-                            <div className="h-48 w-full">
+                            {/* <div className="flex bg-gray-50 dark:bg-slate-800 p-1 rounded-xl mb-6 overflow-x-auto no-scrollbar">
+                                {periodos.map((p) => (
+                                    <button
+                                        key={p}
+                                        onClick={() => setPeriodo(p)}
+                                        className={`flex-1 py-2 px-3 text-xs font-bold rounded-lg transition-all whitespace-nowrap ${
+                                            periodo === p 
+                                            ? 'bg-white dark:bg-slate-700 text-(--color-brand-400) shadow-sm' 
+                                            : 'text-gray-400 hover:text-gray-600'
+                                        }`}
+                                    >
+                                        {p}
+                                    </button>
+                                ))}
+                            </div> */}
+
+                            {/* <div className="h-48 w-full">
                                 <ResponsiveContainer width="100%" height="100%">
                                     <BarChart data={metricWeek} margin={{ top: 10, bottom: 10 }}>
                                         <XAxis 
@@ -293,6 +309,54 @@ export default function Home() {
                                             />
                                         </Bar>
                                         </BarChart>
+                                </ResponsiveContainer>
+                            </div> */}
+
+                            <div className="h-48 w-full">
+                                <ResponsiveContainer width="100%" height="100%">
+                                    <BarChart data={metricWeek} margin={{ top: 10, bottom: 10 }}>
+                                        <XAxis 
+                                            dataKey="day" 
+                                            axisLine={false} 
+                                            tickLine={false} 
+                                            tick={{fill: '#94a3b8', fontSize: 12}}
+                                        />
+                                        <YAxis hide domain={[0, 100]} />
+                                        
+                                        <Bar dataKey="ipv" radius={[10, 10, 10, 10]} barSize={periodo === 'Semana' ? 55 : 20}>
+                                            {metricWeek.map((entry, index) => (
+                                                <Cell 
+                                                    key={`cell-${index}`} 
+                                                    fill={entry.ipv > 85 ? '#4ade80' : entry.ipv >= 60 ? '#f59e0b' : '#ef4444'} 
+                                                />
+                                            ))}
+
+                                            <LabelList
+                                                dataKey="ipv"
+                                                content={(props) => {
+                                                    const { x, y, width, height, index } = props;
+                                                    const data = metricWeek[index!];
+
+                                                    if (periodo !== 'Semana' || !height || Number(height) < 60) return null;
+
+                                                    const centerX = Number(x) + Number(width) / 2;
+                                                    const startY = Number(y) + 20;
+
+                                                    return (
+                                                        <g>
+                                                            <text x={centerX} y={startY} fill="#fff" fontSize="12" fontWeight="bold" textAnchor="middle">
+                                                                {data.ipv.toFixed(0)}%
+                                                            </text>
+                                                            <line x1={Number(x) + 10} y1={startY + 5} x2={Number(x) + Number(width) - 10} y2={startY + 5} stroke="rgba(255,255,255,0.3)" />
+                                                            <text x={centerX} y={startY + 20} fill="#fff" fontSize="9" fontWeight="medium" textAnchor="middle">S: {data.igs.toFixed(0)}</text>
+                                                            <text x={centerX} y={startY + 32} fill="#fff" fontSize="9" fontWeight="medium" textAnchor="middle">N: {data.ign.toFixed(0)}</text>
+                                                            <text x={centerX} y={startY + 44} fill="#fff" fontSize="9" fontWeight="medium" textAnchor="middle">M: {data.ies.toFixed(0)}</text>
+                                                        </g>
+                                                    );
+                                                }}
+                                            />
+                                        </Bar>
+                                    </BarChart>
                                 </ResponsiveContainer>
                             </div>
                         </div>

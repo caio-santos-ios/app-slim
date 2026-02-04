@@ -16,6 +16,19 @@
   --color-brand-800: #0f2135;
   --color-brand-900: #0c1a29;
   --color-brand-950: #07101a;
+
+  --color-brand-2-25: #f0f9f5;
+  --color-brand-2-50: #e0f2e9;
+  --color-brand-2-100: #c2e6d4;
+  --color-brand-2-200: #99d9bc;
+  --color-brand-2-300: #66cc99; /* Cor Base */
+  --color-brand-2-400: #4db380;
+  --color-brand-2-500: #339966;
+  --color-brand-2-600: #2d8659;
+  --color-brand-2-700: #26734d;
+  --color-brand-2-800: #1f5f40;
+  --color-brand-2-900: #194d33;
+  --color-brand-2-950: #0f2e1f;
 }
 
 @theme inline {
@@ -66,6 +79,19 @@
   --color-brand-800: #0f2135;
   --color-brand-900: #0c1a29;
   --color-brand-950: #07101a;
+
+  --color-brand-2-25: #f0f9f5;
+  --color-brand-2-50: #e0f2e9;
+  --color-brand-2-100: #c2e6d4;
+  --color-brand-2-200: #99d9bc;
+  --color-brand-2-300: #66cc99; /* Cor Base */
+  --color-brand-2-400: #4db380;
+  --color-brand-2-500: #339966;
+  --color-brand-2-600: #2d8659;
+  --color-brand-2-700: #26734d;
+  --color-brand-2-800: #1f5f40;
+  --color-brand-2-900: #194d33;
+  --color-brand-2-950: #0f2e1f;
 }
 
 @media (prefers-color-scheme: dark) {

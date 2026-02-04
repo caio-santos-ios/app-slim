@@ -9,4 +9,6 @@ export type TProfile = {
     imc: number;
     agua: number;
     image: any;
+    targetSleepTime: any;
+    dass: any;
 }

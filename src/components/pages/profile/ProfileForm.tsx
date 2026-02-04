@@ -10,6 +10,7 @@ import { TProfile } from "@/types/profile/profile.type";
 import Button from "@/ui/Button";
 import { maskCPF, maskPhone } from "@/utils/mask.util";
 import { useAtom } from "jotai";
+import Link from "next/link";
 import { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 
@@ -81,20 +82,13 @@ export const ProfileForm = () => {
             }
         };
     };
-    
-    useEffect(() => {
-        const initial = async () => {
-            await uploadPhoto();
-        };
-        initial();
-    }, [watch("image")]);
 
     useEffect(() => {
         const initial = async () => {
             await getLogged();
         }
         initial();
-    }, [])
+    }, []);
     
     return (
         <form onSubmit={handleSubmit(save)} className="grid grid-cols-4 gap-4">
@@ -102,10 +96,10 @@ export const ProfileForm = () => {
             
             <div className="col-span-4 max-h-[calc(100dvh-19.5rem)] overflow-y-auto">
                 <div className="grid grid-cols-4 gap-4">
-                    <div className="col-span-4">
+                    {/* <div className="col-span-4">
                         <Label label="Foto de Perfil" required={false}/>
                         <Input id="image" {...register("image")} type="file"/>
-                    </div>
+                    </div> */}
                     <div className="col-span-4">
                         <Label label="Nome" />
                         <Input {...register("name")} />
@@ -138,10 +132,19 @@ export const ProfileForm = () => {
                         <Label label="Meta Água" required={false}/>
                         <Input disabled value={calcularMetaAgua(watch("weight"))} placeholder=""/>
                     </div>
+                    <div className="col-span-2">
+                        <Label label="Horário alvo para dormir" required={false}/>
+                        <input type="time" {...register("targetSleepTime")} className="h-11 w-full border border-(--color-brand-200) focus:border-(--color-brand-200) focus:outline-hidden rounded-lg px-3 py-2" />
+                    </div>
                 </div>
             </div>
-            <div className="col-span-4">
-                <Button className="w-full" size="sm">Salvar</Button>
+            <div className="col-span-2">
+                <Link href="/home/profile">
+                    <Button type="button" variant="outline-secondary" className="w-full" size="sm">Cancelar</Button>
+                </Link>
+            </div>
+            <div className="col-span-2">
+                <Button variant="secondary" className="w-full" size="sm">Salvar</Button>
             </div>
         </form>
     )
