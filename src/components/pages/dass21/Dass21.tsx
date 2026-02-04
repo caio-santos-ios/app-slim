@@ -11,6 +11,7 @@ import { useForm } from 'react-hook-form';
 import { TProfile } from '@/types/profile/profile.type';
 import { HiOutlineLightBulb } from 'react-icons/hi';
 import Button from '@/ui/Button';
+import { FaQuestion } from 'react-icons/fa';
 
 const montserrat = Montserrat({ subsets: ['latin'] });
 const perguntasDass21 = [
@@ -200,7 +201,7 @@ export const QuizDass21 = () => {
                     <div onClick={() => setOpen(true)} className={`${montserrat.className} bg-white p-6 rounded-2xl border border-gray-200`}>
                         <div className="flex items-start gap-3">
                             <div className="p-2 bg-brand-2-800 rounded-xl">
-                                <HiOutlineLightBulb className="text-brand-2-600 dark:text-brand-2-400" size={24} />
+                                <FaQuestion className="text-brand-2-600 dark:text-brand-2-400" size={24} />
                             </div>
                             
                             <div className="flex flex-col">
