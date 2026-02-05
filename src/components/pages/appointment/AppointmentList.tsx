@@ -16,6 +16,7 @@ import { MdOutlineCancel } from "react-icons/md";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { ptBR } from "date-fns/locale";
+import { montserrat } from "../dass21/Dass21";
 
 export const AppointmentList = () => {
     const [__, setIsLoading] = useAtom(loadingAtom);
@@ -144,7 +145,7 @@ export const AppointmentList = () => {
     }, [])
     
     return (
-        <div>
+        <div className={`${montserrat.className}`}>
             {
                 !modalCanceled && !modalCreate &&
                 <div className="mb-4">

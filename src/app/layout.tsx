@@ -4,6 +4,7 @@ import "./globals.css";
 import { Autorization } from "@/components/autorization/Autorization";
 import { Bounce, ToastContainer } from "react-toastify";
 import { Montserrat } from 'next/font/google';
+import { Loading } from "@/components/loading/Loading";
 
 const montserrat = Montserrat({
   subsets: ['latin'],
@@ -29,6 +30,7 @@ export default function RootLayout({
         <meta name="theme-color" content="#000000" />
       </head>
       <body className={`${montserrat.variable} antialiased`}>
+        <Loading />
         <Autorization />
         <ToastContainer
           position="top-right"

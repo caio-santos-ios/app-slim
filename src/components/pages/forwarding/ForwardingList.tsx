@@ -17,6 +17,7 @@ import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { ptBR } from "date-fns/locale";
 import { toast } from "react-toastify";
+import { montserrat } from "../dass21/Dass21";
 
 export const ForwardingList = () => {
     const [__, setIsLoading] = useAtom(loadingAtom);
@@ -122,7 +123,7 @@ export const ForwardingList = () => {
     }, [])
     
     return (
-        <div>
+        <div className={`${montserrat.className}`}>
             {
                 modalCreate &&
                 <form onSubmit={handleSubmit(save)} className="grid grid-cols-4 gap-4 max-h-[calc(80dvh-2rem)] overflow-y-auto">                

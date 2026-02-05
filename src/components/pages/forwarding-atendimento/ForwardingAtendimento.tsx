@@ -17,6 +17,7 @@ import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { ptBR } from "date-fns/locale";
 import { toast } from "react-toastify";
+import { montserrat } from "../dass21/Dass21";
 
 export const ForwardingAten = () => {
     const [__, setIsLoading] = useAtom(loadingAtom);
@@ -42,7 +43,7 @@ export const ForwardingAten = () => {
     };
     
     return (
-        <div>
+        <div className={`${montserrat.className}`}>
             <div className="mb-4 h-[80dvh] flex justify-center items-center">
                 <Button onClick={() => getLogged()} type="button" className="w-full h-8" size="sm">Solicitar atendimento</Button>
             </div>

@@ -1,7 +1,8 @@
 "use client";
+
 import { useEffect, useState } from 'react';
 import { Montserrat } from 'next/font/google';
-import { motion, AnimatePresence } from 'framer-motion'; // Opcional para transição suave
+import { motion, AnimatePresence } from 'framer-motion'; 
 import { api } from '@/service/api.service';
 import { configApi, resolveResponse } from '@/service/config.service';
 import { useAtom } from 'jotai';
@@ -9,11 +10,10 @@ import { loadingAtom } from '@/jotai/global/loading.jotai';
 import { profileAtom } from '@/jotai/profile/profile.jotai';
 import { useForm } from 'react-hook-form';
 import { TProfile } from '@/types/profile/profile.type';
-import { HiOutlineLightBulb } from 'react-icons/hi';
-import Button from '@/ui/Button';
 import { FaQuestion } from 'react-icons/fa';
 
-const montserrat = Montserrat({ subsets: ['latin'] });
+export const montserrat = Montserrat({ subsets: ['latin'] });
+
 const perguntasDass21 = [
     { id: 1, texto: "Achei difícil me acalmar", tipo: "estresse" },
     { id: 2, texto: "Senti minha boca seca", tipo: "ansiedade" },
@@ -135,7 +135,7 @@ export const QuizDass21 = () => {
                     initial={{ x: 20, opacity: 0 }}
                     animate={{ x: 0, opacity: 1 }}
                     exit={{ x: -20, opacity: 0 }}
-                    className="min-h-[10px] mb-10"
+                    className="min-h-2.5 mb-10"
                     >
                     <h2 className="text-xl font-bold text-slate-800 dark:text-white leading-tight">
                         {perguntasDass21[currentStep].texto}

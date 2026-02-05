@@ -122,3 +122,7 @@ body {
   background-color: #a2bcce !important; /* Cor brand-500 */
   color: white !important;
 }
+
+.gradient-box {
+  background: linear-gradient(to right, var(--color-brand-500) 0%, var(--color-brand-2-400) 100%);
+}

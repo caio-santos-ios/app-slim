@@ -12,6 +12,7 @@ type TSubmenu = {
 }
 
 type TTab = {
+    typeIcon: string;
     icon: string;
     link: string;
     code: string;
@@ -26,15 +27,18 @@ export const AppTab = () => {
         {
             icon: 'GoHome',
             link: '/home',
-            code: 'home'
+            code: 'home',
+            typeIcon: 'icon'
         },
         {
             icon: 'PiTreeBold',
             link: '/home/vital',
-            code: 'vital'
+            code: 'vital',
+            typeIcon: 'icon'
         },
         {
             icon: 'LuBrain',
+            typeIcon: 'icon',
             link: '#',
             code: 'appointment',
             submenus: [
@@ -47,6 +51,7 @@ export const AppTab = () => {
             icon: 'IoCalendarOutline',
             link: '#',
             code: 'forwarding',
+            typeIcon: 'icon',
             submenus: [
                 { label: 'Atendimento', link: '/home/forwardings-atendimento' },
                 { label: 'Encaminhamentos', link: '/home/forwardings' },
@@ -56,7 +61,8 @@ export const AppTab = () => {
         {
             icon: 'BsPerson',
             link: '/home/profile',
-            code: 'profile'
+            code: 'profile',
+            typeIcon: 'icon'
         },
     ]);
 
@@ -108,9 +114,17 @@ export const AppTab = () => {
                             <Link 
                                 href={tab.submenus ? "#" : tab.link}
                                 onClick={() => handleTabClick(tab)}
-                                className={`${isActive ? 'bg-brand-300' : ''} w-12 h-12 rounded-full flex justify-center items-center transition-all`}
-                            >
-                                {IconComponent && <IconComponent size={25} />}
+                                className={`${isActive ? 'bg-brand-300' : ''} w-12 h-12 rounded-full flex justify-center items-center transition-all`}>
+                                {
+                                    tab.typeIcon == "icon" ?
+                                    IconComponent && <IconComponent size={25} />
+                                    :
+                                    <img
+                                        className="h-full"
+                                        src={`/aplicativo/${tab.icon}`}
+                                        alt="Logo"
+                                    />
+                                }
                             </Link>
                         </li>
                     )

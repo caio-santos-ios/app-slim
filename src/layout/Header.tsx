@@ -10,20 +10,14 @@ export const Header = () => {
     
     useEffect(() => {
         const localPhoto = localStorage.getItem("photo");
-        console.log(localPhoto)
+
         if(localPhoto) {
             setPhoto(localPhoto);
         }
     }, []);
 
-    useEffect(() => {
-        if(photo) {
-            console.log(photo)
-        }
-    }, [photo]);
-
     return (
-        <header className="px-4 h-24 bg-brand-500 flex justify-between items-center">
+        <header className="px-4 h-24 gradient-box flex justify-between items-center">
             <div className="h-auto">
                 <img
                     className="h-20"

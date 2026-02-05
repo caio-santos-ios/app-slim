@@ -12,6 +12,7 @@ import { FiAlertTriangle, FiPhone } from "react-icons/fi";
 import { HiOutlineLightBulb } from "react-icons/hi";
 import { FaExternalLinkAlt, FaVideo } from "react-icons/fa";
 import { maskDate } from "@/utils/mask.util";
+import { montserrat } from "../dass21/Dass21";
 
 const data = [
     { name: 'quarta', value: 75 },
@@ -86,7 +87,7 @@ export default function Home() {
     }, []);
 
     return (
-        <div>
+        <div className={`${montserrat.className}`}>
             {
                 modal ?
                 <VitalModal />

@@ -7,6 +7,7 @@ import { configApi, resolveResponse } from "@/service/config.service";
 import { useAtom } from "jotai";
 import { useEffect, useState } from "react";
 import "react-day-picker/dist/style.css";
+import { montserrat } from "../dass21/Dass21";
 
 export const AppointmentHistoricList = () => {
     const [__, setIsLoading] = useAtom(loadingAtom);
@@ -50,7 +51,7 @@ export const AppointmentHistoricList = () => {
     }, [])
     
     return (
-        <>
+        <div className={`${montserrat.className}`}>
             {
                 appointments.length == 0 ?
                 <NotData />
@@ -72,6 +73,6 @@ export const AppointmentHistoricList = () => {
                     }
                 </ul>
             }
-        </>
+        </div>
     )
 }

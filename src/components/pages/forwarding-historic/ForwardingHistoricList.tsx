@@ -17,6 +17,7 @@ import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
 import { ptBR } from "date-fns/locale";
 import { NotData } from "@/components/not-data/NotData";
+import { montserrat } from "../dass21/Dass21";
 
 export const ForwardingHistoricList = () => {
     const [__, setIsLoading] = useAtom(loadingAtom);
@@ -60,7 +61,7 @@ export const ForwardingHistoricList = () => {
     }, [])
     
     return (
-        <>
+        <div className={`${montserrat.className}`}>
             {
                 appointments.length == 0 ?
                 <NotData />
@@ -82,6 +83,6 @@ export const ForwardingHistoricList = () => {
                     }
                 </ul>
             }
-        </>
+        </div>
     )
 }

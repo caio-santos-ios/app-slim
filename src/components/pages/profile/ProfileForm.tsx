@@ -13,6 +13,7 @@ import { useAtom } from "jotai";
 import Link from "next/link";
 import { useEffect } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
+import { montserrat } from "../dass21/Dass21";
 
 export const ProfileForm = () => {
     const [_, setIsLoading] = useAtom(loadingAtom);
@@ -91,15 +92,11 @@ export const ProfileForm = () => {
     }, []);
     
     return (
-        <form onSubmit={handleSubmit(save)} className="grid grid-cols-4 gap-4">
+        <form onSubmit={handleSubmit(save)} className={`${montserrat.className} grid grid-cols-4 gap-4`}>
             <h1 className="mb-1.5 block text-md font-bold text-gray-700 dark:text-gray-400">Meu Perfil</h1>
             
             <div className="col-span-4 max-h-[calc(100dvh-19.5rem)] overflow-y-auto">
                 <div className="grid grid-cols-4 gap-4">
-                    {/* <div className="col-span-4">
-                        <Label label="Foto de Perfil" required={false}/>
-                        <Input id="image" {...register("image")} type="file"/>
-                    </div> */}
                     <div className="col-span-4">
                         <Label label="Nome" />
                         <Input {...register("name")} />
