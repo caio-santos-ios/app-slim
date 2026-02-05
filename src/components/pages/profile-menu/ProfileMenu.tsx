@@ -17,6 +17,7 @@ import { MdOutlineWaterDrop } from "react-icons/md"
 import { useRouter } from "next/navigation";
 import { montserrat } from "../dass21/Dass21";
 import { HiOutlinePencilSquare } from "react-icons/hi2";
+import heic2any from "heic2any";
 
 export const ProfileMenu = () => {
     const [_, setIsLoading] = useAtom(loadingAtom);
@@ -55,19 +56,20 @@ export const ProfileMenu = () => {
         return `${litros.toFixed(1)} L`;
     };
 
-    const handleImageChange = async (e: ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0];
-        
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImagePreview(reader.result as string);
-            };
+    const handleImageChange = async (e: any) => {
+        let file = e.target.files[0];
 
-            reader.readAsDataURL(file);
-
-            await uploadPhoto(file); 
+        if (file.type === "image/heic" || file.name.toLowerCase().endsWith(".heic")) {
+            // Converte HEIC para JPG
+            const blob: any = await heic2any({
+            blob: file,
+            toType: "image/jpeg",
+            quality: 0.7
+            });
+            file = new File([blob], file.name.replace(/\.[^/.]+$/, ".jpg"), { type: "image/jpeg" });
         }
+
+        await uploadPhoto(file); // Agora envia o arquivo já compatível
     };
     
     const uploadPhoto = async (file?: File) => {
