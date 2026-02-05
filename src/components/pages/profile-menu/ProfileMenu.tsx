@@ -135,7 +135,7 @@ export const ProfileMenu = () => {
             const localPhoto = localStorage.getItem("photo");
             const localName = localStorage.getItem("name");
             // `${uriBase}/${photo}`
-            if(localPhoto) setPhoto(localPhoto);
+            if(localPhoto) setImagePreview(`${uriBase}/${localPhoto}`);
             if(localName) setName(localName);
 
             await getLogged();
