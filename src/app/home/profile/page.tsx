@@ -1,18 +1,9 @@
+import { ProfileMenu } from "@/components/pages/profile-menu/ProfileMenu";
 import type { Metadata } from "next";
-import dynamic from "next/dynamic";
-
-// Isso força o componente a ser carregado APENAS no navegador
-const ProfileMenu = dynamic(
-  () => import("@/components/pages/profile-menu/ProfileMenu").then(mod => mod.ProfileMenu),
-  { 
-    ssr: false,
-    loading: () => <div className="p-10 text-center font-montserrat">Carregando perfil...</div>
-  }
-);
 
 export const metadata: Metadata = {
     title: "Pasbem | Perfil",
-    description: "Perfil do usuário",
+    description: "This is Next.js Home for TailAdmin Perfil Template",
 };
 
 export default function Profile() {
