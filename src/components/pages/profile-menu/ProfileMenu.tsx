@@ -33,7 +33,12 @@ export const ProfileMenu = () => {
             setIsLoading(true);
             const {data} = await api.get(`/customer-recipients/logged`, configApi());
             const result = data.result.data;  
-            reset(result)
+            reset(result);
+            
+            // Atualiza o preview com a foto que veio do banco (se existir)
+            if (result.photo) {
+                setImagePreview(`${uriBase}/${result.photo}`);
+            }
         } catch (error) {
             resolveResponse(error);
         } finally {
@@ -56,36 +61,41 @@ export const ProfileMenu = () => {
         return `${litros.toFixed(1)} L`;
     };
 
-    const handleImageChange = async (e: any) => {
-        let file = e.target.files[0];
+    const handleImageChange = async (e: ChangeEvent<HTMLInputElement>) => {
+        const files = e.target.files;
+        if (!files || files.length === 0) return;
 
-        if (file.type === "image/heic" || file.name.toLowerCase().endsWith(".heic")) {
-            // Converte HEIC para JPG
-            const blob: any = await heic2any({
-            blob: file,
-            toType: "image/jpeg",
-            quality: 0.7
-            });
-            file = new File([blob], file.name.replace(/\.[^/.]+$/, ".jpg"), { type: "image/jpeg" });
+        let file = files[0];
+
+        // 1. Preview Local Imediato (Melhora UX no Android)
+        const localUrl = URL.createObjectURL(file);
+        setImagePreview(localUrl);
+
+        try {
+            // 2. Tratamento de HEIC (iPhone)
+            if (file.type === "image/heic" || file.name.toLowerCase().endsWith(".heic")) {
+                const blob: any = await heic2any({
+                    blob: file,
+                    toType: "image/jpeg",
+                    quality: 0.7
+                });
+                file = new File([blob], file.name.replace(/\.[^/.]+$/, ".jpg"), { type: "image/jpeg" });
+            }
+
+            await uploadPhoto(file);
+        } catch (err) {
+            console.error("Erro ao processar imagem", err);
         }
-
-        await uploadPhoto(file); // Agora envia o arquivo já compatível
     };
     
-    const uploadPhoto = async (file?: File) => {
-        const selectedFile = file || (document.querySelector('#photo') as HTMLInputElement)?.files?.[0];
-
-        if (!selectedFile) {
-            return resolveResponse({ status: 400, message: "Por favor, selecione uma imagem." });
-        }
-
-        if (selectedFile.size > 5 * 1024 * 1024) {
+    const uploadPhoto = async (file: File) => {
+        if (file.size > 5 * 1024 * 1024) {
             return resolveResponse({ status: 400, message: "A imagem deve ter no máximo 5MB." });
         }
 
         try {
             const formBody = new FormData();
-            formBody.append('photo', selectedFile);
+            formBody.append('photo', file);
 
             const { status, data } = await api.put(
                 `/customer-recipients/profile-photo`, 
@@ -101,123 +111,120 @@ export const ProfileMenu = () => {
 
             if (status === 200 && data?.result?.data) {
                 const newPhotoUrl = data.result.data.photo;
-                
                 setPhoto(newPhotoUrl);
+                setImagePreview(`${uriBase}/${newPhotoUrl}`); // Atualiza para a URL final da API
                 
-            if (typeof window !== 'undefined') {
-                localStorage.setItem("photo", newPhotoUrl);
+                if (typeof window !== 'undefined') {
+                    localStorage.setItem("photo", newPhotoUrl);
+                }
+                resolveResponse({ status, message: "Foto atualizada com sucesso!" });
             }
-
-            resolveResponse({ status, message: "Foto atualizada com sucesso!" });
-            
-            if (setValue) setValue("image", "");
+        } catch (error: any) {
+            console.error("Erro no upload:", error);
+            resolveResponse(error);
         }
-
-    } catch (error: any) {
-        console.error("Erro no upload:", error);
-        // Tratamento de erro mais amigável
-        const errorMsg = error.response?.data?.message || "Erro ao conectar com o servidor.";
-        resolveResponse({ status: error.response?.status || 500, message: errorMsg });
-    }
-};
+    };
 
     const logout = () => {
-        localStorage.removeItem("token");
-        localStorage.removeItem("refreshToken");
-        localStorage.removeItem("name");
-        localStorage.removeItem("photo");
-        localStorage.removeItem("rapidocId");
-        localStorage.removeItem("tab");
-        
-        router.push("/");
+        if (typeof window !== 'undefined') {
+            localStorage.clear();
+            router.push("/");
+        }
     };
 
     useEffect(() => {
-        const initial = async () => {
+        // Proteção para o Build do Next.js (SSR)
+        if (typeof window !== 'undefined') {
             const localPhoto = localStorage.getItem("photo");
             const localName = localStorage.getItem("name");
-            // `${uriBase}/${photo}`
-            if(localPhoto) setImagePreview(`${uriBase}/${localPhoto}`);
-            if(localName) setName(localName);
+            
+            if (localPhoto && localPhoto !== "undefined") {
+                setImagePreview(`${uriBase}/${localPhoto}`);
+            }
+            if (localName) setName(localName);
 
-            await getLogged();
+            getLogged();
         }
-        initial();
     }, []);
 
     return (
         <div className={`${montserrat.className}`}>
             <h1 className="mb-1.5 block text-md font-bold text-gray-700 dark:text-gray-400">Meu Perfil</h1>
 
-            <div className="bg-white p-3 rounded-2xl border border-gray-200 mb-3 flex justify-between gap-4">
-                <div className="flex flex-col items-center">
-                    {
-                        imagePreview ?
-                        <img
-                            className="h-20 w-20 rounded-full border border-gray-200 mb-2"
-                            src={imagePreview}
-                            alt="foto de perfil"
-                        />
-                        :
-                        <div className="h-24 w-20 rounded-full flex flex-col gap-2 justify-center items-center">
-                            <FaUserCircle className="text-gray-400" size={70} />
-                        </div>
-                    }
+            <div className="bg-white p-4 rounded-2xl border border-gray-200 mb-3 flex justify-between items-center gap-4">
+                <div className="relative h-20 w-20">
+                    <div className="h-20 w-20 rounded-full overflow-hidden border border-gray-200 flex items-center justify-center bg-gray-50">
+                        {imagePreview ? (
+                            <img
+                                className="h-full w-full object-cover"
+                                src={imagePreview}
+                                alt="foto de perfil"
+                            />
+                        ) : (
+                            <FaUserCircle className="text-gray-300" size={80} />
+                        )}
+                    </div>
 
-                    <label htmlFor="photo" className="">
-                        <input onChange={handleImageChange} id="photo" type="file" hidden />
-                        <HiOutlinePencilSquare className="text-yellow-400" size={20} />
+                    <label 
+                        htmlFor="photo" 
+                        className="absolute -bottom-1 -right-1 bg-white shadow-md p-1.5 rounded-full cursor-pointer border border-gray-100"
+                    >
+                        <input onChange={handleImageChange} id="photo" type="file" accept="image/*" hidden />
+                        <HiOutlinePencilSquare className="text-brand-400" size={18} />
                     </label>
                 </div>
 
                 <div className="flex flex-col items-end justify-center text-brand-800">
-                    <span className="text-sm font-semibold">{watch("name")}</span>
-                    <span className="text-sm font-semibold">{watch("cpf")}</span>
-                    <span className="text-sm font-semibold">{watch("phone")}</span>
+                    <span className="text-sm font-bold">{watch("name") || "Carregando..."}</span>
+                    <span className="text-xs text-gray-500">{watch("cpf")}</span>
+                    <span className="text-xs text-gray-500">{watch("phone")}</span>
                 </div>
             </div> 
 
             <ul className="bg-white p-3 rounded-2xl border border-gray-200 mb-3 grid grid-cols-2 gap-4">
                 <Link className="col-span-2" href="/home/profile-data">
-                    <Button className="w-full" size="sm">Editar Dados</Button>
+                    <Button className="w-full !bg-(--color-brand-300)" size="sm">Editar Dados</Button>
                 </Link>
-                <li className="bg-gray-200 rounded-2xl p-4">
-                    <div className="flex items-center gap-2 text-brand-800">
-                        <FaBalanceScale />
-                        <span className="text-sm font-medium">Peso</span>
-                    </div>
-                    <span className="text-md font-semibold text-brand-800">{watch("weight")} Kg</span>
-                </li>
-                <li className="bg-gray-200 rounded-2xl p-4">
-                    <div className="flex items-center gap-2 text-brand-800">
-                        <CiRuler />
-                        <span className="text-sm font-medium">Altura</span>
-                    </div>
-                    <span className="text-md font-semibold text-brand-800">{watch("height")} m</span>
-                </li>
-                <li className="bg-brand-2-100 rounded-2xl p-4">
-                    <div className="flex items-center gap-2 text-brand-800">
-                        <FiTarget />
-                        <span className="text-sm font-medium">IMC</span>
-                    </div>
-                    <span className="text-md font-semibold text-brand-800">{calcularIMC(watch('weight'), watch('height'))}</span>
-                </li>
-                <li className="bg-gray-200 rounded-2xl p-4">
-                    <div className="flex items-center gap-2 text-brand-800">
-                        <MdOutlineWaterDrop />
-                        <span className="text-sm font-medium">Meta Água</span>
-                    </div>
-                    <span className="text-md font-semibold text-brand-800">{calcularMetaAgua(watch("weight"))}</span>
-                </li>
                 
+                <li className="bg-gray-50 rounded-2xl p-4 border border-gray-100">
+                    <div className="flex items-center gap-2 text-gray-500 mb-1">
+                        <FaBalanceScale size={14} />
+                        <span className="text-xs font-medium">Peso</span>
+                    </div>
+                    <span className="text-md font-bold text-brand-800">{watch("weight") || 0} Kg</span>
+                </li>
+
+                <li className="bg-gray-50 rounded-2xl p-4 border border-gray-100">
+                    <div className="flex items-center gap-2 text-gray-500 mb-1">
+                        <CiRuler size={16} />
+                        <span className="text-xs font-medium">Altura</span>
+                    </div>
+                    <span className="text-md font-bold text-brand-800">{watch("height") || 0} m</span>
+                </li>
+
+                <li className="bg-green-50 rounded-2xl p-4 border border-green-100">
+                    <div className="flex items-center gap-2 text-green-600 mb-1">
+                        <FiTarget size={14} />
+                        <span className="text-xs font-medium">IMC</span>
+                    </div>
+                    <span className="text-md font-bold text-green-700">{calcularIMC(watch('weight'), watch('height'))}</span>
+                </li>
+
+                <li className="bg-blue-50 rounded-2xl p-4 border border-blue-100">
+                    <div className="flex items-center gap-2 text-blue-600 mb-1">
+                        <MdOutlineWaterDrop size={14} />
+                        <span className="text-xs font-medium">Meta Água</span>
+                    </div>
+                    <span className="text-md font-bold text-blue-700">{calcularMetaAgua(watch("weight"))}</span>
+                </li>
             </ul>
             
             <div className="col-span-2">
-                <Button onClick={logout} type="button" variant="secondary" className="w-full" size="sm">
+                <Button onClick={logout} type="button" variant="secondary" className="w-full gap-2" size="sm">
                     <FiLogOut /> 
-                    Sair
+                    Sair da Conta
                 </Button>
             </div>
         </div>
     )
-} 
+}

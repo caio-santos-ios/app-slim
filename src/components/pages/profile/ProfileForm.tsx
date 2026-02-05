@@ -17,7 +17,6 @@ import { montserrat } from "../dass21/Dass21";
 
 export const ProfileForm = () => {
     const [_, setIsLoading] = useAtom(loadingAtom);
-    const [__, setPhoto] = useAtom(profileAtom);
     const { reset, register, watch, handleSubmit, setValue} = useForm<TProfile>();
 
     const save: SubmitHandler<TProfile> = async (body: TProfile) => {
@@ -59,29 +58,6 @@ export const ProfileForm = () => {
         const ml = peso * 35;
         const litros = ml / 1000;
         return `${litros.toFixed(1)} L`;
-    };
-
-    const uploadPhoto = async () => {
-        const attachment: any = document.querySelector('#image');
-
-        if(attachment.files.length > 0) {
-            try {
-                const formBody = new FormData();
-                if(attachment) {
-                    if (attachment.files[0]) formBody.append('photo', attachment.files[0]);
-                };
-
-                const { status, data } = await api.put(`/customer-recipients/profile-photo`, formBody, configApi(false));
-                const result = data.result.data;
-                setPhoto(result.photo);
-                localStorage.setItem("photo", result.photo);
-                resolveResponse({status, message: "Foto atualizada com sucesso!"});
-                setValue("image", "");
-            } catch (error) {
-                console.log(error)
-                resolveResponse(error);
-            }
-        };
     };
 
     useEffect(() => {
