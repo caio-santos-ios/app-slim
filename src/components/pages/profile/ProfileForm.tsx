@@ -1,47 +1,30 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useAtom } from "jotai";
-import { useForm } from "react-hook-form";
-import { useRouter } from "next/navigation";
-import { FaUserCircle, FaBalanceScale } from "react-icons/fa";
-import { CiRuler } from "react-icons/ci";
-import { FiLogOut, FiTarget } from "react-icons/fi";
-import { MdOutlineWaterDrop } from "react-icons/md";
-import { HiOutlinePencilSquare } from "react-icons/hi2";
-
+import Input from "@/components/form/input/Input";
+import Label from "@/components/form/LabelForm";
 import { loadingAtom } from "@/jotai/global/loading.jotai";
 import { profileAtom } from "@/jotai/profile/profile.jotai";
-import { api, uriBase } from "@/service/api.service";
+import { api } from "@/service/api.service";
 import { configApi, resolveResponse } from "@/service/config.service";
 import { TProfile } from "@/types/profile/profile.type";
 import Button from "@/ui/Button";
+import { maskCPF, maskPhone } from "@/utils/mask.util";
+import { useAtom } from "jotai";
+import Link from "next/link";
+import { useEffect } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { montserrat } from "../dass21/Dass21";
 
-export const ProfileMenu = () => {
+export const ProfileForm = () => {
     const [_, setIsLoading] = useAtom(loadingAtom);
-    const [photo, setPhoto] = useAtom(profileAtom);
-    const [imagePreview, setImagePreview] = useState<string | null>(null);
-    const router = useRouter();
-    const { reset, watch, setValue } = useForm<TProfile>();
+    const { reset, register, watch, handleSubmit, setValue} = useForm<TProfile>();
 
-    // 1. Carregamento inicial SEGURO (apenas no cliente)
-    useEffect(() => {
-        if (typeof window !== "undefined") {
-            const localPhoto = localStorage.getItem("photo");
-            if (localPhoto && localPhoto !== "undefined") {
-                setImagePreview(`${uriBase}/${localPhoto}`);
-            }
-            getLogged();
-        }
-    }, []);
-
-    const getLogged = async () => {
+    const save: SubmitHandler<TProfile> = async (body: TProfile) => {
         try {
             setIsLoading(true);
-            const { data } = await api.get(`/customer-recipients/logged`, configApi());
-            const result = data.result.data;
-            reset(result);
-            if (result.photo) setImagePreview(`${uriBase}/${result.photo}`);
+            const {data} = await api.put(`/customer-recipients/profile`, body, configApi());
+            const result = data.result;  
+            resolveResponse({status: 200, ...result});
         } catch (error) {
             resolveResponse(error);
         } finally {
@@ -49,92 +32,93 @@ export const ProfileMenu = () => {
         }
     };
 
-    // 2. Função de imagem SEM quebrar o servidor
-    const handleImageChange = async (e: any) => {
-        const file = e.target.files[0];
-        if (!file) return;
-
-        // Preview imediato
-        setImagePreview(URL.createObjectURL(file));
-
-        // Importação DINÂMICA do conversor apenas quando o usuário clica
-        // Isso impede o erro de build no Docker
-        if (file.type === "image/heic" || file.name.toLowerCase().endsWith(".heic")) {
-            const heic2any = (await import("heic2any")).default; 
-            const blob: any = await heic2any({
-                blob: file,
-                toType: "image/jpeg",
-                quality: 0.7
-            });
-            const convertedFile = new File([blob], file.name.replace(/\.[^/.]+$/, ".jpg"), { type: "image/jpeg" });
-            uploadPhoto(convertedFile);
-        } else {
-            uploadPhoto(file);
-        }
-    };
-
-    const uploadPhoto = async (file: File) => {
+    const getLogged = async () => {
         try {
-            const formBody = new FormData();
-            formBody.append('photo', file);
-
-            const { status, data } = await api.put(
-                `/customer-recipients/profile-photo`,
-                formBody,
-                {
-                    ...configApi(false),
-                    headers: { ...configApi(false).headers, 'Content-Type': 'multipart/form-data' }
-                }
-            );
-
-            if (status === 200 && data?.result?.data) {
-                const newUrl = data.result.data.photo;
-                setPhoto(newUrl);
-                setImagePreview(`${uriBase}/${newUrl}`);
-                localStorage.setItem("photo", newUrl);
-                resolveResponse({ status, message: "Foto atualizada!" });
-            }
+            setIsLoading(true);
+            const {data} = await api.get(`/customer-recipients/logged`, configApi());
+            const result = data.result.data;  
+            reset(result)
         } catch (error) {
             resolveResponse(error);
+        } finally {
+            setIsLoading(false);
         }
     };
 
-    const logout = () => {
-        localStorage.clear();
-        router.push("/");
+    const calcularIMC = (peso: number, altura: number) => {
+        if (altura > 0) {
+            const imc = peso / (altura * altura);
+            return imc.toFixed(2); 
+        }
+        return 0;
     };
 
-    // Funções de cálculo (Mantenha as suas originais aqui...)
-    const calcularIMC = (p: number, a: number) => (a > 0 ? (p / (a * a)).toFixed(2) : 0);
-    const calcularMeta = (p: number) => (p > 0 ? `${(p * 35 / 1000).toFixed(1)} L` : "0.0 L");
+    const calcularMetaAgua = (peso: number) => {
+        if (!peso || peso <= 0) return "0.0 L";
+        const ml = peso * 35;
+        const litros = ml / 1000;
+        return `${litros.toFixed(1)} L`;
+    };
 
+    useEffect(() => {
+        const initial = async () => {
+            await getLogged();
+        }
+        initial();
+    }, []);
+    
     return (
-        <div className="p-4">
-            <h1 className="text-md font-bold mb-4">Meu Perfil</h1>
+        <form onSubmit={handleSubmit(save)} className={`${montserrat.className} grid grid-cols-4 gap-4`}>
+            <h1 className="mb-1.5 block text-md font-bold text-gray-700 dark:text-gray-400">Meu Perfil</h1>
             
-            <div className="bg-white p-4 rounded-2xl border flex justify-between items-center mb-4">
-                <div className="relative">
-                    <div className="h-20 w-20 rounded-full overflow-hidden border bg-gray-50 flex items-center justify-center">
-                        {imagePreview ? (
-                            <img src={imagePreview} className="h-full w-full object-cover" alt="Perfil" />
-                        ) : (
-                            <FaUserCircle className="text-gray-300" size={60} />
-                        )}
+            <div className="col-span-4 max-h-[calc(100dvh-19.5rem)] overflow-y-auto">
+                <div className="grid grid-cols-4 gap-4">
+                    <div className="col-span-4">
+                        <Label label="Nome" />
+                        <Input {...register("name")} />
                     </div>
-                    <label htmlFor="photo" className="absolute bottom-0 right-0 bg-white shadow-md p-1 rounded-full cursor-pointer">
-                        <input onChange={handleImageChange} id="photo" type="file" accept="image/*" hidden />
-                        <HiOutlinePencilSquare className="text-green-500" size={18} />
-                    </label>
-                </div>
-
-                <div className="text-right">
-                    <p className="font-bold">{watch("name")}</p>
-                    <p className="text-xs text-gray-500">{watch("cpf")}</p>
+                    <div className="col-span-4">
+                        <Label label="E-mail" />
+                        <Input {...register("email")} />
+                    </div>
+                    <div className="col-span-2">
+                        <Label label="Telefone" />
+                        <Input onInput={(e: any) => maskPhone(e)} {...register("phone")} />
+                    </div>
+                    <div className="col-span-2">
+                        <Label label="CPF" />
+                        <Input onInput={(e: any) => maskCPF(e)} {...register("cpf")} />
+                    </div>
+                    <div className="col-span-2">
+                        <Label label="Peso" />
+                        <Input type="number" {...register("weight")} />
+                    </div>
+                    <div className="col-span-2">
+                        <Label label="Altura" />
+                        <Input step="0.01" type="number" {...register("height")} />
+                    </div>
+                    <div className="col-span-2">
+                        <Label label="IMC" required={false}/>
+                        <Input disabled value={calcularIMC(watch('weight'), watch('height'))} placeholder=""/>
+                    </div>
+                    <div className="col-span-2">
+                        <Label label="Meta Água" required={false}/>
+                        <Input disabled value={calcularMetaAgua(watch("weight"))} placeholder=""/>
+                    </div>
+                    <div className="col-span-2">
+                        <Label label="Horário alvo para dormir" required={false}/>
+                        <input type="time" {...register("targetSleepTime")} className="h-11 w-full border border-(--color-brand-200) focus:border-(--color-brand-200) focus:outline-hidden rounded-lg px-3 py-2" />
+                    </div>
                 </div>
             </div>
-
-            {/* Restante do seu layout de IMC e Água... */}
-            <Button onClick={logout} variant="secondary" className="w-full mt-4">Sair</Button>
-        </div>
-    );
-};
+            <div className="col-span-2">
+                <Link href="/home/profile">
+                    <Button type="button" variant="outline-secondary" className="w-full" size="sm">Cancelar</Button>
+                </Link>
+            </div>
+            <div className="col-span-2">
+                <Button variant="secondary" className="w-full" size="sm">Salvar</Button>
+            </div>
+        </form>
+    )
+}
