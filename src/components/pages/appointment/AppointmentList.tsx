@@ -203,7 +203,7 @@ export const AppointmentList = () => {
                             setValue("date", "");
                             setValue("time", "");
                             setValue("availabilityUuid", "");
-                        }} type="button" className="w-full" size="sm" variant="outline">Cancelar</Button>
+                        }} type="button" className="w-full" size="sm" variant="outline-primary">Cancelar</Button>
                     </div>
                     <div className="col-span-2">
                         <Button className="w-full" size="sm">Salvar</Button>
