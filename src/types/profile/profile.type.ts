@@ -10,5 +10,8 @@ export type TProfile = {
     agua: number;
     image: any;
     targetSleepTime: any;
+    lastSupper: any;
+    patrology: any;
     dass: any;
+    dateOfBirth: any;
 }

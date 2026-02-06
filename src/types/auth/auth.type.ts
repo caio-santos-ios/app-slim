@@ -1,15 +1,16 @@
 export type TLogin = {
-    cpf: string;
+    email: string;
     password: string;
     codeAccess?: string;
 }
 
 export type TResetPassword = {
     phone: string;
-    cpf: string;
+    email: string;
     type: string;
     device: string;
     id: string;
     password: string;
     newPassword: string;
+    codeAccess: string;
 }

@@ -31,14 +31,15 @@ export default function ResetPasswordForm() {
   const { register, handleSubmit, formState: { errors }} = useForm<TResetPassword>();
   
   const requestReset: SubmitHandler<TResetPassword> = async (body: TResetPassword) => {
-    if(!body.cpf) return toast.warn('CPF é obrigatório', {theme: 'colored'});
+    if(!body.email) return toast.warn('E-mail é obrigatório', {theme: 'colored'});
     try {
       setIsLoading(true);
       const {data} = await api.put(`/auth/request-forgot-password`, {...body, device: "app", type});
       const result = data.result.data;
-
+      console.log(result)
       setCode(result.codeAccess);
       setId(result.id);
+      toast.success('Foi enviado um código para o seu e-mail', {theme: 'colored'})
     } catch (error) {
       resolveResponse(error);
     } finally {
@@ -74,6 +75,11 @@ export default function ResetPasswordForm() {
             code ?
             <form onSubmit={handleSubmit(reset)}>
               <div className="space-y-6">
+                <div>
+                  <Label label="Código" />
+                  <Input maxLength={6} {...register("codeAccess")} />
+                </div>
+                
                 <div>
                   <Label label="Senha" />
                   <div className="relative">
@@ -118,8 +124,8 @@ export default function ResetPasswordForm() {
             <form onSubmit={handleSubmit(requestReset)}>
               <div className="space-y-6">
                 <div>
-                  <Label label="CPF" />
-                  <Input onInput={(e: any) => maskCPF(e)} {...register("cpf")} />
+                  <Label label="E-mail" />
+                  <Input type="email" {...register("email")} />
                 </div>
                 <div className="flex items-center justify-between">                  
                   <Link href="/" className="text-sm text-brand-500 hover:text-brand-600 dark:text-brand-400">

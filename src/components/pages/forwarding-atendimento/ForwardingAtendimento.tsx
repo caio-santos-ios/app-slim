@@ -44,7 +44,15 @@ export const ForwardingAten = () => {
     
     return (
         <div className={`${montserrat.className}`}>
-            <div className="mb-4 h-[80dvh] flex justify-center items-center">
+            <div className="mb-4 h-[50dvh] flex flex-col justify-end items-center">
+                <div>
+                    <img
+                        className="h-52"
+                        src="/aplicativo/icon-cuida.png"
+                        alt="Logo"
+                    />
+                </div>
+
                 <Button onClick={() => getLogged()} type="button" className="w-full h-8" size="sm">Solicitar atendimento</Button>
             </div>
         </div>

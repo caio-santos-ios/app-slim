@@ -11,13 +11,14 @@ import Button from "@/ui/Button";
 import { maskCPF, maskPhone } from "@/utils/mask.util";
 import { useAtom } from "jotai";
 import Link from "next/link";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { montserrat } from "../dass21/Dass21";
 
 export const ProfileForm = () => {
     const [_, setIsLoading] = useAtom(loadingAtom);
     const [__, setPhoto] = useAtom(profileAtom);
+    const [age, setAge] = useState<number>(0);
     const { reset, register, watch, handleSubmit, setValue} = useForm<TProfile>();
 
     const save: SubmitHandler<TProfile> = async (body: TProfile) => {
@@ -39,6 +40,8 @@ export const ProfileForm = () => {
             const {data} = await api.get(`/customer-recipients/logged`, configApi());
             const result = data.result.data;  
             reset(result)
+            setAge(calcularIdade(result.dateOfBirth));
+            // calcularIdade(watch("dateOfBirth"))
         } catch (error) {
             resolveResponse(error);
         } finally {
@@ -78,11 +81,48 @@ export const ProfileForm = () => {
                 resolveResponse({status, message: "Foto atualizada com sucesso!"});
                 setValue("image", "");
             } catch (error) {
-                console.log(error)
                 resolveResponse(error);
             }
         };
     };
+
+    const calcularIdade = (dataNascimento: any) => {
+        const hoje = new Date();
+        const nascimento = new Date(dataNascimento);
+
+        let idade = hoje.getFullYear() - nascimento.getFullYear();
+        const mesAtual = hoje.getMonth();
+        const diaAtual = hoje.getDate();
+        
+        const mesNasc = nascimento.getMonth();
+        const diaNasc = nascimento.getDate();
+        if (mesAtual < mesNasc || (mesAtual === mesNasc && diaAtual < diaNasc)) {
+            idade--;
+        }
+
+        return idade;
+    }
+    useEffect(() => {
+        const sleepTime = watch("targetSleepTime");
+
+        if (sleepTime) {
+            const [hours, minutes] = sleepTime.split(':').map(Number);
+
+            const date = new Date();
+            date.setHours(hours);
+            date.setMinutes(minutes);
+
+            date.setHours(date.getHours() - 3);
+
+            const lastSupperTime = date.toLocaleTimeString('pt-BR', {
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: false
+            });
+
+            setValue("lastSupper", lastSupperTime);
+        }
+    }, [watch("targetSleepTime")]);
 
     useEffect(() => {
         const initial = async () => {
@@ -92,26 +132,30 @@ export const ProfileForm = () => {
     }, []);
     
     return (
-        <form onSubmit={handleSubmit(save)} className={`${montserrat.className} grid grid-cols-4 gap-4`}>
-            <h1 className="mb-1.5 block text-md font-bold text-gray-700 dark:text-gray-400">Meu Perfil</h1>
+        <form onSubmit={handleSubmit(save)} className={`${montserrat.className} grid grid-cols-6 gap-4`}>
+            <h1 className="col-span-6 mb-1.5 block text-md font-bold text-gray-700 dark:text-gray-400">Meu Perfil</h1>
             
-            <div className="col-span-4 max-h-[calc(100dvh-19.5rem)] overflow-y-auto">
-                <div className="grid grid-cols-4 gap-4">
-                    <div className="col-span-4">
+            <div className="col-span-6 max-h-[calc(100dvh-19.5rem)] overflow-y-auto">
+                <div className="grid grid-cols-6 gap-4">
+                    <div className="col-span-6">
                         <Label label="Nome" />
                         <Input {...register("name")} />
                     </div>
-                    <div className="col-span-4">
+                    <div className="col-span-6">
                         <Label label="E-mail" />
                         <Input {...register("email")} />
                     </div>
-                    <div className="col-span-2">
+                    <div className="col-span-3">
                         <Label label="Telefone" />
                         <Input onInput={(e: any) => maskPhone(e)} {...register("phone")} />
                     </div>
-                    <div className="col-span-2">
+                    <div className="col-span-3">
                         <Label label="CPF" />
                         <Input onInput={(e: any) => maskCPF(e)} {...register("cpf")} />
+                    </div>
+                    <div className="col-span-2">
+                        <Label label="Idade" required={false}/>
+                        <Input value={age} disabled />
                     </div>
                     <div className="col-span-2">
                         <Label label="Peso" />
@@ -121,26 +165,43 @@ export const ProfileForm = () => {
                         <Label label="Altura" />
                         <Input step="0.01" type="number" {...register("height")} />
                     </div>
-                    <div className="col-span-2">
+                    <div className="col-span-3">
                         <Label label="IMC" required={false}/>
                         <Input disabled value={calcularIMC(watch('weight'), watch('height'))} placeholder=""/>
                     </div>
-                    <div className="col-span-2">
+                    <div className="col-span-3">
                         <Label label="Meta Água" required={false}/>
                         <Input disabled value={calcularMetaAgua(watch("weight"))} placeholder=""/>
                     </div>
-                    <div className="col-span-2">
-                        <Label label="Horário alvo para dormir" required={false}/>
+                    <div className="col-span-3">
+                        <Label label="Horário para dormir" required={false}/>
                         <input type="time" {...register("targetSleepTime")} className="h-11 w-full border border-(--color-brand-200) focus:border-(--color-brand-200) focus:outline-hidden rounded-lg px-3 py-2" />
+                    </div>
+                    <div className="col-span-3">
+                        <Label label="Horário última ceia" required={false}/>
+                        <input type="time" {...register("lastSupper")} className="h-11 w-full border border-(--color-brand-200) focus:border-(--color-brand-200) focus:outline-hidden rounded-lg px-3 py-2" />
+                    </div>
+                    <div className="col-span-6">
+                        <Label label="Possui Patologia Metabólica?" required={false}/>
+                        <select {...register("patrology")} className="h-11 w-full border border-(--color-brand-200) focus:border-(--color-brand-200) focus:outline-hidden rounded-lg px-3 py-2">
+                            <option value="">Nenhum</option>
+                            <option value="Diabetes">Diabetes</option>
+                            <option value="Hipertensão">Hipertensão</option>
+                            <option value="Ansiedade">Ansiedade</option>
+                            <option value="Neoplasia">Neoplasia</option>
+                            <option value="Bipolar">Bipolar</option>
+                            <option value="Pós AVC">Pós AVC</option>
+                            <option value="Outros">Outros</option>
+                        </select>
                     </div>
                 </div>
             </div>
-            <div className="col-span-2">
+            <div className="col-span-3">
                 <Link href="/home/profile">
                     <Button type="button" variant="outline-secondary" className="w-full" size="sm">Cancelar</Button>
                 </Link>
             </div>
-            <div className="col-span-2">
+            <div className="col-span-3">
                 <Button variant="secondary" className="w-full" size="sm">Salvar</Button>
             </div>
         </form>

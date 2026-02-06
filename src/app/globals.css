@@ -126,3 +126,26 @@ body {
 .gradient-box {
   background: linear-gradient(to right, var(--color-brand-500) 0%, var(--color-brand-2-400) 100%);
 }
+
+@layer base {
+  /* Esconde a barra para Chrome, Safari e Edge */
+  ::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Esconde a barra para Firefox e IE */
+  html, body {
+    scrollbar-width: none; /* Firefox */
+    -ms-overflow-style: none; /* IE e Edge antigo */
+  }
+
+  /* Garante que elementos com scroll também não mostrem a barra */
+  * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+  
+  *::-webkit-scrollbar {
+    display: none;
+  }
+}

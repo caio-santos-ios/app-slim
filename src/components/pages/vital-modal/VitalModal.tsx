@@ -90,7 +90,7 @@ export default function VitalModal() {
 
                 <div className="flex gap-4 mt-8">
                 {step > 1 && (
-                    <Button type="button" variant="outline" className="flex-1 text-white" onClick={() => setStep(step - 1)}>
+                    <Button type="button" variant="outline-primary" className="flex-1 text-white" onClick={() => setStep(step - 1)}>
                     Voltar
                     </Button>
                 )}
