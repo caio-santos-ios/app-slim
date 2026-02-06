@@ -64,15 +64,18 @@ export const ProfileMenu = () => {
         const files = e.target.files;
         if (!files || files.length === 0) return;
 
-        let file = files[0];
+        const file = files[0];
 
         const localUrl = URL.createObjectURL(file);
         setImagePreview(localUrl);
 
         try {
+            setIsLoading(true); 
             await uploadPhoto(file);
         } catch (err) {
             console.error("Erro ao processar imagem", err);
+        } finally {
+            setIsLoading(false);
         }
     };
     
@@ -100,7 +103,7 @@ export const ProfileMenu = () => {
             if (status === 200 && data?.result?.data) {
                 const newPhotoUrl = data.result.data.photo;
                 setPhoto(newPhotoUrl);
-                setImagePreview(`${uriBase}/${newPhotoUrl}`); // Atualiza para a URL final da API
+                setImagePreview(`${uriBase}/${newPhotoUrl}`);
                 
                 if (typeof window !== 'undefined') {
                     localStorage.setItem("photo", newPhotoUrl);
@@ -155,9 +158,8 @@ export const ProfileMenu = () => {
 
                     <label 
                         htmlFor="photo" 
-                        className="absolute -bottom-1 -right-1 bg-white shadow-md p-1.5 rounded-full cursor-pointer border border-gray-100"
-                    >
-                        <input onChange={handleImageChange} id="photo" type="file" accept="image/*" hidden />
+                        className="absolute -bottom-1 -right-1 bg-white shadow-md p-1.5 rounded-full cursor-pointer border border-gray-100">
+                        <input onChange={handleImageChange} id="photo" type="file" hidden />
                         <HiOutlinePencilSquare className="text-brand-400" size={18} />
                     </label>
                 </div>
@@ -171,7 +173,7 @@ export const ProfileMenu = () => {
 
             <ul className="bg-white p-3 rounded-2xl border border-gray-200 mb-3 grid grid-cols-2 gap-4">
                 <Link className="col-span-2" href="/home/profile-data">
-                    <Button className="w-full !bg-(--color-brand-300)" size="sm">Editar Dados</Button>
+                    <Button className="w-full" size="sm">Editar Dados</Button>
                 </Link>
                 
                 <li className="bg-gray-50 rounded-2xl p-4 border border-gray-100">
