@@ -26,11 +26,11 @@ export const Header = () => {
                 />
             </div> 
             
-            <div className="h-auto">
+            <div className="h-20 w-20">
                 {
                     photo ?
                     <img
-                        className="h-20 w-20 rounded-full"
+                        className="h-full w-full object-cover rounded-full"
                         src={`${uriBase}/${photo}`}
                         alt="foto de perfil"
                     />
