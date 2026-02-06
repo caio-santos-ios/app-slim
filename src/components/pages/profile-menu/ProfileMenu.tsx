@@ -80,14 +80,16 @@ export const ProfileMenu = () => {
     };
     
     const uploadPhoto = async (file: File) => {
-        if (file.size > 5 * 1024 * 1024) {
-            return resolveResponse({ status: 400, message: "A imagem deve ter no máximo 5MB." });
-        }
+        console.log("Iniciando upload para a API...", file.name); // <== ADICIONE ISSO
+
+        // if (file.size > 5 * 1024 * 1024) {
+        //     return resolveResponse({ status: 400, message: "A imagem deve ter no máximo 5MB." });
+        // }
 
         try {
             const formBody = new FormData();
             formBody.append('photo', file);
-
+            console.log("Enviando PUT...");
             const { status, data } = await api.put(
                 `/customer-recipients/profile-photo`, 
                 formBody, 
