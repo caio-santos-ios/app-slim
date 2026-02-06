@@ -218,7 +218,7 @@ export const AppointmentList = () => {
                         <div className="col-span-4">
                             <h1 className="mb-1.5 block text-md font-bold text-white">Deseja cancelar o Agendamento?</h1>
                         </div>
-                        <Button className="col-span-2" onClick={() => setModalCanceled(false)} type="button" variant="outline" size="sm">Não, fechar</Button>
+                        <Button className="col-span-2" onClick={() => setModalCanceled(false)} type="button" variant="outline-primary" size="sm">Não, fechar</Button>
                         <Button className="col-span-2" size="sm">Confirmar</Button>
                     </form>
                 </div>

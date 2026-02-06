@@ -176,7 +176,7 @@ export const ForwardingList = () => {
                             setValue("time", "");
                             setValue("availabilityUuid", "");
                             setSelectedDay(undefined);
-                        }} type="button" className="w-full" size="sm" variant="outline">Cancelar</Button>
+                        }} type="button" className="w-full" size="sm" variant="outline-primary">Cancelar</Button>
                     </div>
                     <div className="col-span-2">
                         <Button className="w-full" size="sm">Salvar</Button>
