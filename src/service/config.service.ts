@@ -13,6 +13,7 @@ export const configApi = (contentTypeJson: boolean = true) => {
 }
 
 export const resolveResponse = (response: any) => {
+  console.log(response)
   if(response.status >= 200 && response.status < 300) {
     toast.success(response.message, {
       theme: 'colored'
@@ -33,7 +34,7 @@ export const resolveResponse = (response: any) => {
       }, 1000);
       return;
     }
-    console.log(response)
+
     toast.warn(response?.response?.data?.result?.message, {
       theme: 'colored'
     });

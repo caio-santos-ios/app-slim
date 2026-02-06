@@ -34,6 +34,7 @@ export default function Home() {
     const [metric, setMetric] = useState<any>({igs: 0, ign: 0, ies: 0, ipv: 0});
     const [metricWeek, setMetricWeek] = useState<any[]>([]);
     const [periodo, setPeriodo] = useState('Semana');
+    const [dass9, setDass9] = useState<any>({})
     const periodos = ['Semana', 'Mês', 'Ano', 'Todo Período'];
 
     const getBarColor = (value: number) => {
@@ -47,6 +48,12 @@ export default function Home() {
         if (metric > 60 && metric < 85) return "text-yellow-400";
         return "text-green-400";
     };
+    
+    const getColorDass9 = (scoore: number) => {
+        if (scoore == 5) return "border bg-red-100 text-red-600 border-red-600";
+        if (scoore > 3 && scoore < 5) return "border bg-yellow-100 text-yellow-600 border-yellow-600";
+        return "border bg-green-100 text-green-600 border-green-600";
+    };
 
     const getAll = async () => {
         try {
@@ -56,7 +63,16 @@ export default function Home() {
             if(!result.id) {
                 setIsCheckIn(true);
             };
-            
+
+            const depressionScore = (result.dass1 || 0) + (result.dass2 || 0) + (result.dass3 || 0);
+            const anxietyScore = (result.dass4 || 0) + (result.dass5 || 0) + (result.dass6 || 0);
+            const stressScore = (result.dass7 || 0) + (result.dass8 || 0) + (result.dass9 || 0);
+
+            setDass9({
+                depression: depressionScore,
+                anxiety: anxietyScore,
+                stress: stressScore
+            });
             setMetric(result.metric);
             setMetricWeek(result.weekMetric);
         } catch (error) {
@@ -164,7 +180,29 @@ export default function Home() {
                                 </a>
                             </div>
                         }
-                        
+                        {
+                            metric.ipv > 0 &&
+                            <ul  className={`bg-white p-6 rounded-2xl border border-gray-200 mb-4 grid grid-cols-1 gap-4`}>
+                                <li className={`${getColorDass9(dass9.depression)} rounded-2xl p-4 flex justify-between`}>
+                                    <span className="text-md font-semibold">Depressão</span>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-sm font-medium">{dass9.depression}</span>
+                                    </div>
+                                </li>
+                                <li className={`${getColorDass9(dass9.stress)} rounded-2xl p-4 flex justify-between`}>
+                                    <span className="text-md font-semibold">Ansiedade</span>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-sm font-medium">{dass9.stress}</span>
+                                    </div>
+                                </li>
+                                <li className={`${getColorDass9(dass9.anxiety)} rounded-2xl p-4 flex justify-between`}>
+                                    <span className="text-md font-semibold">Estresse</span>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-sm font-medium">{dass9.anxiety}</span>
+                                    </div>
+                                </li>                    
+                            </ul>
+                        }
                         <div className="bg-white p-6 rounded-2xl border border-gray-200 mb-4">
                             <div className="relative h-48 w-48 mx-auto mb-4">
                                 <ResponsiveContainer width="100%" height="100%">
@@ -235,7 +273,7 @@ export default function Home() {
                                 <h3 className="font-bold text-(--color-brand-400)">Evolução</h3>
                                 <div className="flex gap-2 text-[10px] font-medium text-gray-500">
                                     <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-green-400" /> &gt;85</span>
-                                    <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-orange-400" /> 60-85</span>
+                                    <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-yellow-400" /> 60-85</span>
                                     <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-red-400" /> &lt;60</span>
                                 </div>
                             </div>
@@ -328,7 +366,7 @@ export default function Home() {
                                             {metricWeek.map((entry, index) => (
                                                 <Cell 
                                                     key={`cell-${index}`} 
-                                                    fill={entry.ipv > 85 ? '#4ade80' : entry.ipv >= 60 ? '#f59e0b' : '#ef4444'} 
+                                                    fill={entry.ipv > 85 ? '#06df72' : entry.ipv >= 60 ? '#fdc700' : '#ff6467'} 
                                                 />
                                             ))}
 
