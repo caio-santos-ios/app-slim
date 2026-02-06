@@ -1,5 +1,5 @@
 export type TLogin = {
-    email: string;
+    cpf: string;
     password: string;
     codeAccess?: string;
 }
