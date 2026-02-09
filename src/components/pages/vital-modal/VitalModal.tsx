@@ -10,12 +10,13 @@ import { useAtom } from "jotai";
 import { loadingAtom } from "@/jotai/global/loading.jotai";
 import { api } from "@/service/api.service";
 import { configApi, resolveResponse } from "@/service/config.service";
-import { VitalModalAtom } from "@/jotai/vital/vital.jotai";
+import { VitalCheckInAtom, VitalModalAtom } from "@/jotai/vital/vital.jotai";
 
 export default function VitalModal() {
     const [_, setIsLoading] = useAtom(loadingAtom);
     const [__, setModal] = useAtom(VitalModalAtom);
     const [step, setStep] = useState(1);
+    const [___, setIsCheckIn] = useAtom(VitalCheckInAtom);
     const { register, watch, setValue, getValues } = useForm({
         defaultValues: {
             sleepTime: "",
@@ -37,6 +38,7 @@ export default function VitalModal() {
 
             resolveResponse({status: 200, message: 'Salvo com sucesso!'});
             setModal(false);
+            setIsCheckIn(false);
         } catch (error) {
             resolveResponse(error);
         } finally {

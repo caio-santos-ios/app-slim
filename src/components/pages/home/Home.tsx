@@ -40,7 +40,7 @@ export default function Home() {
     const getBarColor = (value: number) => {
         if (value <= 60) return "oklch(70.4% 0.191 22.216)";
         if (value > 60 && value < 85) return "oklch(85.2% 0.199 91.936)";
-        return "oklch(70.4% 0.191 22.216)";
+        return "oklch(79.2% 0.209 151.711)";
     };
     
     const getColorMetric = (metric: number) => {
@@ -73,6 +73,7 @@ export default function Home() {
                 anxiety: anxietyScore,
                 stress: stressScore
             });
+
             setMetric(result.metric);
             setMetricWeek(result.weekMetric);
         } catch (error) {
@@ -92,6 +93,12 @@ export default function Home() {
         }
     };
 
+    const GetBarColor = (metric: number) => {
+        if (metric <= 60) return "#ff6467";
+        if (metric > 60 && metric < 85) return "#fdc700";
+        return "#06df72";
+    };
+
     useEffect(() => {
         const initial = async () => {
             setIsLoading(true);
@@ -100,7 +107,7 @@ export default function Home() {
             setIsLoading(false);
         };
         initial();
-    }, []);
+    }, [isCheckIn]);
 
     return (
         <div className={`${montserrat.className}`}>
@@ -366,7 +373,7 @@ export default function Home() {
                                             {metricWeek.map((entry, index) => (
                                                 <Cell 
                                                     key={`cell-${index}`} 
-                                                    fill={entry.ipv > 85 ? '#06df72' : entry.ipv >= 60 ? '#fdc700' : '#ff6467'} 
+                                                    fill={GetBarColor(entry.ipv)} 
                                                 />
                                             ))}
 

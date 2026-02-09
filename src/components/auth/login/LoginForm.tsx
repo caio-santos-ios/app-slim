@@ -28,13 +28,19 @@ export const LoginForm = () => {
             const {data} = await api.post(`/auth/app/login`, body);
             const result = data.result.data;  
             
+            localStorage.setItem("firstAccess", result.firstAccess);
             localStorage.setItem("token", result.token);
             localStorage.setItem("refreshToken", result.refreshToken);
             localStorage.setItem("name", result.name);
             localStorage.setItem("photo", result.photo);
             localStorage.setItem("rapidocId", result.rapidocId);
             localStorage.setItem("tab", "home");
-            router.push("/home");
+            
+            if(result.firstAccess) {
+                router.push("/first-access");
+            } else {
+                router.push("/home");
+            };
         } catch (error) {
             resolveResponse(error);
         } finally {

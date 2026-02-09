@@ -148,4 +148,10 @@ body {
   *::-webkit-scrollbar {
     display: none;
   }
+
+  .color {
+    color: #ff6467;
+    color: #fdc700;
+    color: #06df72;
+  }
 }
