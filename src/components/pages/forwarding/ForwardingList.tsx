@@ -18,6 +18,7 @@ import "react-day-picker/dist/style.css";
 import { ptBR } from "date-fns/locale";
 import { toast } from "react-toastify";
 import { montserrat } from "../dass21/Dass21";
+import { NotData } from "@/components/not-data/NotData";
 
 export const ForwardingList = () => {
     const [__, setIsLoading] = useAtom(loadingAtom);
@@ -125,6 +126,10 @@ export const ForwardingList = () => {
     return (
         <div className={`${montserrat.className}`}>
             {
+                appointments.length == 0 &&
+                <NotData />
+            }
+            {
                 modalCreate &&
                 <form onSubmit={handleSubmit(save)} className="grid grid-cols-4 gap-4 max-h-[calc(80dvh-2rem)] overflow-y-auto">                
                     <div className="col-span-4">
@@ -191,7 +196,7 @@ export const ForwardingList = () => {
                         {
                             appointments.map((ap: any) => {
                                 return (
-                                    <li key={ap.id} className="grid grid-cols-6 rounded-2xl border border-brand-200 bg-white p-3 dark:border-gray-800 dark:bg-white/3 md:p-6">
+                                    <li key={ap.id} className="grid grid-cols-6 bg-white p-6 rounded-2xl border border-gray-200 mb-4">
                                         <div className="col-span-4">
                                             <p className="text-sm font-medium text-brand-900 dark:text-gray-500">STATUS: <strong className={`font-bold ${normalizeNameStatus(ap.status)}`}>{normalizeStatus(ap.status)}</strong></p>
                                             <p className="text-sm font-medium text-brand-900 dark:text-gray-500">ESPECIALIDADE: <strong className="font-bold">{ap.specialtyName}</strong></p>

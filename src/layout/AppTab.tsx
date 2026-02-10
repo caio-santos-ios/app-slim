@@ -16,6 +16,7 @@ type TTab = {
     icon: string;
     link: string;
     code: string;
+    service: string;
     submenus?: TSubmenu[];
 }
 
@@ -23,24 +24,28 @@ export const AppTab = () => {
     const [icons] = useAtom(iconAtom);
     const [currentTab, setCurrentTab] = useAtom(currentTabAtom);
     const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+    const [modules, setModule] = useState<string[]>([]);
     const [tabs] = useState<TTab[]>([
         {
             icon: 'GoHome',
             link: '/home',
             code: 'home',
-            typeIcon: 'icon'
+            typeIcon: 'icon',
+            service: "#"
         },
         {
             icon: 'PiTreeBold',
             link: '/home/vital',
             code: 'vital',
-            typeIcon: 'icon'
+            typeIcon: 'icon',
+            service: 'vital'
         },
         {
             icon: 'LuBrain',
             typeIcon: 'icon',
             link: '#',
             code: 'appointment',
+            service: 'papo',
             submenus: [
                 { label: 'Agendamentos', link: '/home/appointment' },
                 // { label: 'DASS-21', link: '/home/dass' },
@@ -52,6 +57,7 @@ export const AppTab = () => {
             link: '#',
             code: 'forwarding',
             typeIcon: 'icon',
+            service: 'cuidado',
             submenus: [
                 { label: 'Atendimento', link: '/home/forwardings-atendimento' },
                 { label: 'Encaminhamentos', link: '/home/forwardings' },
@@ -62,7 +68,8 @@ export const AppTab = () => {
             icon: 'BsPerson',
             link: '/home/profile',
             code: 'profile',
-            typeIcon: 'icon'
+            typeIcon: 'icon',
+            service: '#'
         },
     ]);
 
@@ -77,17 +84,29 @@ export const AppTab = () => {
         }
     };
 
+    const hasPermission = (code: string) => {
+        if(code == "#") return true;
+        
+        return modules.includes(code);
+    };
+
     useEffect(() => {
         const tabLocal = localStorage.getItem("tab");
         if(tabLocal) {
             setCurrentTab(tabLocal);
-        }
+        };
+
+        const moduleLocal = localStorage.getItem("modules");
+        if(moduleLocal) {
+            const list = JSON.parse(moduleLocal);
+            setModule(list);
+        };
     }, []);
 
     return (
         <div className="flex justify-center">
             <ul className="w-[90dvw] md:w-[60dvw] p-1 absolute bottom-8 rounded-4xl bg-brand-500 text-white flex justify-between items-center">
-                {tabs.map((tab: TTab) => {
+                {tabs.filter(tab => hasPermission(tab.service)).map((tab: TTab) => {
                     const IconComponent = tab.icon ? icons[tab.icon] : null;
                     const isActive = currentTab === tab.code;
                     const isDropdownOpen = openDropdown === tab.code;

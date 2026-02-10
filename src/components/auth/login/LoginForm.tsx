@@ -28,6 +28,7 @@ export const LoginForm = () => {
             const {data} = await api.post(`/auth/app/login`, body);
             const result = data.result.data;  
             
+            localStorage.setItem("modules", JSON.stringify(result.modulesIdentifications));
             localStorage.setItem("firstAccess", result.firstAccess);
             localStorage.setItem("token", result.token);
             localStorage.setItem("refreshToken", result.refreshToken);
