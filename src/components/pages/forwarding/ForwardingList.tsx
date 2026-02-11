@@ -28,18 +28,21 @@ export const ForwardingList = () => {
     const [specialties, setSpecialty] = useState<any[]>([]);
     const [specialtyAvailabilities, setSpecialtyAvailabilities] = useState<any[]>([]);
     const [selectedDay, setSelectedDay] = useState<Date | undefined>();
-    
+    const [specialtyName, setSpecialtyName] = useState<string>("");
+
     const diasComHorario = specialtyAvailabilities.map(h => {
         const [dia, mes, ano] = h.date.split("/");
         return new Date(Number(ano), Number(mes) - 1, Number(dia));
     });
     
     const { reset, register, setValue, getValues, watch, handleSubmit } = useForm<TAppointment>();
+    const { reset: resetCancel, register: registerCancel, watch: watchCancel, handleSubmit: handleSubmitCancel } = useForm<TAppointment>();
 
     const save: SubmitHandler<TAppointment> = async (body: TAppointment) => {
         try {
             const name = localStorage.getItem("name");
-            const form = {...body, beneficiaryName: name ? name : ""};
+            const cpf = localStorage.getItem("cpf");
+            const form = {...body, beneficiaryName: name ? name : "", beneficiaryCPF: cpf ? cpf : ""};
 
             setIsLoading(true);
             const {data} = await api.post(`/forwardings`, form, configApi());
@@ -62,7 +65,6 @@ export const ForwardingList = () => {
 
     const getAll = async (rapidocId: string) => {
         try {
-            setIsLoading(true);
             const {data} = await api.get(`/forwardings/${rapidocId}`, configApi());
             const result = data.result.data;
             setAppointments(result);
@@ -72,8 +74,6 @@ export const ForwardingList = () => {
             setValue("beneficiaryUuid", rapidocId ? rapidocId : "");
         } catch (error) {
             resolveResponse(error);
-        } finally {
-            setIsLoading(false);
         }
     };
 
@@ -108,6 +108,26 @@ export const ForwardingList = () => {
         }
     };
 
+    const cancel: SubmitHandler<TAppointment> = async (body: TAppointment) => {
+        try {
+            const name = localStorage.getItem("name");
+            const form = {...body, beneficiaryName: name ? name : "", specialtyName};
+            setIsLoading(true);
+            const {data} = await api.put(`/appointments/cancel`, form, configApi());
+            const result = data.result;  
+
+            resolveResponse({status: 200, message: 'Cancelado com sucesso!'});
+            setModalCanceled(false);
+            setModalCreate(false);
+            const rapidocId = localStorage.getItem("rapidocId");
+            await getAll(rapidocId ? rapidocId : "");
+        } catch (error) {
+            resolveResponse(error);
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
     useEffect(() => {
         if(selectedDay) {
             const existed = specialtyAvailabilities.find(h => h.date === selectedDay.toLocaleDateString('pt-BR'));
@@ -117,8 +137,10 @@ export const ForwardingList = () => {
 
     useEffect(() => {
         const initial = async () => {
+            setIsLoading(true);
             const rapidocId = localStorage.getItem("rapidocId");
             await getAll(rapidocId ? rapidocId : "");
+            setIsLoading(false);
         }
         initial();
     }, [])
@@ -188,16 +210,27 @@ export const ForwardingList = () => {
                     </div>
                 </form>
             }
-
+            {
+                modalCanceled &&
+                <div className="rounded-2xl border border-brand-200 bg-brand-200 p-3 mb-8">
+                    <form onSubmit={handleSubmitCancel(cancel)} className="grid grid-cols-4 gap-4">
+                        <div className="col-span-4">
+                            <h1 className="mb-1.5 block text-md font-bold text-white">Deseja cancelar o Agendamento?</h1>
+                        </div>
+                        <Button className="col-span-2" onClick={() => setModalCanceled(false)} type="button" variant="outline-primary" size="sm">Não, fechar</Button>
+                        <Button className="col-span-2" size="sm">Confirmar</Button>
+                    </form>
+                </div>
+            }
             {
                 !modalCreate &&
                 <div className="">
-                    <ul className={`${modalCanceled ? 'max-h-[calc(80dvh-10.5rem)]' : 'max-h-[calc(80dvh-4rem)]'} overflow-y-auto flex flex-col gap-4`}>
+                    <ul className={`${modalCanceled ? 'max-h-[calc(80dvh-10.5rem)]' : 'max-h-[calc(80dvh-4rem)]'} overflow-y-auto flex flex-col gap-1`}>
                         {
                             appointments.map((ap: any) => {
                                 return (
-                                    <li key={ap.id} className="grid grid-cols-6 bg-white p-6 rounded-2xl border border-gray-200 mb-4">
-                                        <div className="col-span-4">
+                                    <li key={ap.id} className="grid grid-cols-8 bg-white p-4 rounded-2xl border border-gray-200 mb-3">
+                                        <div className="col-span-6">
                                             <p className="text-sm font-medium text-brand-900 dark:text-gray-500">STATUS: <strong className={`font-bold ${normalizeNameStatus(ap.status)}`}>{normalizeStatus(ap.status)}</strong></p>
                                             <p className="text-sm font-medium text-brand-900 dark:text-gray-500">ESPECIALIDADE: <strong className="font-bold">{ap.specialtyName}</strong></p>
                                         </div>

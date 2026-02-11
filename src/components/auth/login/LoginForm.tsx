@@ -30,6 +30,7 @@ export const LoginForm = () => {
             
             localStorage.setItem("modules", JSON.stringify(result.modulesIdentifications));
             localStorage.setItem("firstAccess", result.firstAccess);
+            localStorage.setItem("cpf", result.cpf);
             localStorage.setItem("token", result.token);
             localStorage.setItem("refreshToken", result.refreshToken);
             localStorage.setItem("name", result.name);
