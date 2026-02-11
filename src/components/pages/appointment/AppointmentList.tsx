@@ -24,6 +24,7 @@ export const AppointmentList = () => {
     const [modalCreate, setModalCreate] = useState<boolean>(false);
     const [modalCanceled, setModalCanceled] = useState<boolean>(false);
     const [appointments, setAppointments] = useState<any[]>([]);
+    const [appointmentsFilted, setAppointmentsFilted] = useState<any[]>([]);
     const [specialtyAvailabilities, setSpecialtyAvailabilities] = useState<any[]>([]);
     const [selectedDay, setSelectedDay] = useState<Date | undefined>();
     const [specialtyName, setSpecialtyName] = useState<string>("");
@@ -39,8 +40,10 @@ export const AppointmentList = () => {
     const save: SubmitHandler<TAppointment> = async (body: TAppointment) => {
         try {
             setIsLoading(true);
-            const {data} = await api.post(`/appointments`, body, configApi());
+            await api.post(`/appointments`, body, configApi());
             resolveResponse({status: 200, message: 'Agendado com sucesso!'});
+            const rapidocId = localStorage.getItem("rapidocId");
+            await getAll(rapidocId ? rapidocId : "");
         } catch (error) {
             resolveResponse(error);
         } finally {
@@ -53,9 +56,7 @@ export const AppointmentList = () => {
             const name = localStorage.getItem("name");
             const form = {...body, beneficiaryName: name ? name : "", specialtyName};
             setIsLoading(true);
-            const {data} = await api.put(`/appointments/cancel`, form, configApi());
-            const result = data.result;  
-
+            await api.put(`/appointments/cancel`, form, configApi());
             resolveResponse({status: 200, message: 'Cancelado com sucesso!'});
             setModalCanceled(false);
             setModalCreate(false);
@@ -92,9 +93,10 @@ export const AppointmentList = () => {
             const name = localStorage.getItem("name");
             const rapidocId = localStorage.getItem("rapidocId");
             
-            const newList = listAppointments.filter(x => x.specialtyUuid == psicologia.id);
+            const newList = listAppointments.filter(x => x.specialtyUuid == psicologia.id).map(x => ({...x, status: normalizeStatus(x.status)}));
             
             setAppointments(newList);
+            setAppointmentsFilted(newList);
             setValue("specialtyUuid", psicologia.id);
             setValue("specialistId", psicologia.id);
             setValue("specialistName", psicologia.name);
@@ -107,7 +109,7 @@ export const AppointmentList = () => {
         } finally {
             setIsLoading(false);
         }
-    };
+    }; 
     
     const getSelectSpecialtyAvailability = async (specialtyUuid: string, beneficiaryUuid: string) => {
         try {
@@ -125,17 +127,19 @@ export const AppointmentList = () => {
     const normalizeStatus = (status: string) => {
         switch(status) {
             case "FINISHED": return "Finalizado";
+            case "PENDING": return "Pedente";
             case "SCHEDULED": return "Agendado";
             case "CANCELED": return "Cancelado";
             default: return status;
         }
     };
     
-    const normalizeNameStatus = (status: string) => {
+    const normalizeNameStatus = (status: string): string => {
         switch(status) {
-            case "FINISHED": return "text-green-500";
-            case "SCHEDULED": return "text-blue-500";
-            case "CANCELED": return "text-red-500";
+            case "Finalizado": return "text-green-500";
+            case "Pedente": return "text-yellow-500";
+            case "Agendado": return "text-blue-500";
+            case "Cancelado": return "text-red-500";
             default: return status;
         }
     };
@@ -151,12 +155,24 @@ export const AppointmentList = () => {
     return (
         <div className={`${montserrat.className}`}>
             {
+                <Input className="mb-2" placeholder="Busca rápida" onInput={(e: any) => {
+                    const filted = appointmentsFilted.filter(x => 
+                        x.date.toLowerCase().includes(e.target.value.toLowerCase()) ||
+                        x.startTime.toLowerCase().includes(e.target.value.toLowerCase()) ||
+                        x.endTime.toLowerCase().includes(e.target.value.toLowerCase()) ||
+                        x.status.toLowerCase().includes(e.target.value.toLowerCase()) ||
+                        x.specialty.toLowerCase().includes(e.target.value.toLowerCase())
+                    );
+                    setAppointments(filted);
+                }} />
+            }
+            {
                 appointments.length == 0 && !modalCanceled && !modalCreate &&
                 <NotData />
             }
             {
                 !modalCanceled && !modalCreate &&
-                <div className="mb-4">
+                <div className="mb-2">
                     <Button onClick={() => setModalCreate(true)} type="button" className="w-full" size="sm">Fazer agendamento</Button>
                 </div>
             }

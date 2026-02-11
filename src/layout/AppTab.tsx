@@ -43,14 +43,14 @@ export const AppTab = () => {
         {
             icon: 'LuBrain',
             typeIcon: 'icon',
-            link: '#',
+            link: '/home/appointment',
             code: 'appointment',
             service: 'papo',
-            submenus: [
-                { label: 'Agendamentos', link: '/home/appointment' },
-                // { label: 'DASS-21', link: '/home/dass' },
-                { label: 'Histórico', link: '/home/appointment-historic' }
-            ]
+            // submenus: [
+            //     { label: 'Agendamentos', link: '/home/appointment' },
+            //     { label: 'DASS-21', link: '/home/dass' },
+            //     { label: 'Histórico', link: '/home/appointment-historic' }
+            // ]
         },
         {
             icon: 'IoCalendarOutline',
