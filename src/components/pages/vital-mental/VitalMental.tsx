@@ -125,9 +125,6 @@ export const VitalMental = ({ watch, setValue }: any) => {
                                     >
                                         {opt.label}
                                     </button>
-                                    {/* <span className="text-[10px] text-gray-500 text-center leading-tight">
-                                        {opt.label}
-                                    </span> */}
                                 </div>
                             ))}
                         </div>

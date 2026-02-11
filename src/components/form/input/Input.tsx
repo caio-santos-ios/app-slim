@@ -13,16 +13,17 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
     placeholder = "Digite", 
     className,
     ...props }, ref) => {
-    let inputClasses = `h-11 w-full border border-(--color-brand-200) focus:border-(--color-brand-200) focus:outline-hidden rounded-lg px-3 py-2 ${className}`;
+    
+    let inputClasses = `h-11 min-h-[2.75rem] w-full appearance-none bg-white border border-(--color-brand-200) focus:border-(--color-brand-200) focus:outline-hidden rounded-lg px-3 py-2 text-base leading-tight ${className}`;
 
     return (
-      <div className="w-full">
+      <div className="w-full flex items-center">
         <input
           {...props}
           ref={ref} 
           type={type}
           placeholder={placeholder}
-          className={`${inputClasses} ${className}`}
+          className={inputClasses}
         />
       </div>
     );

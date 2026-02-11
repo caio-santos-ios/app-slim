@@ -8,10 +8,8 @@ export const metadata: Metadata = {
 
 export default function ProfileData() {
     return (
-        <div className="grid grid-cols-12 gap-4 md:gap-6">
-            <div className="col-span-12 space-y-6 xl:col-span-7 h-[80dvh]">
-                <ProfileForm />
-            </div>
+        <div className="min-h-[calc(100dvh-13rem)] max-h-[calc(100dvh-13rem)] overflow-y-auto">
+            <ProfileForm />
         </div>
     );
 }

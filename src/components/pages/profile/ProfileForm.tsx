@@ -175,15 +175,15 @@ export const ProfileForm = () => {
                     </div>
                     <div className="col-span-3">
                         <Label label="Horário para dormir" required={false}/>
-                        <input type="time" {...register("targetSleepTime")} className="h-11 w-full border border-(--color-brand-200) focus:border-(--color-brand-200) focus:outline-hidden rounded-lg px-3 py-2" />
+                        <input type="time" {...register("targetSleepTime")} className="h-11 w-full bg-white border border-(--color-brand-200) focus:border-(--color-brand-200) focus:outline-hidden rounded-lg px-3 py-2" />
                     </div>
                     <div className="col-span-3">
                         <Label label="Horário última ceia" required={false}/>
-                        <input type="time" {...register("lastSupper")} className="h-11 w-full border border-(--color-brand-200) focus:border-(--color-brand-200) focus:outline-hidden rounded-lg px-3 py-2" />
+                        <input type="time" {...register("lastSupper")} className="h-11 w-full bg-white border border-(--color-brand-200) focus:border-(--color-brand-200) focus:outline-hidden rounded-lg px-3 py-2" />
                     </div>
                     <div className="col-span-6">
                         <Label label="Possui Patologia Metabólica?" required={false}/>
-                        <select {...register("patrology")} className="h-11 w-full border border-(--color-brand-200) focus:border-(--color-brand-200) focus:outline-hidden rounded-lg px-3 py-2">
+                        <select {...register("patrology")} className="h-11 w-full bg-white border border-(--color-brand-200) focus:border-(--color-brand-200) focus:outline-hidden rounded-lg px-3 py-2">
                             <option value="">Nenhum</option>
                             <option value="Diabetes">Diabetes</option>
                             <option value="Hipertensão">Hipertensão</option>

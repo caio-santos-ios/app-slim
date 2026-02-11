@@ -128,30 +128,34 @@ body {
 }
 
 @layer base {
-  /* Esconde a barra para Chrome, Safari e Edge */
-  ::-webkit-scrollbar {
+  /* ::-webkit-scrollbar {
     display: none;
   }
 
-  /* Esconde a barra para Firefox e IE */
   html, body {
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE e Edge antigo */
-  }
-
-  /* Garante que elementos com scroll também não mostrem a barra */
-  * {
     scrollbar-width: none;
     -ms-overflow-style: none;
-  }
+  } */
+
+  /* * {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  } */
   
-  *::-webkit-scrollbar {
+  /* *::-webkit-scrollbar {
     display: none;
+  } */
+
+  input[type="date"]::-webkit-date-and-time-value {
+    height: 1.5rem; /* Ajuste conforme necessário */
+    display: flex;
+    align-items: center;
   }
 
-  .color {
-    color: #ff6467;
-    color: #fdc700;
-    color: #06df72;
+  /* Garante que o input de data ocupe a altura correta no Safari Mobile */
+  input[type="date"] {
+    display: flex;
+    align-items: center;
+    -webkit-appearance: none;
   }
 }

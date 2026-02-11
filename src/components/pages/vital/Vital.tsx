@@ -29,6 +29,7 @@ export default function Vital() {
             setIsLoading(true);
             const {data} = await api.get(`/vitals/beneficiary-all/${startDate}/${endDate}`, configApi());
             const result = data.result.data;
+            console.log(result)
             setHistoric(result);
         } catch (error) {
             resolveResponse(error);
@@ -71,24 +72,23 @@ export default function Vital() {
                 <div>
                     <h1 className="mb-1.5 block text-md font-bold text-brand-400">Bem Vital - Histórico</h1>
                     <div className="max-h-[calc(100dvh-13rem)] overflow-y-auto">
+                        <div className="grid grid-cols-2 gap-2 mb-2">
+                            <div className="col-span-1">
+                                <Label label="Data Inicial" required={false}/>
+                                <Input type="date" onInput={(e: any) => setStartDate(e.target.value)} />
+                            </div>
+                            <div className="col-span-1">
+                                <Label label="Data Final" required={false}/>
+                                <Input type="date" onInput={(e: any) => setEndDate(e.target.value)} />
+                            </div>
+                            <Button onClick={getAll} type="button" variant="secondary" className="col-span-2" size="sm">Buscar</Button>
+                        </div>
+
                         {
                             historics.length == 0 &&
-                            <NotData />
+                            <NotData h="30dvh" />
                         }
-                        {
-                            historics.length > 0 &&
-                            <div className="grid grid-cols-2 gap-4 mb-4">
-                                <div className="col-span-1">
-                                    <Label label="Data Inicial" required={false}/>
-                                    <Input type="date" onInput={(e: any) => setStartDate(e.target.value)} />
-                                </div>
-                                <div className="col-span-1">
-                                    <Label label="Data Final" required={false}/>
-                                    <Input type="date" onInput={(e: any) => setEndDate(e.target.value)} />
-                                </div>
-                                <Button onClick={getAll} type="button" variant="secondary" className="col-span-2" size="sm">Buscar</Button>
-                            </div>
-                        }
+
                         <ul className="max-h-[calc(100dvh-24rem)] overflow-y-auto">
                             {
                                 historics.map((cardItem: any, i) => {

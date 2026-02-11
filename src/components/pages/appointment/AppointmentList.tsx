@@ -124,14 +124,16 @@ export const AppointmentList = () => {
 
     const normalizeStatus = (status: string) => {
         switch(status) {
+            case "FINISHED": return "Finalizado";
             case "SCHEDULED": return "Agendado";
             case "CANCELED": return "Cancelado";
             default: return status;
         }
     };
-
+    
     const normalizeNameStatus = (status: string) => {
         switch(status) {
+            case "FINISHED": return "text-green-500";
             case "SCHEDULED": return "text-blue-500";
             case "CANCELED": return "text-red-500";
             default: return status;

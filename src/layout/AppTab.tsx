@@ -61,7 +61,7 @@ export const AppTab = () => {
             submenus: [
                 { label: 'Atendimento', link: '/home/forwardings-atendimento' },
                 { label: 'Encaminhamentos', link: '/home/forwardings' },
-                { label: 'Histórico', link: '/home/forwardings-historic' }
+                // { label: 'Histórico', link: '/home/forwardings-historic' }
             ]
         },
         {
