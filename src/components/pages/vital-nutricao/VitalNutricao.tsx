@@ -11,12 +11,7 @@ export const VitalNutricao = ({ register, setValue, watch }: any) => {
                 </div>
                 <h2 className="">Nutrição</h2>
             </div>
-
-            {/* <div className="bg-blue-50 dark:bg-blue-900/20 p-4 rounded-2xl mb-6 text-center">
-                <p className="text-sm text-blue-600 dark:text-blue-300">Sua meta calculada é de:</p>
-                <p className="text-2xl font-bold text-blue-800 dark:text-blue-100">2.8 L / dia</p>
-            </div> */}
-
+            
             <div>
                 <label className="block text-sm text-white mb-2">Hora da última refeição</label>
                 <input type="time" {...register("lastMeal")} className="w-full p-2 rounded-xl border bg-slate-800 text-white mb-6" />
