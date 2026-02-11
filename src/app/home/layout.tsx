@@ -16,7 +16,7 @@ export default function AdminLayout({
     <div className="flex-1 relative h-dvh bg-gray-100">
       <Loading />
       <Header />
-      <div className="p-4 mx-auto md:p-6">{children}</div>
+        <div className="px-4 mx-auto pt-2 h-[calc(100dvh-12rem)] overflow-y-auto">{children}</div>
         <Autorization />
         <ToastContainer
           position="top-right"

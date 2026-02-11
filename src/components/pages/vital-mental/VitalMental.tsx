@@ -94,21 +94,21 @@ export const VitalMental = ({ watch, setValue }: any) => {
 
     return (
         <div className="animate-in slide-in-from-right">
-            <div className="flex items-center gap-3 text-lg font-bold mb-4 dark:text-white">
-                <div className="bg-gray-500 p-2 rounded-lg">
+            <div className="flex items-center gap-3 text-lg font-bold mb-2 text-brand-500">
+                <div className="bg-brand-500 text-white p-2 rounded-lg">
                     <LuBrain />
                 </div>
                 <h2 className="">Saúde Mental (DASS-9)</h2>
             </div>
 
-            <p className="text-[11px] text-gray-400 mb-4 italic">
+            <p className="text-[12px] mb-3 text-center rounded-lg border bg-red-100 border-red-500 text-red-500 font-bold py-2">
                 Responda considerando como se sentiu nas últimas 24h.
             </p>
 
-            <div className="max-h-[calc(100dvh-20rem)] overflow-y-auto pr-2 space-y-6">
+            <div className="max-h-[calc(100dvh-25rem)] overflow-y-auto">
                 {questions.map((q) => (
-                    <div key={q.id} className="border-b border-slate-700/50 pb-4">
-                        <label className="block text-sm text-white mb-3">
+                    <div key={q.id} className="pb-4">
+                        <label className="block text-sm text-brand-500 mb-2">
                             {q.label}
                         </label>
                         <div className="grid grid-cols-4 gap-2">
@@ -119,15 +119,15 @@ export const VitalMental = ({ watch, setValue }: any) => {
                                         onClick={() => setValue(q.id, opt.value)}
                                         className={`w-full py-2 rounded-xl border text-sm transition-all ${
                                             watch(q.id) === opt.value 
-                                            ? 'bg-blue-600 border-blue-600 text-white shadow-lg shadow-blue-900/20' 
-                                            : 'dark:bg-slate-800 dark:border-slate-700 dark:text-gray-400'
+                                            ? 'bg-brand-2-600 text-white' 
+                                            : 'bg-white border-gray-200 text-brand-500'
                                         }`}
                                     >
-                                        {opt.value}
-                                    </button>
-                                    <span className="text-[10px] text-gray-500 text-center leading-tight">
                                         {opt.label}
-                                    </span>
+                                    </button>
+                                    {/* <span className="text-[10px] text-gray-500 text-center leading-tight">
+                                        {opt.label}
+                                    </span> */}
                                 </div>
                             ))}
                         </div>

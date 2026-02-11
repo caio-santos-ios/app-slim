@@ -11,6 +11,7 @@ import { loadingAtom } from "@/jotai/global/loading.jotai";
 import { api } from "@/service/api.service";
 import { configApi, resolveResponse } from "@/service/config.service";
 import { VitalCheckInAtom, VitalModalAtom } from "@/jotai/vital/vital.jotai";
+import { montserrat } from "../dass21/Dass21";
 
 export default function VitalModal() {
     const [_, setIsLoading] = useAtom(loadingAtom);
@@ -72,37 +73,37 @@ export default function VitalModal() {
 
     useEffect(() => {
         const initial = async () => {
-            await getLogged();
+            // await getLogged();
         }
         initial();
     }, [])
 
     return (
-        <div className="p-4 max-w-md mx-auto bg-white dark:bg-slate-900 rounded-3xl shadow-lg mt-4">
-            <div className="flex gap-2 mb-6">
+        <div className={`${montserrat.className} h-[calc(100dvh-13rem)] py-2 max-w-md mx-auto bg-white rounded-2xl border border-gray-200`}>
+            <div className="flex gap-2 px-4 py-3">
                 {[1, 2, 3].map((s) => (
-                <div key={s} className={`h-1.5 flex-1 rounded-full transition-colors ${step >= s ? 'bg-blue-600' : 'bg-gray-200 dark:bg-gray-700'}`} />
+                    <div key={s} className={`h-1.5 flex-1 rounded-full transition-colors ${step >= s ? 'bg-brand-2-600' : 'bg-gray-300'}`} />
                 ))}
             </div>
 
             <div>
-                <div className="max-h-[calc(100dvh-23rem)] overflow-y-auto">
+                <div className="px-3">
                     {renderStep()}
                 </div>
 
-                <div className="flex gap-4 mt-8">
-                {step > 1 && (
-                    <Button type="button" variant="outline-primary" className="flex-1 text-white" onClick={() => setStep(step - 1)}>
-                    Voltar
-                    </Button>
-                )}
-                {step < 3 ? (
-                    <Button type="button" className="flex-1" onClick={() => setStep(step + 1)}>
-                    Próximo
-                    </Button>
-                ) : (
-                    <Button onClick={() => save({...getValues()})} type="button" className="flex-1">Finalizar</Button>
-                )}
+                <div className="flex gap-4 mt-2 px-2">
+                    {step > 1 && (
+                        <Button type="button" variant="outline-primary" className="flex-1" onClick={() => setStep(step - 1)}>
+                            Voltar
+                        </Button>
+                    )}
+                    {step < 3 ? (
+                        <Button type="button" className="flex-1" onClick={() => setStep(step + 1)}>
+                            Próximo
+                        </Button>
+                    ) : (
+                        <Button onClick={() => save({...getValues()})} type="button" className="flex-1">Finalizar</Button>
+                    )}
                 </div>
             </div>
         </div>

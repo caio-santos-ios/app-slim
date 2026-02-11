@@ -484,7 +484,7 @@ export default function Home() {
     const getAll = async (currentPeriod: string) => {
         try {
             if(currentPeriod.toLowerCase() == "personalizado") return;
-            console.log(currentPeriod.toLowerCase())
+            
             const { data } = await api.get(`/vitals/beneficiary/${currentPeriod.toLowerCase()}`, configApi());
             const result = data.result.data;
 
@@ -621,7 +621,6 @@ export default function Home() {
                                 <Input type="date" onInput={(e: any) => setEndDate(e.target.value)} />
                             </div>
                             <Button onClick={() => {
-                                console.log(startDate, endDate)
                                 getAll(`${startDate}&${endDate}`);
                             }} type="button" variant="secondary" className="col-span-2" size="sm">Buscar</Button>
                         </div>
