@@ -581,7 +581,7 @@ export default function Home() {
                             </div>
                         
                             <span className="text-brand-500 font-bold text-sm">
-                                Horario: {nextTelemedicine.to} até {nextTelemedicine.from}
+                                Horario: {nextTelemedicine.from} até {nextTelemedicine.to}
                             </span>
                             <span className="text-brand-500 font-bold text-sm">
                                 Especialidade: {nextTelemedicine.specialty}
