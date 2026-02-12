@@ -59,15 +59,18 @@ export const VitalNutricao = ({ register, setValue, watch }: any) => {
                 <div className="mb-4">
                     <label className="block text-sm text-brand-500 mb-2">Refeições em horários regulares?</label>
                     <div className="grid grid-cols-6 gap-2">
-                    {['Sim', 'Não'].map((h) => (
-                        <button
-                        key={h} type="button"
-                        onClick={() => setValue("snackHours", h)}
-                        className={`py-1 px-0 w-10 rounded-xl border transition-all ${watch("snackHours") === h ? 'bg-brand-2-600 text-white' : 'bg-white border-gray-200 text-brand-500'}`}
-                        >
-                        {h}
-                        </button>
-                    ))}
+                        {['Sim', 'Não'].map((h) => (
+                            <div key={h}>
+                                <button
+                                key={h} type="button"
+                                onClick={() => setValue("snackHours", h)}
+                                className={`py-1 px-0 w-10 rounded-xl border transition-all ${watch("snackHours") === h ? 'bg-brand-2-600 text-white' : 'bg-white border-gray-200 text-brand-500'}`}
+                                >
+                                {h}
+                                </button>
+                            </div>
+                        ))}
+                        <span className="text-[11px] text-gray-500 col-span-6">Café, Almoço e Janta</span>
                     </div>
                 </div>       
             </div>            

@@ -28,7 +28,10 @@ export const AppointmentList = () => {
     const [specialtyAvailabilities, setSpecialtyAvailabilities] = useState<any[]>([]);
     const [selectedDay, setSelectedDay] = useState<Date | undefined>();
     const [specialtyName, setSpecialtyName] = useState<string>("");
-    
+    const [startDate, setStartDate] = useState<string>("");
+    const [endDate, setEndDate] = useState<string>("");
+    const [status, setStatus] = useState<string>("");
+
     const diasComHorario = specialtyAvailabilities.map(h => {
         const [dia, mes, ano] = h.date.split("/");
         return new Date(Number(ano), Number(mes) - 1, Number(dia));
@@ -43,6 +46,7 @@ export const AppointmentList = () => {
             await api.post(`/appointments`, body, configApi());
             resolveResponse({status: 200, message: 'Agendado com sucesso!'});
             const rapidocId = localStorage.getItem("rapidocId");
+            setModalCreate(false);
             await getAll(rapidocId ? rapidocId : "");
         } catch (error) {
             resolveResponse(error);
@@ -94,7 +98,7 @@ export const AppointmentList = () => {
             const rapidocId = localStorage.getItem("rapidocId");
             
             const newList = listAppointments.filter(x => x.specialtyUuid == psicologia.id).map(x => ({...x, status: normalizeStatus(x.status)}));
-            
+            console.log(newList)
             setAppointments(newList);
             setAppointmentsFilted(newList);
             setValue("specialtyUuid", psicologia.id);
@@ -122,6 +126,30 @@ export const AppointmentList = () => {
         } finally {
             setIsLoading(false);
         }
+    };
+
+    const search = () => {
+        let list = [...appointmentsFilted];
+
+        if (startDate) {
+            list = list.filter(x => {
+                const itemData = x.data.split('T')[0];
+                return itemData >= startDate;
+            });
+        };
+
+        if (endDate) {
+            list = list.filter(x => {
+                const itemData = x.data.split('T')[0];
+                return itemData <= endDate;
+            });
+        };
+
+        if (status) {
+            list = list.filter(x => x.status === status);
+        };
+
+        setAppointments(list);
     };
 
     const normalizeStatus = (status: string) => {
@@ -155,20 +183,37 @@ export const AppointmentList = () => {
     return (
         <div className={`${montserrat.className}`}>
             {
-                <Input className="mb-2" placeholder="Busca rápida" onInput={(e: any) => {
-                    const filted = appointmentsFilted.filter(x => 
-                        x.date.toLowerCase().includes(e.target.value.toLowerCase()) ||
-                        x.startTime.toLowerCase().includes(e.target.value.toLowerCase()) ||
-                        x.endTime.toLowerCase().includes(e.target.value.toLowerCase()) ||
-                        x.status.toLowerCase().includes(e.target.value.toLowerCase()) ||
-                        x.specialty.toLowerCase().includes(e.target.value.toLowerCase())
-                    );
-                    setAppointments(filted);
-                }} />
+                !modalCreate && !modalCanceled &&
+                <div className="grid grid-cols-2 gap-2 mb-2">
+                    <div className="col-span-1">
+                        <Label label="Período Inicial" required={false}/>
+                        <Input type="date" onInput={(e: any) => setStartDate(e.target.value)} />
+                    </div>
+                    <div className="col-span-1">
+                        <Label label="Período Final" required={false}/>
+                        <Input type="date" onInput={(e: any) => setEndDate(e.target.value)} />
+                    </div>
+                    <div className="col-span-1">
+                        <Label label="Status" required={false}/>
+                        <select className="h-11 w-full bg-white border border-gray-200 focus:border-(--color-brand-200) focus:outline-hidden rounded-lg px-3 py-2"
+                            onChange={(e) => {
+                                const val = e.target.value;
+                                setStatus(val);
+                            }}>
+                            <option value="">Todos</option>
+                            <option value="Finalizado">Finalizado</option>
+                            <option value="Pedente">Pedente</option>
+                            <option value="Agendado">Agendado</option>
+                            <option value="Cancelado">Cancelado</option>
+                        </select>
+                    </div>
+
+                    <Button onClick={search} type="button" variant="secondary" className="col-span-1 h-11 self-end" size="sm">Buscar</Button>
+                </div>
             }
             {
                 appointments.length == 0 && !modalCanceled && !modalCreate &&
-                <NotData />
+                <NotData h="[10dvh]" />
             }
             {
                 !modalCanceled && !modalCreate &&
@@ -251,11 +296,11 @@ export const AppointmentList = () => {
             {
                 !modalCreate &&
                 <div className="">
-                    <ul className={`${modalCanceled ? 'max-h-[calc(80dvh-16rem)]' : 'max-h-[calc(80dvh-10rem)]'} overflow-y-auto flex flex-col gap-4`}>
+                    <ul className={`${modalCanceled ? 'max-h-[calc(80dvh-15rem)]' : 'max-h-[calc(80dvh-18.8rem)]'} overflow-y-auto flex flex-col gap-2`}>
                         {
                             appointments.map((ap: any) => {
                                 return (
-                                    <li key={ap.id} className="grid grid-cols-6 bg-white p-6 rounded-2xl border border-gray-200 mb-4">
+                                    <li key={ap.id} className="grid grid-cols-6 bg-white p-6 rounded-2xl border border-gray-200">
                                         <div className="col-span-4">
                                             <p className="text-sm font-medium text-brand-900 dark:text-gray-500">DATA: <strong className="font-bold">{ap.date}</strong></p>
                                             <p className="text-sm font-medium text-brand-900 dark:text-gray-500">HORARIO: <strong className="font-bold">{ap.startTime} até {ap.endTime}</strong></p>
@@ -265,7 +310,7 @@ export const AppointmentList = () => {
                                         <div className="col-span-2">
                                             <div className="flex flex-col justify-center gap-3">                                      
                                                 {
-                                                    ap.status == "SCHEDULED" &&
+                                                    ap.status == "Agendado" &&
                                                     <button onClick={() => {
                                                         setSpecialtyName(ap.specialty);
                                                         setValue("beneficiaryName", ap.recipientName);
@@ -277,7 +322,7 @@ export const AppointmentList = () => {
                                                     </button>
                                                 }
                                                 {
-                                                    ap.status == "SCHEDULED" &&
+                                                    ap.status == "Agendado" &&
                                                     <Link target="_blank" href={ap.beneficiaryUrl} className="bg-blue-500 shadow-theme-xs hover:bg-blue-600 text-white flex items-center gap-1 px-2 rounded-lg">
                                                         <IoIosVideocam/>                                                   
                                                         Consulta

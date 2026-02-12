@@ -10,13 +10,13 @@ import { useAtom } from "jotai";
 import { loadingAtom } from "@/jotai/global/loading.jotai";
 import { api } from "@/service/api.service";
 import { configApi, resolveResponse } from "@/service/config.service";
-import { VitalCheckInAtom, VitalModalAtom } from "@/jotai/vital/vital.jotai";
+import { VitalCheckInAtom, VitalModalAtom, VitalStepAtom } from "@/jotai/vital/vital.jotai";
 import { montserrat } from "../dass21/Dass21";
 
 export default function VitalModal() {
     const [_, setIsLoading] = useAtom(loadingAtom);
     const [__, setModal] = useAtom(VitalModalAtom);
-    const [step, setStep] = useState(1);
+    const [step, setStep] = useAtom(VitalStepAtom);
     const [___, setIsCheckIn] = useAtom(VitalCheckInAtom);
     const { register, watch, setValue, getValues } = useForm({
         defaultValues: {
@@ -24,7 +24,8 @@ export default function VitalModal() {
             sleepHours: 8,
             waterAmount: 0,
             mood: "bom",
-            id: ""
+            id: "",
+            sleepFragmentation: "Não"
         }
     });
 

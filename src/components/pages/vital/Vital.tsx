@@ -29,7 +29,7 @@ export default function Vital() {
             setIsLoading(true);
             const {data} = await api.get(`/vitals/beneficiary-all/${startDate}/${endDate}`, configApi());
             const result = data.result.data;
-            console.log(result)
+
             setHistoric(result);
         } catch (error) {
             resolveResponse(error);

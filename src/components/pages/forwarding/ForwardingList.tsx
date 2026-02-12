@@ -30,6 +30,9 @@ export const ForwardingList = () => {
     const [specialtyAvailabilities, setSpecialtyAvailabilities] = useState<any[]>([]);
     const [selectedDay, setSelectedDay] = useState<Date | undefined>();
     const [specialtyName, setSpecialtyName] = useState<string>("");
+    const [startDate, setStartDate] = useState<string>("");
+    const [endDate, setEndDate] = useState<string>("");
+    const [status, setStatus] = useState<string>("");
 
     const diasComHorario = specialtyAvailabilities.map(h => {
         const [dia, mes, ano] = h.date.split("/");
@@ -179,6 +182,30 @@ export const ForwardingList = () => {
         }
     };
 
+    const search = () => {
+        let list = [...appointmentsFilted];
+
+        if (startDate) {
+            list = list.filter(x => {
+                const itemData = x.data.split('T')[0];
+                return itemData >= startDate;
+            });
+        };
+
+        if (endDate) {
+            list = list.filter(x => {
+                const itemData = x.data.split('T')[0];
+                return itemData <= endDate;
+            });
+        };
+
+        if (status) {
+            list = list.filter(x => x.status === status);
+        };
+
+        setAppointments(list);
+    };
+
     useEffect(() => {
         if(selectedDay) {
             const existed = specialtyAvailabilities.find(h => h.date === selectedDay.toLocaleDateString('pt-BR'));
@@ -200,20 +227,36 @@ export const ForwardingList = () => {
     return (
         <div className={`${montserrat.className}`}>
             {
-                <Input className="mb-2" placeholder="Busca rápida" onInput={(e: any) => {
-                    const filted = appointmentsFilted.filter(x => 
-                        x.date.toLowerCase().includes(e.target.value.toLowerCase()) ||
-                        x.startTime.toLowerCase().includes(e.target.value.toLowerCase()) ||
-                        x.endTime.toLowerCase().includes(e.target.value.toLowerCase()) ||
-                        x.status.toLowerCase().includes(e.target.value.toLowerCase()) ||
-                        x.specialty.toLowerCase().includes(e.target.value.toLowerCase())
-                    );
-                    setAppointments(filted);
-                }} />
+                !modalCreate && !modalCanceled &&
+                <div className="grid grid-cols-2 gap-2 mb-2">
+                    <div className="col-span-1">
+                        <Label label="Período Inicial" required={false}/>
+                        <Input type="date" onInput={(e: any) => setStartDate(e.target.value)} />
+                    </div>
+                    <div className="col-span-1">
+                        <Label label="Período Final" required={false}/>
+                        <Input type="date" onInput={(e: any) => setEndDate(e.target.value)} />
+                    </div>
+                    <div className="col-span-1">
+                        <Label label="Status" required={false}/>
+                        <select className="h-11 w-full bg-white border border-gray-200 focus:border-(--color-brand-200) focus:outline-hidden rounded-lg px-3 py-2"
+                            onChange={(e) => {
+                                const val = e.target.value;
+                            }}>
+                            <option value="">Todos</option>
+                            <option value="Finalizado">Finalizado</option>
+                            <option value="Pedente">Pedente</option>
+                            <option value="Agendado">Agendado</option>
+                            <option value="Cancelado">Cancelado</option>
+                        </select>
+                    </div>
+
+                    <Button onClick={search} type="button" variant="secondary" className="col-span-1 h-11 self-end" size="sm">Buscar</Button>
+                </div>
             }
             {
                 appointments.length == 0 && !modalCanceled && !modalCreate &&
-                <NotData />
+                <NotData h="[10dvh]" />
             }
             {
                 !modalCanceled && !modalCreate &&
