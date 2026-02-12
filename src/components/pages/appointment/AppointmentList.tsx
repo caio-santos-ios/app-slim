@@ -155,7 +155,7 @@ export const AppointmentList = () => {
     const normalizeStatus = (status: string) => {
         switch(status) {
             case "FINISHED": return "Finalizado";
-            case "PENDING": return "Pedente";
+            case "PENDING": return "Pendente";
             case "SCHEDULED": return "Agendado";
             case "CANCELED": return "Cancelado";
             default: return status;
@@ -165,7 +165,7 @@ export const AppointmentList = () => {
     const normalizeNameStatus = (status: string): string => {
         switch(status) {
             case "Finalizado": return "text-green-500";
-            case "Pedente": return "text-yellow-500";
+            case "Pendente": return "text-yellow-500";
             case "Agendado": return "text-blue-500";
             case "Cancelado": return "text-red-500";
             default: return status;
@@ -202,7 +202,7 @@ export const AppointmentList = () => {
                             }}>
                             <option value="">Todos</option>
                             <option value="Finalizado">Finalizado</option>
-                            <option value="Pedente">Pedente</option>
+                            <option value="Pendente">Pendente</option>
                             <option value="Agendado">Agendado</option>
                             <option value="Cancelado">Cancelado</option>
                         </select>
