@@ -445,6 +445,7 @@ import { montserrat } from "../dass21/Dass21";
 import Label from "@/components/form/LabelForm";
 import Input from "@/components/form/input/Input";
 import Button from "@/ui/Button";
+import Link from "next/link";
 
 const chartData = [
     { value: 10 },
@@ -591,9 +592,11 @@ export default function Home() {
                             </span>
 
                             <div className="bg-brand-500 border-brand-500 mt-2 w-full py-2 rounded-2xl flex items-center justify-center gap-2 border shadow-sm">
-                                <span className="text-brand-100 font-bold text-sm">
-                                    Acessar consulta
-                                </span>
+                                <Link href={nextTelemedicine.beneficiaryUrl}>
+                                    <span className="text-brand-100 font-bold text-sm">
+                                        Acessar consulta
+                                    </span>
+                                </Link>
                             </div>
                         </div>
                     }
