@@ -11,14 +11,6 @@ export const VitalSono = ({ register, watch, setValue }: any) => {
     const [isManualMode, setIsManualMode] = useAtom(VitalIsManualModeAtom);
     const fragmentationValue = watch("sleepFragmentation");
     const [step] = useAtom(VitalStepAtom);
-    
-    useEffect(() => {
-        console.log("teste")
-        // console.log(watch("sleepFragmentation"))
-        // if(watch("sleepFragmentation") == "Outras") {
-        //     console.log(sleepFragmentation)
-        // };
-    }, [step]);
 
     return (
         <div className="animate-in slide-in-from-right">

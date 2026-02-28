@@ -126,7 +126,6 @@ export const ProfileMenu = () => {
     };
 
     useEffect(() => {
-        // Proteção para o Build do Next.js (SSR)
         if (typeof window !== 'undefined') {
             const localPhoto = localStorage.getItem("photo");
             const localName = localStorage.getItem("name");

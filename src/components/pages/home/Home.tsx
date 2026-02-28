@@ -433,7 +433,7 @@ import { useAtom } from "jotai";
 import { loadingAtom } from "@/jotai/global/loading.jotai";
 import VitalModal from "../vital-modal/VitalModal";
 import { VitalCheckInAtom, VitalModalAtom } from "@/jotai/vital/vital.jotai";
-import { configApi, resolveResponse } from "@/service/config.service";
+import { configApi, isTokenExpiringSoon, resolveResponse } from "@/service/config.service";
 import { api } from "@/service/api.service";
 import { useEffect, useState } from "react";
 import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell, PieChart, Pie, LabelList } from 'recharts';
@@ -514,6 +514,22 @@ export default function Home() {
         try {
             const { data } = await api.get(`/customer-recipients/logged`, configApi());
             const result = data.result.data;
+            const isRefresh = isTokenExpiringSoon();
+            
+            if(!isRefresh) {
+                const refreshToken = localStorage.getItem("refreshToken");
+                const { data } = await api.post(`/auth/refresh-token/app`, {}, {
+                    headers: {
+                        Authorization: `Bearer ${refreshToken}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+                const newData = data.data;
+                localStorage.setItem("token", newData.token);
+                localStorage.setItem("refreshToken", newData.refreshToken);
+                localStorage.setItem("expires", newData.expires);
+            };
+
             if (result.telemedicine?.date) {
                 setNextTelemedicine(result.telemedicine);
             }

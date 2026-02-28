@@ -27,7 +27,7 @@ export const resolveResponse = (response: any) => {
       });
 
       setTimeout(() => {
-        window.location.href = "/";
+        window.location.href = "/aplicativo";
         localStorage.removeItem("token");
         localStorage.removeItem("name");
       }, 1000);
@@ -59,3 +59,21 @@ export const resolveParamsRequest = (params: any) => {
 
   return _params;
 }
+
+export const isTokenExpiringSoon = (thresholdDays: number = 2): boolean | null => {
+    const raw = localStorage.getItem("token");
+    if (!raw) return null;
+
+    try {
+        const payload = JSON.parse(atob(raw.split(".")[1]));
+        if (!payload?.exp) return null;
+
+        const expiresAt  = payload.exp * 1000;              
+        const now        = Date.now();
+        const threshold  = thresholdDays * 24 * 60 * 60 * 1000;
+
+        return (expiresAt - now) <= threshold;              
+    } catch {
+        return null;                                        
+    }
+};

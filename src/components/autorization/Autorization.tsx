@@ -6,10 +6,6 @@ import { usePathname, useRouter } from "next/navigation";
 import { userLoggerAtom } from "@/jotai/auth/auth.jotai";
 import { loadingAtom } from "@/jotai/global/loading.jotai";
 
-type TProp = {
-    path?: string;
-}
-
 export const Autorization = () => {
     const [_, setUserLogger] = useAtom(userLoggerAtom);
     const [__, setIsLoading] = useAtom(loadingAtom);
@@ -28,7 +24,7 @@ export const Autorization = () => {
         } else {
             setUserLogger(true);
             if(path == "/" || path == "reset-password") {
-                router.push("/home");
+                router.push("/aplicativo");
             };
         };
 
