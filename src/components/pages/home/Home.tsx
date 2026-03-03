@@ -446,6 +446,8 @@ import Label from "@/components/form/LabelForm";
 import Input from "@/components/form/input/Input";
 import Button from "@/ui/Button";
 import Link from "next/link";
+import Ranking from "../ranking/Ranking";
+import RankingPreview from "../ranking/RankingPreview";
 
 const chartData = [
     { value: 10 },
@@ -558,6 +560,8 @@ export default function Home() {
         <div className={`${montserrat.className}`}>
             {modal ? <VitalModal /> : (
                 <div className="max-h-[calc(100dvh-13rem)] overflow-y-auto px-1">
+                    <RankingPreview />
+
                     {!isCheckIn && !nextTelemedicine.date && metric.ies <= 60 && (
                         <div className="mb-4 w-full p-2 bg-red-50 border border-red-200 rounded-2xl flex flex-col gap-3">
                             <div className="flex items-center gap-2">
