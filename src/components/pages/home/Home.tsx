@@ -448,6 +448,7 @@ import Button from "@/ui/Button";
 import Link from "next/link";
 import Ranking from "../ranking/Ranking";
 import RankingPreview from "../ranking/RankingPreview";
+import { urlBase64ToUint8Array } from "@/utils/push";
 
 const chartData = [
     { value: 10 },
@@ -546,8 +547,32 @@ export default function Home() {
         return "#06df72";
     };
 
+    const activeNotification = async () => {
+        try {
+            const registration = await navigator.serviceWorker.ready;
+    
+            const publicKey = "BKAi4Ae35cMd0JtCRVgIuHq6tjlqaN0Va0AifE1OzuldnKWkoGILA1F5qRr6iYOh6rcKr_3cp14qEFeNmp6olhs";
+    
+            const sub = await registration.pushManager.subscribe({
+                userVisibleOnly: true,
+                applicationServerKey: urlBase64ToUint8Array(publicKey)
+            });
+    
+            await api.put(`/customer-recipients/sub-notification`, sub, configApi());
+        } catch (error) {}
+    };
+
+    useEffect(() => {
+        if ("serviceWorker" in navigator) {
+            navigator.serviceWorker.register("/aplicativo/sw.js").then((_) => {
+                // console.log("SW Ativo com escopo:", reg.scope);
+            });
+        }
+    }, []);
+
     useEffect(() => {
         const initial = async () => {
+            activeNotification();
             setIsLoading(true);
             await getAll(periodo);
             await getLogged();

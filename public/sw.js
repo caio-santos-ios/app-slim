@@ -90,3 +90,11 @@ define(['./workbox-7144475a'], (function (workbox) { 'use strict';
   }), 'GET');
 
 }));
+
+self.addEventListener('push', (event) => {
+  const data = event.data.json();
+  self.registration.showNotification(data.title, {
+    body: data.body,
+    icon: '/icon-512x512.png'
+  });
+});

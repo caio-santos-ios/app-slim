@@ -6,6 +6,7 @@ import { api } from "@/service/api.service";
 import { configApi, resolveResponse } from "@/service/config.service";
 import { useEffect, useState } from "react";
 import { montserrat } from "../dass21/Dass21";
+import Link from "next/link";
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 
@@ -371,11 +372,11 @@ export default function Ranking() {
                         <p className="text-[10px] font-semibold text-brand-2-300 uppercase tracking-widest">Ranking</p>
                         <h2 className="text-sm font-extrabold text-white leading-tight">Top Saúde do Mês</h2>
                     </div>
-                    {/* <Link href="/home/ranking">
+                    <Link href="/home">
                         <div className="flex items-center gap-1 text-[11px] font-bold text-brand-2-300 bg-brand-2-300/10 border border-brand-2-300/30 px-2.5 py-1 rounded-lg">
-                            Ver tudo →
+                            Voltar
                         </div>
-                    </Link> */}
+                    </Link>
                 </div>
 
                 {/* Pódio */}
