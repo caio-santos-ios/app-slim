@@ -520,7 +520,7 @@ export default function Home() {
             const isRefresh = isTokenExpiringSoon();
             
             if(!isRefresh) {
-                const refreshToken = localStorage.getItem("refreshToken");
+                const refreshToken = localStorage.getItem("appRefreshToken");
                 const { data } = await api.post(`/auth/refresh-token/app`, {}, {
                     headers: {
                         Authorization: `Bearer ${refreshToken}`,
@@ -528,9 +528,9 @@ export default function Home() {
                     }
                 });
                 const newData = data.data;
-                localStorage.setItem("token", newData.token);
-                localStorage.setItem("refreshToken", newData.refreshToken);
-                localStorage.setItem("expires", newData.expires);
+                localStorage.setItem("appToken", newData.token);
+                localStorage.setItem("appRefreshToken", newData.refreshToken);
+                localStorage.setItem("appExpires", newData.expires);
             };
 
             if (result.telemedicine?.date) {

@@ -1,7 +1,7 @@
 import { toast } from "react-toastify";
 
 export const configApi = (contentTypeJson: boolean = true) => {
-  const localToken = localStorage.getItem("token");
+  const localToken = localStorage.getItem("appToken");
   const token = localToken ? localToken : "";
   
   return {
@@ -28,8 +28,7 @@ export const resolveResponse = (response: any) => {
 
       setTimeout(() => {
         window.location.href = "/aplicativo";
-        localStorage.removeItem("token");
-        localStorage.removeItem("name");
+        localStorage.clear();
       }, 1000);
       return;
     }

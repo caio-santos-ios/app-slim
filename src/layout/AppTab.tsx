@@ -74,7 +74,7 @@ export const AppTab = () => {
     ]);
 
     const handleTabClick = (tab: TTab) => {
-        localStorage.setItem("tab", tab.code);
+        localStorage.setItem("appTab", tab.code);
         setCurrentTab(tab.code);
 
         if (tab.submenus) {
@@ -91,12 +91,12 @@ export const AppTab = () => {
     };
 
     useEffect(() => {
-        const tabLocal = localStorage.getItem("tab");
+        const tabLocal = localStorage.getItem("appTab");
         if(tabLocal) {
             setCurrentTab(tabLocal);
         };
 
-        const moduleLocal = localStorage.getItem("modules");
+        const moduleLocal = localStorage.getItem("appModules");
         if(moduleLocal) {
             const list = JSON.parse(moduleLocal);
             setModule(list);

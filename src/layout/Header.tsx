@@ -9,7 +9,7 @@ export const Header = () => {
     const [photo, setPhoto] = useAtom(profileAtom);
     
     useEffect(() => {
-        const localPhoto = localStorage.getItem("photo");
+        const localPhoto = localStorage.getItem("appPhoto");
 
         if(localPhoto) {
             setPhoto(localPhoto);

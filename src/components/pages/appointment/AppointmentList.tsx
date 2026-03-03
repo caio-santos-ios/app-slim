@@ -45,7 +45,7 @@ export const AppointmentList = () => {
             setIsLoading(true);
             await api.post(`/appointments`, body, configApi());
             resolveResponse({status: 200, message: 'Agendado com sucesso!'});
-            const rapidocId = localStorage.getItem("rapidocId");
+            const rapidocId = localStorage.getItem("appRapidocId");
             setModalCreate(false);
             await getAll(rapidocId ? rapidocId : "");
         } catch (error) {
@@ -64,7 +64,7 @@ export const AppointmentList = () => {
             resolveResponse({status: 200, message: 'Cancelado com sucesso!'});
             setModalCanceled(false);
             setModalCreate(false);
-            const rapidocId = localStorage.getItem("rapidocId");
+            const rapidocId = localStorage.getItem("appRapidocId");
             await getAll(rapidocId ? rapidocId : "");
         } catch (error) {
             resolveResponse(error);
@@ -94,8 +94,8 @@ export const AppointmentList = () => {
             
             const psicologia = result?.data.find((x: any) => x.name == "Psicologia")
             
-            const name = localStorage.getItem("name");
-            const rapidocId = localStorage.getItem("rapidocId");
+            const name = localStorage.getItem("appName");
+            const rapidocId = localStorage.getItem("appRapidocId");
             
             const newList = listAppointments.filter(x => x.specialtyUuid == psicologia.id).map(x => ({...x, status: normalizeStatus(x.status)}));
             setAppointments(newList);
@@ -175,7 +175,7 @@ export const AppointmentList = () => {
 
     useEffect(() => {
         const initial = async () => {
-            const rapidocId = localStorage.getItem("rapidocId");
+            const rapidocId = localStorage.getItem("appRapidocId");
             await getAll(rapidocId ? rapidocId : "");
         }
         initial();

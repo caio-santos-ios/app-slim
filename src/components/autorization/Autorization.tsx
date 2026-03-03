@@ -14,7 +14,7 @@ export const Autorization = () => {
 
 
     useEffect(() => {
-        const localToken = localStorage.getItem("token");
+        const localToken = localStorage.getItem("appToken");
         const token = localToken ? localToken : "";
         if(!token) {
             setUserLogger(false);
@@ -23,7 +23,7 @@ export const Autorization = () => {
             };
         } else {
             setUserLogger(true);
-            if(path == "/" || path == "reset-password") {
+            if(path == "/aplicativo" || path == "reset-password") {
                 router.push("/aplicativo");
             };
         };

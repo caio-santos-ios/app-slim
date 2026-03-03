@@ -114,8 +114,8 @@ export const ForwardingList = () => {
             
             const nutricao = result?.data.find((x: any) => x.name == "Nutrição")
             
-            const name = localStorage.getItem("name");
-            const rapidocId = localStorage.getItem("rapidocId");
+            const name = localStorage.getItem("appName");
+            const rapidocId = localStorage.getItem("appRapidocId");
             
             const newList = listAppointments.filter(x => x.specialtyUuid == nutricao.id).map(x => ({...x, status: normalizeStatus(x.status)}));
             
@@ -167,7 +167,7 @@ export const ForwardingList = () => {
 
     const cancel: SubmitHandler<TAppointment> = async (body: TAppointment) => {
         try {
-            const name = localStorage.getItem("name");
+            const name = localStorage.getItem("appName");
             const form = {...body, beneficiaryName: name ? name : "", specialtyName};
             setIsLoading(true);
             
@@ -175,7 +175,7 @@ export const ForwardingList = () => {
             resolveResponse({status: 200, message: 'Cancelado com sucesso!'});
             setModalCanceled(false);
             setModalCreate(false);
-            const rapidocId = localStorage.getItem("rapidocId");
+            const rapidocId = localStorage.getItem("appRapidocId");
             await getAll(rapidocId ? rapidocId : "");
         } catch (error) {
             resolveResponse(error);
@@ -218,7 +218,7 @@ export const ForwardingList = () => {
     useEffect(() => {
         const initial = async () => {
             setIsLoading(true);
-            const rapidocId = localStorage.getItem("rapidocId");
+            const rapidocId = localStorage.getItem("appRapidocId");
             await getAll(rapidocId ? rapidocId : "");
             await getAppointments(rapidocId ? rapidocId : "");
             setIsLoading(false);

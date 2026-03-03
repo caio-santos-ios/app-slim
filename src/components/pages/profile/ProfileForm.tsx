@@ -77,7 +77,7 @@ export const ProfileForm = () => {
                 const { status, data } = await api.put(`/customer-recipients/profile-photo`, formBody, configApi(false));
                 const result = data.result.data;
                 setPhoto(result.photo);
-                localStorage.setItem("photo", result.photo);
+                localStorage.setItem("appPhoto", result.photo);
                 resolveResponse({status, message: "Foto atualizada com sucesso!"});
                 setValue("image", "");
             } catch (error) {

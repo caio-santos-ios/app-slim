@@ -80,12 +80,6 @@ export const ProfileMenu = () => {
     };
     
     const uploadPhoto = async (file: File) => {
-        console.log("Iniciando upload para a API...", file.name); // <== ADICIONE ISSO
-
-        // if (file.size > 5 * 1024 * 1024) {
-        //     return resolveResponse({ status: 400, message: "A imagem deve ter no máximo 5MB." });
-        // }
-
         try {
             const formBody = new FormData();
             formBody.append('photo', file);
@@ -108,7 +102,7 @@ export const ProfileMenu = () => {
                 setImagePreview(`${uriBase}/${newPhotoUrl}`);
                 
                 if (typeof window !== 'undefined') {
-                    localStorage.setItem("photo", newPhotoUrl);
+                    localStorage.setItem("appPhoto", newPhotoUrl);
                 }
                 resolveResponse({ status, message: "Foto atualizada com sucesso!" });
             }
@@ -127,8 +121,8 @@ export const ProfileMenu = () => {
 
     useEffect(() => {
         if (typeof window !== 'undefined') {
-            const localPhoto = localStorage.getItem("photo");
-            const localName = localStorage.getItem("name");
+            const localPhoto = localStorage.getItem("appPhoto");
+            const localName = localStorage.getItem("appName");
             
             if (localPhoto && localPhoto !== "undefined") {
                 setImagePreview(`${uriBase}/${localPhoto}`);

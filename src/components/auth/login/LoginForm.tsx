@@ -28,16 +28,16 @@ export const LoginForm = () => {
             const {data} = await api.post(`/auth/app/login`, body);
             const result = data.result.data;  
 
-            localStorage.setItem("modules", JSON.stringify(result.modulesIdentifications));
-            localStorage.setItem("firstAccess", result.firstAccess);
-            localStorage.setItem("cpf", result.cpf);
-            localStorage.setItem("name", result.name);
-            localStorage.setItem("photo", result.photo);
-            localStorage.setItem("rapidocId", result.rapidocId);
-            localStorage.setItem("token", result.token);
-            localStorage.setItem("refreshToken", result.refreshToken);
-            localStorage.setItem("expires", result.expires);
-            localStorage.setItem("tab", "home");
+            localStorage.setItem("appModules", JSON.stringify(result.modulesIdentifications));
+            localStorage.setItem("appFirstAccess", result.firstAccess);
+            localStorage.setItem("appCpf", result.cpf);
+            localStorage.setItem("appName", result.name);
+            localStorage.setItem("appPhoto", result.photo);
+            localStorage.setItem("appRapidocId", result.rapidocId);
+            localStorage.setItem("appToken", result.token);
+            localStorage.setItem("appRefreshToken", result.refreshToken);
+            localStorage.setItem("appExpires", result.expires);
+            localStorage.setItem("appTab", "home");
             
             if(result.firstAccess) {
                 router.push("/first-access");

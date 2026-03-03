@@ -44,7 +44,7 @@ export const AppointmentHistoricList = () => {
 
     useEffect(() => {
         const initial = async () => {
-            const rapidocId = localStorage.getItem("rapidocId");
+            const rapidocId = localStorage.getItem("appRapidocId");
             await getAll(rapidocId ? rapidocId : "");
         }
         initial();
