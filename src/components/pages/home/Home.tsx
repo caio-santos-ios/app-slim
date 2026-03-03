@@ -549,34 +549,47 @@ export default function Home() {
 
     const activeNotification = async () => {
         try {
+            if (!("serviceWorker" in navigator) || !("PushManager" in window)) return;
+
+            // Pede permissão explicitamente — sem isso o browser bloqueia silenciosamente
+            const permission = await Notification.requestPermission();
+            if (permission !== "granted") return;
+
             const registration = await navigator.serviceWorker.ready;
-    
-            const publicKey = "BKAi4Ae35cMd0JtCRVgIuHq6tjlqaN0Va0AifE1OzuldnKWkoGILA1F5qRr6iYOh6rcKr_3cp14qEFeNmp6olhs";
-    
-            const sub = await registration.pushManager.subscribe({
-                userVisibleOnly: true,
-                applicationServerKey: urlBase64ToUint8Array(publicKey)
-            });
-    
+
+            // Verifica se já tem subscription ativa para não re-registrar desnecessariamente
+            let sub = await registration.pushManager.getSubscription();
+
+            if (!sub) {
+                const publicKey = "BKAi4Ae35cMd0JtCRVgIuHq6tjlqaN0Va0AifE1OzuldnKWkoGILA1F5qRr6iYOh6rcKr_3cp14qEFeNmp6olhs";
+                sub = await registration.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: urlBase64ToUint8Array(publicKey)
+                });
+            }
+
             await api.put(`/customer-recipients/sub-notification`, sub, configApi());
-        } catch (error) {}
+        } catch (error) {
+            console.error("Push registration error:", error);
+        }
     };
 
     useEffect(() => {
         if ("serviceWorker" in navigator) {
             navigator.serviceWorker.register("/aplicativo/sw.js").then((_) => {
-                // console.log("SW Ativo com escopo:", reg.scope);
-            });
+                // SW registrado
+            }).catch((err) => console.error("SW register error:", err));
         }
     }, []);
 
     useEffect(() => {
         const initial = async () => {
-            activeNotification();
             setIsLoading(true);
             await getAll(periodo);
             await getLogged();
             setIsLoading(false);
+            // Roda após o carregamento para não bloquear a tela
+            activeNotification();
         };
         initial();
     }, [isCheckIn, periodo]);
