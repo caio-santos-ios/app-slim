@@ -266,65 +266,6 @@ export const ForwardingList = () => {
                     <Button onClick={() => setModalCreate(true)} type="button" className="w-full" size="sm">Fazer agendamento</Button>
                 </div>
             }
-            {/* {
-                modalCreate &&
-                <form onSubmit={handleSubmit(save)} className="grid grid-cols-4 gap-4 max-h-[calc(80dvh-2rem)] overflow-y-auto">                
-                    <div className="col-span-4">
-                        <Label label="Especialista" required={false}/>
-                        <Input disabled {...register("specialtyName")} placeholder="Especialista"/>
-                    </div>
-                    <div className="col-span-4 flex justify-center">
-                        <DayPicker
-                            mode="single"
-                            selected={selectedDay}
-                            onSelect={setSelectedDay}
-                            locale={ptBR}
-                            modifiers={{ 
-                                available: diasComHorario,
-                                unavailable: { before: new Date() }
-                            }}
-                            modifiersClassNames={{
-                                available: "text-white font-bold bg-brand-600 rounded-full", 
-                                unavailable: "text-red-500 line-through opacity-50" 
-                            }}
-                        />
-                    </div>
-                    <div className="col-span-4">
-                        {selectedDay && (
-                            <div className="col-span-4 grid grid-cols-2 gap-2">
-                                <Label label="Selecione o Horário" className="col-span-2"/>
-                                {specialtyAvailabilities
-                                    .filter(h => h.date === selectedDay.toLocaleDateString('pt-BR'))
-                                    .map(h => (
-                                        <button
-                                            key={h.id}
-                                            type="button"
-                                            onClick={() => {
-                                                setValue("date", h.date);
-                                                setValue("time", `${h.startTime} até ${h.endTime}`);
-                                                setValue("availabilityUuid", h.id);
-                                            }}
-                                            className={`${watch("availabilityUuid") == h.id ? 'bg-brand-500 text-white' : ''} p-2 border rounded-lg hover:bg-brand-500 hover:text-white transition-colors`}>
-                                            {h.startTime} - {h.endTime}
-                                        </button>
-                                    ))}
-                            </div>
-                        )}
-                    </div>
-                    <div className="col-span-2">
-                        <Button onClick={() => {
-                            setModalCreate(false);
-                            setValue("date", "");
-                            setValue("time", "");
-                            setValue("availabilityUuid", "");
-                            setSelectedDay(undefined);
-                        }} type="button" className="w-full" size="sm" variant="outline-primary">Cancelar</Button>
-                    </div>
-                    <div className="col-span-2">
-                        <Button className="w-full" size="sm">Salvar</Button>
-                    </div>
-                </form>
-            } */}
             {
                 modalCreate &&
                 <form onSubmit={handleSubmit(save)} className="grid grid-cols-4 gap-4 max-h-[calc(80dvh-6rem)] overflow-y-auto">                
@@ -404,7 +345,7 @@ export const ForwardingList = () => {
                                 return (
                                     <li key={ap.id} className="grid grid-cols-8 bg-white p-4 rounded-2xl border border-gray-200 mb-3">
                                         <div className="col-span-6">
-                                            <p className="text-sm font-medium text-brand-900 dark:text-gray-500">DATA: <strong className="font-bold">{ap.date}</strong></p>
+                                            <p className="text-sm font-medium text-brand-900 dark:text-gray-500">DATA: <strong className="font-bold">{ap.date} {ap.status}</strong></p>
                                             <p className="text-sm font-medium text-brand-900 dark:text-gray-500">HORARIO: <strong className="font-bold">{ap.startTime} até {ap.endTime}</strong></p>
                                             <p className="text-sm font-medium text-brand-900 dark:text-gray-500">STATUS: <strong className={`font-bold ${normalizeNameStatus(ap.status)}`}>{normalizeStatus(ap.status)}</strong></p>
                                             <p className="text-sm font-medium text-brand-900 dark:text-gray-500">ESPECIALIDADE: <strong className="font-bold">{ap.specialty}</strong></p>
@@ -412,7 +353,7 @@ export const ForwardingList = () => {
                                         <div className="col-span-2">
                                             <div className="flex flex-col justify-end items-end gap-3">                                      
                                                 {
-                                                    ap.status == "PENDING" &&
+                                                    ap.status == "Pendente" &&
                                                     <button onClick={async () => {
                                                         setModalCreate(true);
                                                         reset(ap);
@@ -428,7 +369,7 @@ export const ForwardingList = () => {
                                                     </button>
                                                 }
                                                 {
-                                                    ap.status == "SCHEDULED" &&
+                                                    ap.status == "Agendado" &&
                                                     <button onClick={() => {
                                                         setSpecialtyName(ap.specialty);
                                                         setValue("beneficiaryName", ap.recipientName);
@@ -440,7 +381,7 @@ export const ForwardingList = () => {
                                                     </button>
                                                 }
                                                 {
-                                                    ap.status == "SCHEDULED" &&
+                                                    ap.status == "Agendado" &&
                                                     <Link href={ap.beneficiaryUrl} className="bg-blue-500 shadow-theme-xs hover:bg-blue-600 text-white flex items-center gap-1 px-2 rounded-lg">
                                                         <IoIosVideocam/>                                                   
                                                         Consulta

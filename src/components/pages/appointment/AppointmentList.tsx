@@ -98,7 +98,6 @@ export const AppointmentList = () => {
             const rapidocId = localStorage.getItem("rapidocId");
             
             const newList = listAppointments.filter(x => x.specialtyUuid == psicologia.id).map(x => ({...x, status: normalizeStatus(x.status)}));
-            console.log(newList)
             setAppointments(newList);
             setAppointmentsFilted(newList);
             setValue("specialtyUuid", psicologia.id);
