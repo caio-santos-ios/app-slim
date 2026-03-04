@@ -71,7 +71,7 @@
 
 import { LuBrain } from "react-icons/lu";
 
-export const VitalMental = ({ watch, setValue }: any) => {
+export const VitalMental = ({ watch, setValue, className = "max-h-[calc(100dvh-26.2rem)]" }: any) => {
     // Lista de perguntas baseada na planilha DASS-9
     const questions = [
         { id: "dass1", label: "1. Senti que não tinha perspectiva de nada.", cat: "Depressão" },
@@ -105,7 +105,7 @@ export const VitalMental = ({ watch, setValue }: any) => {
                 Responda considerando como se sentiu nas últimas 24h.
             </p>
 
-            <div className="max-h-[calc(100dvh-26.2rem)] overflow-y-auto">
+            <div className={`${className} overflow-y-auto`}>
                 {questions.map((q) => (
                     <div key={q.id} className="pb-4">
                         <label className="block text-sm text-brand-500 mb-2">

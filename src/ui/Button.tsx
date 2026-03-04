@@ -1,3 +1,4 @@
+import { montserrat } from "@/components/pages/dass21/Dass21";
 import React, { ReactNode } from "react";
 
 interface ButtonProps {
@@ -43,7 +44,7 @@ const Button: React.FC<ButtonProps> = ({
 
   return (
     <button
-      className={`inline-flex items-center justify-center font-medium gap-2 rounded-lg transition ${className} ${
+      className={`${montserrat.className} inline-flex items-center justify-center font-medium gap-2 transition rounded-2xl ${className} ${
         sizeClasses[size]
       } ${variantClasses[variant]} ${
         disabled ? "cursor-not-allowed opacity-50" : ""

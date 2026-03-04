@@ -1,7 +1,7 @@
 import { FaRegMoon } from "react-icons/fa"
 import { IoIosNutrition } from "react-icons/io"
 
-export const VitalNutricao = ({ register, setValue, watch }: any) => {
+export const VitalNutricao = ({ register, setValue, watch, className = "max-h-[calc(100dvh-22.5rem)]" }: any) => {
 
     return (
         <div className="animate-in slide-in-from-right">
@@ -12,7 +12,7 @@ export const VitalNutricao = ({ register, setValue, watch }: any) => {
                 <h2 className="">Nutrição</h2>
             </div>
 
-            <div className="max-h-[calc(100dvh-22.5rem)] overflow-y-auto">
+            <div className={`${className} overflow-y-auto`}>
                 <div className="mb-4">
                     <label className="block text-sm text-brand-500 mb-2">Hora da última refeição</label>
                     <input type="time" {...register("lastMeal")} className="h-11 w-full border bg-white border-gray-200 text-brand-500 focus:border-(--color-brand-200) focus:outline-hidden rounded-lg px-3 py-2" />
