@@ -23,8 +23,8 @@ export const Autorization = () => {
             };
         } else {
             setUserLogger(true);
-            if(path == "/aplicativo" || path == "reset-password") {
-                router.push("/aplicativo/home");
+            if(path == "/" || path == "reset-password") {
+                router.push("/home");
             };
         };
 
