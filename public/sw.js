@@ -10,12 +10,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+// If the loader is already loaded, just stop.
 if (!self.define) {
   let registry = {};
+
+  // Used for `eval` and `importScripts` where we can't get script URL by other means.
+  // In both cases, it's safe to use a global var because those functions are synchronous.
   let nextDefineUri;
+
   const singleRequire = (uri, parentUri) => {
     uri = new URL(uri + ".js", parentUri).href;
     return registry[uri] || (
+
         new Promise(resolve => {
           if ("document" in self) {
             const script = document.createElement("script");
@@ -28,18 +35,21 @@ if (!self.define) {
             resolve();
           }
         })
+
       .then(() => {
         let promise = registry[uri];
         if (!promise) {
-          throw new Error(`Module ${uri} didn't register its module`);
+          throw new Error(`Module ${uri} didn’t register its module`);
         }
         return promise;
       })
     );
   };
+
   self.define = (depsNames, factory) => {
     const uri = nextDefineUri || ("document" in self ? document.currentScript.src : "") || location.href;
     if (registry[uri]) {
+      // Module is already loading or loaded.
       return;
     }
     let exports = {};
@@ -80,41 +90,10 @@ define(['./workbox-7144475a'], (function (workbox) { 'use strict';
 }));
 
 self.addEventListener('push', (event) => {
-  const data = event.data?.json() ?? {};
-
-  event.waitUntil(
-    self.registration.showNotification(data.title ?? 'Pasbem Saúde', {
-      body:     data.body  ?? '',
-      icon:     '/icon-512x512.png',
-      badge:    '/icon-512x512.png',
-      tag:      data.tag   ?? 'pasbem',
-      renotify: true,
-      vibrate:  [200, 100, 200],
-      data: { url: data.url ?? '/aplicativo/home' },
-      actions: [
-        { action: 'open',  title: '✅ Abrir' },
-        { action: 'close', title: '✖ Fechar' },
-      ],
-    })
-  );
-});
-
-self.addEventListener('notificationclick', (event) => {
-  event.notification.close();
-  if (event.action === 'close') return;
-
-  const url = event.notification.data?.url ?? '/aplicativo/home';
-
-  event.waitUntil(
-    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
-      for (const client of clientList) {
-        if (client.url.includes('/aplicativo') && 'focus' in client) {
-          client.focus();
-          client.navigate(url);
-          return;
-        }
-      }
-      clients.openWindow(url);
-    })
-  );
+  console.log('[Service Worker] Push Recebido.');
+  const data = event.data.json();
+  self.registration.showNotification(data.title, {
+    body: data.body,
+    icon: '/icon-512x512.png'
+  });
 });
