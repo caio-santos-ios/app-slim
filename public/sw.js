@@ -93,11 +93,13 @@ self.addEventListener('push', (event) => {
   
   let title = 'Pasbem Saúde';
   let body = 'Nova atualização disponível';
+  console.log(event)
 
   if (event.data) {
     try {
       // Tenta ler como JSON (o que o seu .NET envia)
       const data = event.data.json();
+      console.log(data)
       title = data.title || title;
       body = data.body || body;
     } catch (e) {
