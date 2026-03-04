@@ -91,9 +91,28 @@ define(['./workbox-7144475a'], (function (workbox) { 'use strict';
 
 self.addEventListener('push', (event) => {
   console.log('[Service Worker] Push Recebido.');
-  const data = event.data.json();
-  self.registration.showNotification(data.title, {
+  
+  let data = { title: 'Pasbem Saúde', body: 'Nova atualização disponível' };
+
+  try {
+    if (event.data) {
+      data = event.data.json();
+    }
+  } catch (e) {
+    console.error('Erro ao parsear JSON do push, usando fallback');
+    // Se não for JSON, tenta pegar como texto
+    data.body = event.data.text();
+  }
+
+  const options = {
     body: data.body,
-    icon: '/icon-512x512.png'
-  });
+    icon: '/icon-512x512.png',
+    badge: '/icon-512x512.png', // Ícone pequeno da barra de status
+    vibrate: [100, 50, 100],
+    data: { url: '/aplicativo' } // Para abrir o app no lugar certo
+  };
+
+  event.waitUntil(
+    self.registration.showNotification(data.title || 'Pasbem', options)
+  );
 });
