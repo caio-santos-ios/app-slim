@@ -89,7 +89,8 @@ define(['./workbox-7144475a'], (function (workbox) { 'use strict';
   }), 'GET');
 }));
 self.addEventListener('push', (event) => {
-    console.log('[Service Worker] Push Recebido.');
+    const textData = event.data ? event.data.text() : 'Sem dados';
+    console.log('[DEBUG PUSH] Conteúdo bruto recebido:', textData);
 
     let title = 'Pasbem Saúde';
     let body = 'Nova atualização disponível para você.';

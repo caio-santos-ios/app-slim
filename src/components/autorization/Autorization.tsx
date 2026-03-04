@@ -19,7 +19,7 @@ export const Autorization = () => {
         if(!token) {
             setUserLogger(false);
             if(!["/reset-password", "/aplicativo/", "/", "/reset-password/", "reset-password"].includes(path)) {
-                router.push("/aplicativo");
+                router.push("/");
             };
         } else {
             setUserLogger(true);
