@@ -91,10 +91,56 @@ define(['./workbox-7144475a'], (function (workbox) { 'use strict';
 
 }));
 
+// self.addEventListener('push', (event) => {
+//   const data = event.data.json();
+//   self.registration.showNotification(data.title, {
+//     body: data.body,
+//     icon: '/icon-512x512.png'
+//   });
+// });
+
 self.addEventListener('push', (event) => {
-  const data = event.data.json();
-  self.registration.showNotification(data.title, {
-    body: data.body,
-    icon: '/icon-512x512.png'
-  });
+  const data = event.data?.json() ?? {};
+
+  event.waitUntil(
+    self.registration.showNotification(data.title ?? 'Pasbem Saúde', {
+      body:    data.body    ?? '',
+      icon:    '/aplicativo/icon-192x192.png',
+      badge:   '/aplicativo/icon-192x192.png',
+      image:   data.image   ?? '',           // imagem grande (opcional)
+      tag:     data.tag     ?? 'pasbem',     // agrupa notificações do mesmo tipo
+      renotify: true,                         // vibra mesmo se já existe uma com o mesmo tag
+      vibrate: [200, 100, 200],
+      data: {
+        url: data.url ?? '/aplicativo/home',
+      },
+      actions: [
+        { action: 'open', title: '✅ Abrir' },
+        { action: 'close', title: '✖ Fechar' },
+      ],
+    })
+  );
+});
+
+self.addEventListener('notificationclick', (event) => {
+  event.notification.close();
+
+  if (event.action === 'close') return;
+
+  const url = event.notification.data?.url ?? '/aplicativo/home';
+
+  event.waitUntil(
+    clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+      // Se o app já está aberto, foca e navega
+      for (const client of clientList) {
+        if (client.url.includes('/aplicativo') && 'focus' in client) {
+          client.focus();
+          client.navigate(url);
+          return;
+        }
+      }
+      // Senão, abre uma nova janela
+      clients.openWindow(url);
+    })
+  );
 });
