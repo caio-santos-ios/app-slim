@@ -89,35 +89,34 @@ define(['./workbox-7144475a'], (function (workbox) { 'use strict';
   }), 'GET');
 }));
 self.addEventListener('push', (event) => {
-  console.log('[Service Worker] Push Recebido.');
-  
-  let title = 'Pasbem Saúde';
-  let body = 'Nova atualização disponível';
-  console.log(event)
+    console.log('[Service Worker] Push Recebido.');
 
-  if (event.data) {
+    let title = 'Pasbem Saúde';
+    let body = 'Nova atualização disponível para você.';
+
     try {
-      // Tenta ler como JSON (o que o seu .NET envia)
-      const data = event.data.json();
-      console.log(data)
-      title = data.title || title;
-      body = data.body || body;
+        if (event.data) {
+            // Tenta tratar como JSON (o que sua API .NET envia)
+            const data = event.data.json();
+            title = data.title || title;
+            body = data.body || body;
+        }
     } catch (e) {
-      // Se não for JSON, lê como texto puro
-      body = event.data.text();
+        console.warn('Dados do Push não são JSON, tentando ler como texto.');
+        // Fallback: tenta ler como texto simples se não for JSON
+        const textData = event.data.text();
+        if (textData) body = textData;
     }
-  }
 
-  const options = {
-    body: body,
-    icon: '/icon-512x512.png',
-    badge: '/icon-512x512.png',
-    vibrate: [100, 50, 100],
-    data: { url: '/aplicativo' }
-  };
+    const options = {
+        body: body,
+        icon: '/icon-512x512.png',
+        badge: '/icon-512x512.png',
+        vibrate: [100, 50, 100],
+        data: { url: '/aplicativo' }
+    };
 
-  // Garante que a notificação seja exibida antes do SW dormir
-  event.waitUntil(
-    self.registration.showNotification(title, options)
-  );
+    event.waitUntil(
+        self.registration.showNotification(title, options)
+    );
 });
