@@ -24,7 +24,7 @@ export const Autorization = () => {
         } else {
             setUserLogger(true);
             if(path == "/aplicativo" || path == "reset-password") {
-                router.push("/aplicativo");
+                router.push("/aplicativo/home");
             };
         };
 
