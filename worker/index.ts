@@ -4,6 +4,7 @@ self.addEventListener('push', (event: any) => {
     (self as unknown as any).registration.showNotification(data.title ?? 'Pasbem Saúde', {
       body:     data.body  ?? '',
       icon:     '/aplicativo/icon-512x512.png',
+      badge:    '/aplicativo/icon-192x192.png',
       tag:      data.tag   ?? 'pasbem',
       renotify: true,
       data: { url: data.url ?? '/aplicativo/home' },
