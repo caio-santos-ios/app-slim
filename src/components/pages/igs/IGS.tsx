@@ -53,6 +53,7 @@ export const CheckIn = () => {
         }
     };
 
+    
     const getLogged = async () => {
         try {
             setLoading(true);
