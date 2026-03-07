@@ -612,7 +612,7 @@ export default function Home() {
                         </div>
                     )}
 
-                    {isCheckIn && (
+                    {/* {isCheckIn && (
                         <div onClick={() => setModal(true)} className="w-full bg-white p-6 rounded-2xl border border-gray-200 mb-4 flex flex-col gap-2 cursor-pointer">
                             <div className="flex items-start gap-3">
                                 <div className="p-2 bg-brand-2-500 rounded-xl">
@@ -627,7 +627,7 @@ export default function Home() {
                                 Fazer Check-in
                             </div>
                         </div>
-                    )}
+                    )} */}
 
                     {
                         nextTelemedicine.date &&
