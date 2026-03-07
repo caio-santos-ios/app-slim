@@ -1,4 +1,4 @@
-import { CheckIn } from "@/components/pages/igs/IGS";
+import { CheckIn } from "@/components/pages/check-in/CheckIn";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {

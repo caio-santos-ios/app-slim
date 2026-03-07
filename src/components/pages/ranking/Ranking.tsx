@@ -7,6 +7,12 @@ import { configApi, resolveResponse } from "@/service/config.service";
 import { useEffect, useState } from "react";
 import { montserrat } from "../dass21/Dass21";
 import Link from "next/link";
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/accordion/AccordionContent";
+import { MdFilterAltOff } from "react-icons/md";
+import { FaLightbulb, FaMoon, FaRegMoon } from "react-icons/fa";
+import { CgEditBlackPoint } from "react-icons/cg";
+import { CheckInManhaAnimation, CheckInNoiteAnimation, LevelUpAnimation } from "@/components/animations/Animations";
+import { IoIosWarning } from "react-icons/io";
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 
@@ -21,6 +27,7 @@ interface RankEntry {
     rank: number;
     levelIndex: number;
     progress: number;
+    level: number;
 }
 
 // ─── Constantes ───────────────────────────────────────────────────────────────
@@ -188,6 +195,18 @@ function RankBadge({ rank }: { rank: number }) {
 
 function UserRow({ entry, isMe = false }: { entry: RankEntry; isMe?: boolean }) {
     const level = getLevel(entry.points);
+    
+    const getStreakStyle = (streak: number) => {
+        if (streak === 0)  return { color: "#9ca3af", icon: "🔥" };  // cinza
+        if (streak < 3)    return { color: "#fb923c", icon: "🔥" };  // laranja
+        if (streak < 7)    return { color: "#f97316", icon: "🔥" };  // laranja forte
+        if (streak < 14)   return { color: "#ef4444", icon: "🔥" };  // vermelho
+        if (streak < 30)   return { color: "#a855f7", icon: "⚡" };  // roxo + raio
+        return                    { color: "#ffd700", icon: "👑" };  // dourado + coroa
+    };
+
+    const streak = getStreakStyle(entry.streak);
+    
     return (
         <div
             className={`flex items-center gap-3 p-3 rounded-2xl border mb-2 ${isMe ? "border-brand-2-300 bg-brand-2-25" : "border-gray-100 bg-white"}`}
@@ -216,7 +235,18 @@ function UserRow({ entry, isMe = false }: { entry: RankEntry; isMe?: boolean }) 
                     {entry.points.toLocaleString("pt-BR")}
                 </span>
                 <span className="text-[10px] text-brand-300">pontos</span>
-                <span className="text-[11px] font-semibold text-orange-400">🔥 {entry.streak}d</span>
+
+                <span style={{ color: streak.color }} className="text-[11px] font-semibold">
+                    <span style={{ filter: `sepia(1) saturate(10) hue-rotate(${
+                        entry.streak === 0  ? "0deg" :
+                        entry.streak < 3  ? "340deg" :
+                        entry.streak < 7  ? "350deg" :
+                        entry.streak < 14 ? "320deg" :
+                        entry.streak < 30 ? "240deg" :
+                        "40deg"
+                    })` }}>{streak.icon}</span>
+                    {" "}{entry.streak}d
+                </span>
             </div>
         </div>
     );
@@ -249,7 +279,7 @@ function Podium({ top3 }: { top3: RankEntry[] }) {
                         <Avatar name={u.name} photo={u.photo} points={u.points} size={i === 1 ? 60 : 50} />
                     </div>
                     <p
-                        className="text-[11px] font-semibold text-center truncate max-w-[80px]"
+                        className="text-[11px] font-semibold text-center truncate max-w-20"
                         style={{ color: i === 1 ? "white" : "#cedbe6" }}
                     >
                         {u.name.split(" ")[0]}
@@ -271,7 +301,6 @@ function Podium({ top3 }: { top3: RankEntry[] }) {
     );
 }
 
-// ─── Componente principal ─────────────────────────────────────────────────────
 
 export default function Ranking() {
     const [_, setIsLoading] = useAtom(loadingAtom);
@@ -279,6 +308,12 @@ export default function Ranking() {
     const [ranking, setRanking]   = useState<RankEntry[]>([]);
     const [myEntry, setMyEntry]   = useState<RankEntry | null>(null);
     const [loading, setLoading]   = useState(true);
+    
+    const normalizeLevel = (points: number) => {
+        if(points >= 0 && points < 2000) return 1;
+        if(points >= 2000 && points < 3000) return 2;
+        return 3;
+    }
 
     const getAll = async () => {
         try {
@@ -287,28 +322,35 @@ export default function Ranking() {
 
             const [
                 { data: recipientsData },
-                { data: historicsData },
                 { data: vitalsData },
                 { data: loggedData },
             ] = await Promise.all([
                 api.get("/customer-recipients", configApi()),
-                api.get("/historics",             configApi()),
                 api.get("/vitals",                configApi()),
                 api.get("/customer-recipients/logged", configApi()),
             ]);
 
             const recipients: any[] = recipientsData?.result?.data ?? [];
-            const historics: any[]  = historicsData?.result?.data  ?? [];
             const vitals: any[]     = vitalsData?.result?.data     ?? [];
             const loggedId: string  = loggedData?.result?.data?.id ?? "";
 
             const entries: RankEntry[] = recipients.map((r: any) => {
-                const myHistorics = historics.filter((h: any) => h.recipient === r.id);
                 const myVitals    = vitals.filter((v: any) => v.beneficiaryId === r.id);
-                const checkIns    = myHistorics.length;
-                const vitalCount  = myVitals.length;
-                const streak      = calcStreak(historics, r.id);
-                const points      = (checkIns * PTS_CHECKIN) + (vitalCount * PTS_VITAL) + (streak * PTS_STREAK);
+                const checkIns    = myVitals.length;
+                const streak      = calculateStreak(myVitals);
+                const checkINIGS = myVitals.filter(v => v.chekinIGS).length * 5;
+                const checkINIGN = myVitals.filter(v => v.chekinIGN).length * 5;
+                const checkINIES = myVitals.filter(v => v.chekinIES).length * 5;
+                
+                // const points      =  checkINIGS + checkINIGN + checkINIES;
+
+                const totalIGS = myVitals.reduce((a, b) => a + b.chekinIGSPoint, 0);
+                const totalIGN = myVitals.reduce((a, b) => a + b.chekinIGNPoint, 0);
+                const totalIES = myVitals.reduce((a, b) => a + b.chekinIESPoint, 0);
+                const totalExtrasPoint = myVitals.reduce((a, b) => a + b.extrasPoint, 0);
+                
+                const points      = totalIGS + totalIGN + totalIES + totalExtrasPoint;
+
 
                 return {
                     id:         r.id,
@@ -316,11 +358,12 @@ export default function Ranking() {
                     photo:      r.photo ?? "",
                     points,
                     checkIns,
-                    vitals:     vitalCount,
+                    vitals:     1,
                     streak,
                     rank:       0,
                     levelIndex: getLevelIndex(points),
                     progress:   getLevelProgress(points),
+                    level: normalizeLevel(points)
                 };
             });
 
@@ -358,16 +401,63 @@ export default function Ranking() {
         ]
         : [];
 
+    const calculateStreak = (records: any[]): number => {
+        if (!records || records.length === 0) return 0;
+
+        // 1. Extrair datas únicas (YYYY-MM-DD) e ordenar da mais recente para a antiga
+        const dates = Array.from(
+            new Set(
+                records.map(r => new Date(r.createdAt).toISOString().split('T')[0])
+            )
+        ).sort((a, b) => new Date(b).getTime() - new Date(a).getTime());
+
+        const now = new Date();
+        const today = now.toISOString().split('T')[0];
+        
+        // Calcular ontem
+        const yesterdayDate = new Date();
+        yesterdayDate.setDate(now.getDate() - 1);
+        const yesterday = yesterdayDate.toISOString().split('T')[0];
+
+        // 2. Se a data mais recente não for hoje nem ontem, o streak zerou
+        if (dates[0] !== today && dates[0] !== yesterday) {
+            return 0;
+        }
+
+        let streak = 0;
+        
+        // 3. Verificar consecutividade
+        for (let i = 0; i < dates.length; i++) {
+            const current = new Date(dates[i]);
+            
+            if (i === 0) {
+                streak++;
+                continue;
+            }
+
+            const previous = new Date(dates[i - 1]);
+            const diffInMs = previous.getTime() - current.getTime();
+            const diffInDays = Math.round(diffInMs / (1000 * 60 * 60 * 24));
+
+            if (diffInDays === 1) {
+                streak++;
+            } else {
+                // Buraco detectado na sequência
+                break;
+            }
+        }
+
+        return streak;
+    };
+
     return (
         <div className={`${montserrat.className} mb-4`}>
             <div className={`${montserrat.className} bg-white rounded-2xl border border-gray-100 mb-4 overflow-hidden`}
                 style={{ boxShadow: "0 2px 12px rgba(26,58,92,0.08)" }}>
 
-                {/* Cabeçalho */}
                 <div
                     className="flex items-center justify-between px-4 py-3"
-                    style={{ background: "linear-gradient(135deg,#1a3a5c,#122942)" }}
-                >
+                    style={{ background: "linear-gradient(135deg,#1a3a5c,#122942)" }}>
                     <div>
                         <p className="text-[10px] font-semibold text-brand-2-300 uppercase tracking-widest">Ranking</p>
                         <h2 className="text-sm font-extrabold text-white leading-tight">Top Saúde do Mês</h2>
@@ -379,7 +469,6 @@ export default function Ranking() {
                     </Link>
                 </div>
 
-                {/* Pódio */}
                 {loading ? (
                     <div className="flex justify-center items-center py-8">
                         <div className="w-6 h-6 rounded-full border-2 border-brand-2-300/30 border-t-brand-2-300 animate-spin" />
@@ -390,86 +479,18 @@ export default function Ranking() {
                     </div>
                 ) : (
                     <div className="px-3 pt-4" style={{ background: "linear-gradient(180deg,#0f2135 0%,#1a3a5c 100%)" }}>
-                        {/* <div className="flex items-end justify-center gap-2">
-                            {podiumOrder.map((entry, i) => (
-                                <PodiumItem key={entry.id} entry={entry} position={podiumPositions[i]} />
-                            ))}
-                        </div> */}
                         <Podium top3={top3} />
                     </div>
                 )}
-
-                {/* {myEntry && (
-                    <div className="flex items-center justify-between px-4 py-3 border-t border-brand-50">
-                        <div className="flex items-center gap-2">
-                            <div className="w-7 h-7 rounded-full bg-brand-2-25 border border-brand-2-200 flex items-center justify-center">
-                                <span className="text-[10px] font-extrabold text-brand-2-500">#{myEntry.rank}</span>
-                            </div>
-                            <div>
-                                <p className="text-[11px] font-bold text-brand-500 leading-none">Sua posição</p>
-                                <p className="text-[10px] text-brand-300 mt-0.5">
-                                    {getLevel(myEntry.points).name} · Lv.{myEntry.levelIndex + 1}
-                                </p>
-                            </div>
-                        </div>
-                        <div className="text-right">
-                            <p className="text-sm font-extrabold text-brand-500">
-                                {myEntry.points.toLocaleString("pt-BR")}
-                            </p>
-                            <p className="text-[10px] text-brand-300">pontos</p>
-                        </div>
-                    </div>
-                )} */}
             </div>
-
-            {/* <div
-                className="rounded-b-3xl mb-5 overflow-hidden"
-                style={{
-                    background: "linear-gradient(160deg,#1a3a5c 0%,#122942 60%,#0f2135 100%)",
-                    boxShadow: "0 8px 32px rgba(26,58,92,0.3)",
-                }}
-            >
-                <div className="flex items-center justify-between px-4 pt-4 pb-4">
-                    <div>
-                        <p className="text-[11px] font-semibold text-brand-2-300 uppercase tracking-widest">Pasbem</p>
-                        <h1 className="text-xl font-extrabold text-white leading-tight">Ranking de Saúde</h1>
-                    </div>
-                    <div className="text-[11px] font-bold text-brand-2-300 px-3 py-1.5 rounded-xl border border-brand-2-300/30 bg-brand-2-300/10">
-                        🏆 {new Date().toLocaleDateString("pt-BR", { month: "long", year: "numeric" })}
-                    </div>
-                </div>
-
-                {loading ? (
-                    <div className="flex justify-center py-10">
-                        <div className="w-8 h-8 rounded-full border-2 border-brand-2-300/30 border-t-brand-2-300 animate-spin" />
-                    </div>
-                ) : (
-                    <Podium top3={top3} />
-                )}
-
-                <div className="flex gap-1 mx-3 mt-4 bg-white/10 rounded-t-xl p-1.5 pb-0">
-                    {TABS.map((t, i) => (
-                        <button
-                            key={t}
-                            type="button"
-                            onClick={() => setTab(i)}
-                            className={`flex-1 py-2 text-[11px] font-semibold rounded-t-lg transition-all border-none cursor-pointer
-                                ${tab === i ? "bg-brand-25 text-brand-500" : "bg-transparent text-white/50"}`}
-                        >
-                            {t}
-                        </button>
-                    ))}
-                </div>
-            </div> */}
-
+            
             {myEntry && (
                 <div
                     className="mb-4 rounded-2xl p-4 flex items-center gap-3"
                     style={{
                         background: "linear-gradient(135deg,#1a3a5c,#339966)",
                         boxShadow: "0 4px 20px rgba(26,58,92,0.25)",
-                    }}
-                >
+                    }}>
                     <Avatar name={myEntry.name} photo={myEntry.photo} points={myEntry.points} size={48} />
                     <div className="flex-1 min-w-0">
                         <p className="text-xs text-white/70 mb-0.5">Sua posição atual</p>
@@ -482,13 +503,12 @@ export default function Ranking() {
                         </div>
                     </div>
                     <div className="shrink-0 bg-brand-2-300/25 rounded-xl px-3 py-2 text-center">
-                        <p className="text-xs font-extrabold text-brand-2-300">Lv.{myEntry.levelIndex + 1}</p>
+                        <p className="text-xs font-extrabold text-brand-2-300">Lv.{myEntry.level}</p>
                         <p className="text-[9px] text-white/60">nível</p>
                     </div>
                 </div>
             )}
 
-            {/* Stats */}
             {myStats.length > 0 && (
                 <div className="grid grid-cols-4 gap-2 mb-4">
                     {myStats.map((s) => (
@@ -505,7 +525,58 @@ export default function Ranking() {
                 </div>
             )}
 
-            {/* Lista */}
+            <Accordion multiple={false}>
+                <AccordionItem id="ranking" className="mb-2">
+                    <AccordionTrigger icon={<FaLightbulb />} subtitle="Veja como funciona a pontuação do Ranking">
+                        Como ganhar mais pontos?
+                    </AccordionTrigger>
+                    <AccordionContent>
+                        <ul className="pt-3 flex flex-col gap-3">
+                            <li className="text-xs text-gray-500 flex items-center gap-3">
+                                <span className="text-xl">☀️</span>
+                                <span className="flex-1">Check-in da <strong>manhã</strong> (como foi seu sono)</span>
+                                <span className="text-brand-2-500 font-bold whitespace-nowrap">+5 pts</span>
+                            </li>
+                            <li className="text-xs text-gray-500 flex items-center gap-3">
+                                <span className="text-xl">🥗</span>
+                                <span className="flex-1">Check-in da <strong>noite</strong> (sua alimentação)</span>
+                                <span className="text-brand-2-500 font-bold whitespace-nowrap">+5 pts</span>
+                            </li>
+                            <li className="text-xs text-gray-500 flex items-center gap-3">
+                                <span className="text-xl">🧠</span>
+                                <span className="flex-1">Check-in da <strong>noite</strong> (sua saúde mental)</span>
+                                <span className="text-brand-2-500 font-bold whitespace-nowrap">+5 pts</span>
+                            </li>
+                        </ul>
+
+                        <div className="flex items-center gap-2 text-brand-2-500 mt-4 mb-2">
+                            <IoIosWarning />
+                            <span className="text-xs font-semibold">Bônus por sequência 🔥</span>
+                        </div>
+                        <p className="text-xs text-gray-400 mb-3">
+                            Faça check-in <strong>dias seguidos</strong> e ganhe pontos extras por consistência.
+                        </p>
+                        <ul className="flex flex-col gap-2">
+                            <li className="text-xs text-gray-500 flex items-center gap-3">
+                                <span className="text-xl">🔥</span>
+                                <span className="flex-1">Sequência no check-in do sono</span>
+                                <span className="text-brand-2-500 font-bold whitespace-nowrap">+1 pt/dia</span>
+                            </li>
+                            <li className="text-xs text-gray-500 flex items-center gap-3">
+                                <span className="text-xl">🔥</span>
+                                <span className="flex-1">Sequência no check-in da alimentação</span>
+                                <span className="text-brand-2-500 font-bold whitespace-nowrap">+1 pt/dia</span>
+                            </li>
+                            <li className="text-xs text-gray-500 flex items-center gap-3">
+                                <span className="text-xl">🔥</span>
+                                <span className="flex-1">Sequência no check-in mental</span>
+                                <span className="text-brand-2-500 font-bold whitespace-nowrap">+1 pt/dia</span>
+                            </li>
+                        </ul>
+                    </AccordionContent>
+                </AccordionItem>
+            </Accordion>
+            
             <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-bold text-brand-500">Top Beneficiários</span>
                 <span className="text-xs text-brand-300">{ranking.length} participantes</span>
@@ -537,17 +608,6 @@ export default function Ranking() {
                     )}
                 </div>
             )}
-
-            {/* Dica */}
-            <div className="mt-2 rounded-2xl p-4 flex items-center gap-3 border border-brand-2-100 bg-brand-2-25">
-                <span className="text-2xl shrink-0">💡</span>
-                <div>
-                    <p className="text-xs font-bold text-brand-500 mb-0.5">Como ganhar mais pontos</p>
-                    <p className="text-[11px] text-brand-400 leading-relaxed">
-                        Check-in diário (+{PTS_CHECKIN}pts) · Sinais Vitais (+{PTS_VITAL}pts) · Sequência (+{PTS_STREAK}pts/dia)
-                    </p>
-                </div>
-            </div>
         </div>
     );
 }

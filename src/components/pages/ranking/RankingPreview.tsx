@@ -141,7 +141,7 @@ function PodiumItem({ entry, position }: { entry: RankEntry; position: number })
                 )}
                 <Avatar name={entry.name} photo={entry.photo} points={entry.points} size={size} />
             </div>
-            <p className="text-[10px] font-semibold text-center truncate max-w-[72px] mb-0.5"
+            <p className="text-[10px] font-semibold text-center truncate max-w-18 mb-0.5"
                 style={{ color: nameColor }}>
                 {entry.name.split(" ")[0]}
             </p>
@@ -152,7 +152,7 @@ function PodiumItem({ entry, position }: { entry: RankEntry; position: number })
                 className="w-full rounded-t-lg flex items-center justify-center"
                 style={{ height: heights[position as keyof typeof heights], background: bgs[position as keyof typeof bgs] }}
             >
-                <span className="font-black text-white text-lg">#{position}</span>
+                <span className="font-black text-white text-lg">#{(entry.points)}</span>
             </div>
         </div>
     );
@@ -194,7 +194,12 @@ export default function RankingPreview() {
                 const checkIns    = myHistorics.length;
                 const vitalCount  = myVitals.length;
                 const streak      = calcStreak(historics, r.id);
-                const points      = (checkIns * PTS_CHECKIN) + (vitalCount * PTS_VITAL) + (streak * PTS_STREAK);
+                const totalIGS = myVitals.reduce((a, b) => a + b.chekinIGSPoint, 0);
+                const totalIGN = myVitals.reduce((a, b) => a + b.chekinIGNPoint, 0);
+                const totalIES = myVitals.reduce((a, b) => a + b.chekinIESPoint, 0);
+                const totalExtrasPoint = myVitals.reduce((a, b) => a + b.extrasPoint, 0);
+                
+                const points      = totalIGS + totalIGN + totalIES + totalExtrasPoint;
 
                 return {
                     id:         r.id,
@@ -226,6 +231,12 @@ export default function RankingPreview() {
     useEffect(() => {
         getAll();
     }, []);
+
+    const normalizeLevel = (points: number) => {
+        if(points >= 0 && points < 2000) return 1;
+        if(points >= 2000 && points < 3000) return 2;
+        return 3;
+    }
 
     // Ordem do pódio: 2º | 1º | 3º
     const podiumOrder = top3.length === 3
