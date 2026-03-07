@@ -177,9 +177,9 @@ export default function RankingPreview() {
                 { data: vitalsData },
                 { data: loggedData },
             ] = await Promise.all([
-                api.get("/customer-recipients", configApi()),
-                api.get("/historics",           configApi()),
-                api.get("/vitals",              configApi()),
+                api.get("/customer-recipients?deleted=false", configApi()),
+                api.get("/historics?deleted=false",           configApi()),
+                api.get("/vitals?deleted=false",              configApi()),
                 api.get("/customer-recipients/logged", configApi()),
             ]);
 
