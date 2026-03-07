@@ -338,12 +338,7 @@ export default function Ranking() {
                 const myVitals    = vitals.filter((v: any) => v.beneficiaryId === r.id);
                 const checkIns    = myVitals.length;
                 const streak      = calculateStreak(myVitals);
-                const checkINIGS = myVitals.filter(v => v.chekinIGS).length * 5;
-                const checkINIGN = myVitals.filter(v => v.chekinIGN).length * 5;
-                const checkINIES = myVitals.filter(v => v.chekinIES).length * 5;
                 
-                // const points      =  checkINIGS + checkINIGN + checkINIES;
-
                 const totalIGS = myVitals.reduce((a, b) => a + b.chekinIGSPoint, 0);
                 const totalIGN = myVitals.reduce((a, b) => a + b.chekinIGNPoint, 0);
                 const totalIES = myVitals.reduce((a, b) => a + b.chekinIESPoint, 0);

@@ -152,7 +152,7 @@ function PodiumItem({ entry, position }: { entry: RankEntry; position: number })
                 className="w-full rounded-t-lg flex items-center justify-center"
                 style={{ height: heights[position as keyof typeof heights], background: bgs[position as keyof typeof bgs] }}
             >
-                <span className="font-black text-white text-lg">#{(entry.points)}</span>
+                <span className="font-black text-white text-lg">#{(position)}</span>
             </div>
         </div>
     );
