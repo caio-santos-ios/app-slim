@@ -46,7 +46,7 @@ export const ForwardingList = () => {
         try {
             const name = localStorage.getItem("name");
             const cpf = localStorage.getItem("cpf");
-            const form = {...body, beneficiaryName: name ? name : "", beneficiaryCPF: cpf ? cpf : ""};
+            const form = {...body, beneficiaryName: name ? name : "", beneficiaryCPF: cpf ? cpf : "", origin: "app"};
 
             setIsLoading(true);
             const {data} = await api.post(`/forwardings`, form, configApi());

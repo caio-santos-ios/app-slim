@@ -43,7 +43,7 @@ export const AppointmentList = () => {
     const save: SubmitHandler<TAppointment> = async (body: TAppointment) => {
         try {
             setIsLoading(true);
-            await api.post(`/appointments`, body, configApi());
+            await api.post(`/appointments`, {...body, origin: "app"}, configApi());
             resolveResponse({status: 200, message: 'Agendado com sucesso!'});
             const rapidocId = localStorage.getItem("appRapidocId");
             setModalCreate(false);
