@@ -457,11 +457,19 @@ export default function Ranking() {
                         <p className="text-[10px] font-semibold text-brand-2-300 uppercase tracking-widest">Ranking</p>
                         <h2 className="text-sm font-extrabold text-white leading-tight">Top Saúde do Mês</h2>
                     </div>
-                    <Link href="/home">
-                        <div className="flex items-center gap-1 text-[11px] font-bold text-brand-2-300 bg-brand-2-300/10 border border-brand-2-300/30 px-2.5 py-1 rounded-lg">
-                            Voltar
-                        </div>
-                    </Link>
+
+                    <div className="flex gap-4">
+                        <Link href="/home/historic-points">
+                            <div className="flex items-center gap-1 text-[11px] font-bold text-brand-2-300 bg-brand-2-300/10 border border-brand-2-300/30 px-2.5 py-1 rounded-lg">
+                                Hitórico de Pontos
+                            </div>
+                        </Link>
+                        <Link href="/home">
+                            <div className="flex items-center gap-1 text-[11px] font-bold text-brand-2-300 bg-brand-2-300/10 border border-brand-2-300/30 px-2.5 py-1 rounded-lg">
+                                Voltar
+                            </div>
+                        </Link>
+                    </div>
                 </div>
 
                 {loading ? (

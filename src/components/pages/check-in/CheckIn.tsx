@@ -46,7 +46,7 @@ export const CheckIn = () => {
             if (!body.id) {
                 await api.post(`/vitals`, { ...body, chekinIGS: true, chekinIGSPoint: 5 }, configApi());
                 setAnimacao("manha");
-            } else if (hora >= 16 && !body.id) {
+            } else if (hora >= 18 && !body.id) {
                 await api.post(`/vitals`, {
                     ...body,
                     chekinIGS: true, chekinIGSPoint: 5,
@@ -103,13 +103,13 @@ export const CheckIn = () => {
         let steps: number[] = [];
 
         if (!id) {
-            if (hora >= 16) {
+            if (hora >= 18) {
                 steps = [1, 2, 3];
             } else {
                 steps = [1];
             }
         } else {
-            if (hora >= 16) {
+            if (hora >= 18) {
                 steps = [2, 3];
             } else {
                 steps = [];
