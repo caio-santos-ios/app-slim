@@ -33,7 +33,7 @@ export default function HistoricPoint() {
 
             const list: any[] = [];
             result.map((x: any) => {
-                
+
                 if(x.chekinIGS) {
                     list.push({
                         date: maskDate(x.createdAt),

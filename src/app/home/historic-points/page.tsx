@@ -2,8 +2,8 @@ import HistoricPoint from "@/components/pages/historic-point/HistoricPoint";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-    title: "Pasbem | Bem Vital",
-    description: "This is Next.js Home for TailAdmin Bem Vital Template",
+    title: "Pasbem | Hitórico de Pontos",
+    description: "This is Next.js Home for TailAdmin Hitórico de Pontos Template",
 };
 
 export default function HistoricPointPage() {

@@ -1,8 +1,7 @@
 "use client";
 
-import Input from "@/components/form/input/Input";
 import { loadingAtom } from "@/jotai/global/loading.jotai";
-import { VitalCheckInAtom, VitalIsManualModeAtom, VitalStepAtom } from "@/jotai/vital/vital.jotai";
+import { VitalStepAtom } from "@/jotai/vital/vital.jotai";
 import { api } from "@/service/api.service";
 import { configApi, resolveResponse } from "@/service/config.service";
 import Button from "@/ui/Button";
@@ -14,15 +13,14 @@ import { VitalMental } from "../vital-mental/VitalMental";
 import { VitalNutricao } from "../vital-nutricao/VitalNutricao";
 import { VitalSono } from "../vital-sono/VitalSono";
 import { CheckInManhaAnimation, CheckInNoiteAnimation } from "@/components/animations/Animations";
+import { steps } from "framer-motion";
+import Link from "next/link";
 
 export const CheckIn = () => {
     const [_, setLoading]       = useAtom(loadingAtom);
-    const [___, setIsCheckIn]   = useAtom(VitalCheckInAtom);
-    const [isManualMode]        = useAtom(VitalIsManualModeAtom);
     const [step, setStep]       = useAtom(VitalStepAtom);
     const [permissionStep, setPermissionStep] = useState<number[]>([]);
 
-    // Controle da animação
     const [animacao, setAnimacao] = useState<"manha" | "noite" | null>(null);
 
     const router = useRouter();
@@ -85,6 +83,16 @@ export const CheckIn = () => {
     };
 
     const renderStep = () => {
+        if (permissionStep.length === 0 && watch("id")) {
+            return (
+                <div className="flex flex-col items-center justify-center h-80 gap-4 py-4 text-center">
+                    <div className="text-5xl">☀️</div>
+                    <h2 className="text-brand-500 font-bold text-lg">Check-in da manhã concluído!</h2>
+                    <p className="text-gray-400 text-sm">Seu próximo check-in estará disponível a partir das <span className="font-bold text-brand-500">18h</span>.</p>
+                </div>
+            );
+        }
+
         switch (step) {
             case 1: return <VitalSono register={register} watch={watch} setValue={setValue} className="max-h-[calc(100dvh-21rem)]" />;
             case 2: return <VitalNutricao register={register} watch={watch} setValue={setValue} className="max-h-[calc(100dvh-21rem)]" />;
@@ -139,7 +147,7 @@ export const CheckIn = () => {
             <div className="bg-white p-2 rounded-2xl border border-gray-200 h-[calc(100dvh-13rem)] overflow-y-auto">
                 {renderStep()}
 
-                <div className="flex gap-4 mt-2 px-2">
+                {/* <div className="flex gap-4 mt-2 px-2">
                     {!isFirst && (
                         <Button
                             type="button"
@@ -168,7 +176,33 @@ export const CheckIn = () => {
                             {permissionStep.length > 1 ? "Finalizar" : "Salvar Check-in"}
                         </Button>
                     )}
-                </div>
+                </div> */}
+                {permissionStep.length > 0 && (
+                    <div className="flex gap-4 mt-2 px-2">
+                        {!isFirst && (
+                            <Button type="button" variant="outline-primary" className="flex-1" onClick={() => setStep(step - 1)}>
+                                Voltar
+                            </Button>
+                        )}
+                        {!isLast ? (
+                            <Button type="button" className="flex-1" onClick={() => setStep(step + 1)}>
+                                Próximo
+                            </Button>
+                        ) : (
+                            <Button type="button" className="flex-1" onClick={() => save({ ...getValues() })}>
+                                {permissionStep.length > 1 ? "Finalizar" : "Salvar Check-in"}
+                            </Button>
+                        )}
+                    </div>
+                )}
+
+                {permissionStep.length == 0 && (
+                    <Link href="/home/">
+                        <Button type="button" variant="primary" className="w-full">
+                            Voltar
+                        </Button>
+                    </Link>
+                )}
             </div>
         </>
     );

@@ -1,79 +1,12 @@
-// import { LuBrain } from "react-icons/lu"
-
-// export const VitalMental = ({ watch, setValue }: any) => {
-
-//     return (
-//         <div className="animate-in slide-in-from-right">
-//             <div className="flex items-center gap-3 text-lg font-bold mb-4 dark:text-white">
-//                 <div className="bg-gray-500 p-2 rounded-lg">
-//                     <LuBrain />
-//                 </div>
-//                 <h2 className="">Mental</h2>
-//             </div>
-            
-//             <div className="mb-4">
-//                 <label className="block text-sm text-white mb-2">Humor</label>
-//                 <div className="flex justify-between gap-2">
-//                 {["pessimo", "ruim", "neutro", "bom", "excelente"].map((mood) => (
-//                     <button
-//                     key={mood} type="button"
-//                     onClick={() => setValue("mood", mood)}
-//                     className={`flex-1 p-2 rounded-2xl text-2xl border transition-all ${watch("mood") === mood ? 'bg-blue-600 border-blue-600' : 'dark:bg-slate-800'}`}>
-//                     {mood === "pessimo" ? "😫" : mood === "ruim" ? "😕" : mood === "neutro" ? "😐" : mood === "bom" ? "🙂" : "🤩"}
-//                     </button>
-//                 ))}
-//                 </div>
-//             </div>
-
-//             <div className="mb-4">
-//                 <label className="block text-sm text-white mb-2">Nivel de estresse</label>
-//                 <div className="grid grid-cols-5 gap-2">
-//                 {[1, 2, 3, 4, 5].map((h) => (
-//                     <div key={h}>
-//                         <button
-//                         key={h} type="button"
-//                         onClick={() => setValue("stress", h)}
-//                         className={`py-1 px-0 w-15 rounded-xl border transition-all ${watch("stress") === h ? 'bg-blue-600 text-white' : 'dark:bg-slate-800 dark:text-white'}`}
-//                         >
-//                         {h}
-//                         </button>
-//                         {
-//                             h == 1 &&
-//                             <span className="text-[11px] text-gray-500">tranquilo</span>
-//                         }
-//                         {
-//                             h == 5 &&
-//                             <span className="text-[11px] text-gray-500">Muito estre.</span>
-//                         }
-//                     </div>
-//                 ))}
-//                 </div>
-//             </div>  
-
-//             <div className="mb-4">
-//                 <label className="block text-sm text-white mb-2">Praticou descompressão?</label>
-//                 <div className="grid grid-cols-6 gap-2">
-//                 {['Sim', 'Não'].map((h) => (
-//                     <button
-//                     key={h} type="button"
-//                     onClick={() => setValue("decompression", h)}
-//                     className={`py-1 px-0 w-10 rounded-xl border transition-all ${watch("decompression") === h ? 'bg-blue-600 text-white' : 'dark:bg-slate-800 dark:text-white'}`}
-//                     >
-//                     {h}
-//                     </button>
-//                 ))}
-//                 </div>
-//                 <span className="text-[11px] text-gray-500">Meditação, exercício, hobby</span>
-//             </div> 
-//         </div>
-//     )
-// }
-
+// VitalMental.tsx
 import { LuBrain } from "react-icons/lu";
+import { useState, useEffect } from "react";
+
+const shuffle = (arr: any[]) => [...arr].sort(() => Math.random() - 0.5);
 
 export const VitalMental = ({ watch, setValue, className = "max-h-[calc(100dvh-26.2rem)]" }: any) => {
-    // Lista de perguntas baseada na planilha DASS-9
-    const questions = [
+
+    const allQuestions = [
         { id: "dass1", label: "1. Senti que não tinha perspectiva de nada.", cat: "Depressão" },
         { id: "dass2", label: "2. Senti que não conseguia sentir nada positivo.", cat: "Depressão" },
         { id: "dass3", label: "3. Senti que não tinha valor como pessoa.", cat: "Depressão" },
@@ -92,13 +25,19 @@ export const VitalMental = ({ watch, setValue, className = "max-h-[calc(100dvh-2
         { value: 3, label: "Sempre", desc: "Quase sempre" },
     ];
 
+    const [questions, setQuestions] = useState<any[]>([]);
+
+    useEffect(() => {
+        setQuestions(shuffle(allQuestions));
+    }, []);
+
     return (
         <div className="animate-in slide-in-from-right">
             <div className="flex items-center gap-3 text-lg font-bold mb-2 text-brand-500">
                 <div className="bg-brand-500 text-white p-2 rounded-lg">
                     <LuBrain />
                 </div>
-                <h2 className="">Saúde Mental (DASS-9)</h2>
+                <h2 className="">Saúde Mental</h2>
             </div>
 
             <p className="text-[12px] mb-3 text-center rounded-lg border bg-red-100 border-red-500 text-red-500 font-bold py-2">
