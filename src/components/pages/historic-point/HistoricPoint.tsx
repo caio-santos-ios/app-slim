@@ -33,7 +33,7 @@ export default function HistoricPoint() {
 
             const list: any[] = [];
             result.map((x: any) => {
-                console.log(x.chekinIGS)
+                
                 if(x.chekinIGS) {
                     list.push({
                         date: maskDate(x.createdAt),
@@ -110,9 +110,9 @@ export default function HistoricPoint() {
                                         <p className={`text-brand-500 text-sm font-medium`}>{cardItem.date}</p>
                                     </div>
                                     <div className="col-span-12 text-end">
-                                        <div className="flex gap-2 justify-between">
+                                        <div className={`flex gap-2 ${cardItem.extrasPoint == 0 ? 'justify-end':'justify-between'}`}>
                                             {
-                                                cardItem.extrasPoint == 0 &&
+                                                cardItem.extrasPoint > 0 &&
                                                 <div className="flex items-center gap-2 text-brand-2-500">
                                                     <IoIosWarning />
                                                     <span className="text-xs font-semibold">Bônus por sequência 🔥 +1</span>
