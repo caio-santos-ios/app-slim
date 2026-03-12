@@ -13,6 +13,7 @@ import { FaLightbulb, FaMoon, FaRegMoon } from "react-icons/fa";
 import { CgEditBlackPoint } from "react-icons/cg";
 import { CheckInManhaAnimation, CheckInNoiteAnimation, LevelUpAnimation } from "@/components/animations/Animations";
 import { IoIosWarning } from "react-icons/io";
+import Button from "@/ui/Button";
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 
@@ -449,7 +450,6 @@ export default function Ranking() {
         <div className={`${montserrat.className} mb-4`}>
             <div className={`${montserrat.className} bg-white rounded-2xl border border-gray-100 mb-4 overflow-hidden`}
                 style={{ boxShadow: "0 2px 12px rgba(26,58,92,0.08)" }}>
-
                 <div
                     className="flex items-center justify-between px-4 py-3"
                     style={{ background: "linear-gradient(135deg,#1a3a5c,#122942)" }}>
@@ -459,11 +459,6 @@ export default function Ranking() {
                     </div>
 
                     <div className="flex gap-4">
-                        <Link href="/home/historic-points">
-                            <div className="flex items-center gap-1 text-[11px] font-bold text-brand-2-300 bg-brand-2-300/10 border border-brand-2-300/30 px-2.5 py-1 rounded-lg">
-                                Hitórico de Pontos
-                            </div>
-                        </Link>
                         <Link href="/home">
                             <div className="flex items-center gap-1 text-[11px] font-bold text-brand-2-300 bg-brand-2-300/10 border border-brand-2-300/30 px-2.5 py-1 rounded-lg">
                                 Voltar
@@ -486,10 +481,15 @@ export default function Ranking() {
                     </div>
                 )}
             </div>
-            
+            <Link href="/home/historic-points">
+                <Button type="button" variant="secondary" className="w-full">
+                    Hitórico de Pontos
+                </Button>
+            </Link>
+
             {myEntry && (
                 <div
-                    className="mb-4 rounded-2xl p-4 flex items-center gap-3"
+                    className="mb-4 mt-4 rounded-2xl p-4 flex items-center gap-3"
                     style={{
                         background: "linear-gradient(135deg,#1a3a5c,#339966)",
                         boxShadow: "0 4px 20px rgba(26,58,92,0.25)",
