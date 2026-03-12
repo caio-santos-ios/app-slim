@@ -695,3 +695,242 @@ export function CheckInNoiteAnimation({ onDone }: CheckInProps) {
     </div>
   );
 }
+
+// ─────────────────────────────────────────────────────────────────────────────
+// 4. CHECK-IN COMPLETO — céu crepuscular (sol + lua + estrelas) + 3 ícones
+// ─────────────────────────────────────────────────────────────────────────────
+export function CheckInCompletoAnimation({ onDone }: CheckInProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [phase, setPhase]   = useState<"rise"|"glow"|"done">("rise");
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d")!;
+    canvas.width  = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+    const W = canvas.width, H = canvas.height;
+
+    let frame = 0;
+    let raf: number;
+
+    // Estrelas
+    type Star = { x: number; y: number; r: number; alpha: number; pulse: number };
+    const stars: Star[] = Array.from({ length: 120 }, () => ({
+      x: rand(0, W), y: rand(0, H * 0.7),
+      r: rand(0.5, 2), alpha: rand(0.3, 1), pulse: rand(0, Math.PI * 2),
+    }));
+
+    // Partículas tricolores (referência aos 3 check-ins)
+    type Particle = { x: number; y: number; vx: number; vy: number; r: number; color: string; alpha: number };
+    const particles: Particle[] = Array.from({ length: 80 }, () => {
+      const colors = ["#ffe066", "#66ccff", "#66cc99"];
+      const angle  = rand(0, Math.PI * 2);
+      const speed  = rand(1, 5);
+      return {
+        x: W / 2, y: H * 0.38,
+        vx: Math.cos(angle) * speed,
+        vy: Math.sin(angle) * speed - rand(1, 3),
+        r: rand(2, 6),
+        color: colors[Math.floor(rand(0, 3))],
+        alpha: 1,
+      };
+    });
+
+    // Névoa
+    type Mist = { x: number; y: number; r: number; alpha: number; vx: number };
+    const mist: Mist[] = Array.from({ length: 6 }, () => ({
+      x: rand(0, W), y: rand(H * 0.65, H),
+      r: rand(80, 130), alpha: rand(0.03, 0.07), vx: rand(-0.2, 0.2),
+    }));
+
+    function tick() {
+      ctx.clearRect(0, 0, W, H);
+      frame++;
+
+      const progress = Math.min(frame / 120, 1);
+
+      // Céu crepuscular — meio-termo entre dia e noite
+      const sky = ctx.createLinearGradient(0, 0, 0, H);
+      sky.addColorStop(0,   "#0a0f2e");
+      sky.addColorStop(0.35, "#1a1060");
+      sky.addColorStop(0.6,  "#7c2d6e");
+      sky.addColorStop(0.8,  "#e0601a");
+      sky.addColorStop(1,    "#f5a623");
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, W, H);
+
+      // Estrelas (somem conforme progride — crepúsculo)
+      stars.forEach(s => {
+        s.pulse += 0.025;
+        const fade = Math.max(0, 1 - progress * 1.2);
+        const a = s.alpha * (0.6 + 0.4 * Math.sin(s.pulse)) * fade;
+        if (a <= 0) return;
+        ctx.save();
+        ctx.globalAlpha = a;
+        ctx.fillStyle   = "#ffffff";
+        ctx.shadowColor = "#aaddff";
+        ctx.shadowBlur  = 3;
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      });
+
+      // Sol (lado direito, saindo)
+      const sunX = W * 0.72;
+      const sunY = H * 0.38 - progress * 20;
+      const gSun = ctx.createRadialGradient(sunX, sunY, 0, sunX, sunY, 90);
+      gSun.addColorStop(0,   "#ffffff");
+      gSun.addColorStop(0.2, "#ffe066");
+      gSun.addColorStop(0.6, "#ff9c33");
+      gSun.addColorStop(1,   "rgba(255,100,50,0)");
+      ctx.save();
+      ctx.globalAlpha = 0.85;
+      ctx.fillStyle   = gSun;
+      ctx.beginPath();
+      ctx.arc(sunX, sunY, 90, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      // Lua (lado esquerdo, subindo)
+      const moonX = W * 0.28;
+      const moonY = H * 0.42 - progress * 30;
+      ctx.save();
+      ctx.globalAlpha = Math.min(progress * 1.8, 1);
+      ctx.shadowColor = "#aaccff";
+      ctx.shadowBlur  = 25;
+      ctx.fillStyle   = "#e8f0ff";
+      ctx.beginPath();
+      ctx.arc(moonX, moonY, 36, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalCompositeOperation = "destination-out";
+      ctx.beginPath();
+      ctx.arc(moonX + 18, moonY - 6, 30, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+
+      // Reflexo horizontal (linha do horizonte)
+      const horizon = ctx.createLinearGradient(0, H * 0.72, 0, H * 0.78);
+      horizon.addColorStop(0, "rgba(255,180,80,0.25)");
+      horizon.addColorStop(1, "rgba(255,180,80,0)");
+      ctx.fillStyle = horizon;
+      ctx.fillRect(0, H * 0.72, W, H * 0.06);
+
+      // Partículas tricolores
+      particles.forEach(p => {
+        p.x    += p.vx;
+        p.y    += p.vy;
+        p.vy   += 0.12;
+        p.vx   *= 0.98;
+        p.alpha -= 0.012;
+        if (p.alpha <= 0) return;
+        ctx.save();
+        ctx.globalAlpha = p.alpha * Math.min(progress * 3, 1);
+        ctx.fillStyle   = p.color;
+        ctx.shadowColor = p.color;
+        ctx.shadowBlur  = 6;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      });
+
+      // Névoa
+      mist.forEach(m => {
+        m.x += m.vx;
+        if (m.x > W + m.r) m.x = -m.r;
+        if (m.x < -m.r)    m.x = W + m.r;
+        ctx.save();
+        const mg = ctx.createRadialGradient(m.x, m.y, 0, m.x, m.y, m.r);
+        mg.addColorStop(0, `rgba(200,120,80,${m.alpha * progress})`);
+        mg.addColorStop(1, "rgba(0,0,0,0)");
+        ctx.fillStyle = mg;
+        ctx.beginPath();
+        ctx.arc(m.x, m.y, m.r, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.restore();
+      });
+
+      // Silhueta montanhas
+      ctx.save();
+      ctx.fillStyle = "#05091a";
+      ctx.beginPath();
+      ctx.moveTo(0, H);
+      ctx.lineTo(0, H * 0.76);
+      ctx.quadraticCurveTo(W * 0.15, H * 0.58, W * 0.3, H * 0.7);
+      ctx.quadraticCurveTo(W * 0.45, H * 0.52, W * 0.6, H * 0.68);
+      ctx.quadraticCurveTo(W * 0.75, H * 0.6, W, H * 0.72);
+      ctx.lineTo(W, H);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+
+      if (frame < 160) {
+        raf = requestAnimationFrame(tick);
+      } else {
+        setPhase("glow");
+        setTimeout(() => { setPhase("done"); setTimeout(() => { setVisible(false); onDone?.(); }, 600); }, 2500);
+      }
+    }
+
+    raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  if (!visible) return null;
+
+  return (
+    <div style={{
+      position: "fixed", inset: 0, zIndex: 9999,
+      display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+      fontFamily: "'Georgia', serif",
+    }}>
+      <canvas ref={canvasRef} style={{ position: "absolute", inset: 0, width: "100%", height: "100%" }} />
+      <div style={{ position: "relative", zIndex: 2, textAlign: "center" }}>
+
+        {/* 3 ícones representando sono, nutrição e mental */}
+        <div style={{
+          display: "flex", gap: 20, justifyContent: "center", marginBottom: 16,
+          opacity: phase === "glow" ? 1 : 0,
+          transform: phase === "glow" ? "translateY(0)" : "translateY(16px)",
+          transition: "all 0.6s 0.1s",
+        }}>
+          {["🌙", "🥗", "🧠"].map((icon, i) => (
+            <div key={i} style={{
+              fontSize: 40,
+              filter: "drop-shadow(0 0 12px rgba(255,200,100,0.9))",
+              animation: `floatIcon${i} ${3 + i * 0.4}s ease-in-out infinite`,
+              animationDelay: `${i * 0.3}s`,
+            }}>{icon}</div>
+          ))}
+        </div>
+
+        <h2 style={{
+          fontSize: 28, fontWeight: 900, color: "#fff7e6",
+          textShadow: "0 2px 20px rgba(255,150,50,0.9)",
+          opacity: phase === "glow" ? 1 : 0,
+          transform: phase === "glow" ? "translateY(0)" : "translateY(20px)",
+          transition: "all 0.6s 0.3s",
+          margin: "0 0 8px",
+        }}>
+          Check-in completo! 🌅
+        </h2>
+        <p style={{
+          fontSize: 15, color: "rgba(255,240,200,0.85)",
+          opacity: phase === "glow" ? 1 : 0,
+          transition: "opacity 0.6s 0.6s",
+        }}>
+          Sono, nutrição e saúde mental registrados.
+        </p>
+      </div>
+
+      <style>{`
+        @keyframes floatIcon0 { 0%,100%{transform:translateY(0) rotate(-5deg)} 50%{transform:translateY(-10px) rotate(5deg)} }
+        @keyframes floatIcon1 { 0%,100%{transform:translateY(0) rotate(3deg)}  50%{transform:translateY(-14px) rotate(-3deg)} }
+        @keyframes floatIcon2 { 0%,100%{transform:translateY(0) rotate(-3deg)} 50%{transform:translateY(-8px) rotate(6deg)} }
+      `}</style>
+    </div>
+  );
+}

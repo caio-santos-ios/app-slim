@@ -12,7 +12,7 @@ import { useForm } from "react-hook-form";
 import { VitalMental } from "../vital-mental/VitalMental";
 import { VitalNutricao } from "../vital-nutricao/VitalNutricao";
 import { VitalSono } from "../vital-sono/VitalSono";
-import { CheckInManhaAnimation, CheckInNoiteAnimation } from "@/components/animations/Animations";
+import { CheckInCompletoAnimation, CheckInManhaAnimation, CheckInNoiteAnimation } from "@/components/animations/Animations";
 import { steps } from "framer-motion";
 import Link from "next/link";
 
@@ -21,7 +21,7 @@ export const CheckIn = () => {
     const [step, setStep]       = useAtom(VitalStepAtom);
     const [permissionStep, setPermissionStep] = useState<number[]>([]);
 
-    const [animacao, setAnimacao] = useState<"manha" | "noite" | null>(null);
+    const [animacao, setAnimacao] = useState<"manha" | "noite" | "completo" | null>(null);
 
     const router = useRouter();
 
@@ -41,10 +41,7 @@ export const CheckIn = () => {
             setLoading(true);
             const hora = new Date().getHours();
 
-            if (!body.id) {
-                await api.post(`/vitals`, { ...body, chekinIGS: true, chekinIGSPoint: 5 }, configApi());
-                setAnimacao("manha");
-            } else if (hora >= 18 && !body.id) {
+            if (!body.id && hora >= 18) {
                 await api.post(`/vitals`, {
                     ...body,
                     chekinIGS: true, chekinIGSPoint: 5,
@@ -52,6 +49,9 @@ export const CheckIn = () => {
                     chekinIES: true, chekinIESPoint: 5,
                 }, configApi());
                 setAnimacao("noite");
+            } else if (!body.id) {
+                await api.post(`/vitals`, { ...body, chekinIGS: true, chekinIGSPoint: 5 }, configApi());
+                setAnimacao("completo");
             } else {
                 await api.put(`/vitals`, {
                     ...body,
@@ -141,8 +141,9 @@ export const CheckIn = () => {
 
     return (
         <>
-            {animacao === "manha" && <CheckInManhaAnimation onDone={handleAnimacaoDone} />}
-            {animacao === "noite" && <CheckInNoiteAnimation onDone={handleAnimacaoDone} />}
+            {animacao === "manha"    && <CheckInManhaAnimation    onDone={handleAnimacaoDone} />}
+            {animacao === "noite"    && <CheckInNoiteAnimation    onDone={handleAnimacaoDone} />}
+            {animacao === "completo" && <CheckInCompletoAnimation onDone={handleAnimacaoDone} />}
 
             <div className="bg-white p-2 rounded-2xl border border-gray-200 h-[calc(100dvh-13rem)] overflow-y-auto">
                 {renderStep()}
