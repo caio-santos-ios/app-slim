@@ -7,7 +7,7 @@ import { VitalCheckInAtom, VitalModalAtom } from "@/jotai/vital/vital.jotai";
 import { configApi, isTokenExpiringSoon, resolveResponse } from "@/service/config.service";
 import { api } from "@/service/api.service";
 import { useEffect, useState } from "react";
-import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell, PieChart, Pie, LabelList, LineChart, Line } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, ResponsiveContainer, Area, CartesianGrid, Tooltip, PieChart, Pie, Cell } from 'recharts';
 import { FiAlertTriangle, FiPhone } from "react-icons/fi";
 import { FaVideo } from "react-icons/fa";
 import { maskDate } from "@/utils/mask.util";
@@ -18,6 +18,10 @@ import Button from "@/ui/Button";
 import Link from "next/link";
 import RankingPreview from "../ranking/RankingPreview";
 import { urlBase64ToUint8Array } from "@/utils/push";
+import { LollipopChart } from "@/components/grafic/LollipopChart";
+import { LineChartCustom } from "@/components/grafic/LineChart";
+import { IpvRing } from "@/components/grafic/IpvRing";
+import { IpvGauge } from "@/components/grafic/IpvGauge";
 
 const chartData = [
     { value: 10 },
@@ -178,17 +182,6 @@ export default function Home() {
                 <div className="max-h-[calc(100dvh-13rem)] overflow-y-auto px-1">
                     <RankingPreview />
 
-                    {/* {!isCheckIn && !nextTelemedicine.date && metric.ies <= 60 && (
-                        <div className="mb-4 w-full p-2 bg-red-50 border border-red-200 rounded-2xl flex flex-col gap-3">
-                            <div className="flex items-center gap-2">
-                                <FiAlertTriangle className="text-red-400" size={20} />
-                                <span className="text-red-400 font-bold text-sm">Precisando de apoio?</span>
-                            </div>
-                            <a href="tel:188" className="w-full py-3 bg-red-600 rounded-2xl flex items-center justify-center gap-3 text-white font-bold">
-                                <FiPhone size={20} /> Ligar 188 - CVV (24h)
-                            </a>
-                        </div>
-                    )} */}
                     {cvv && (
                         <div className="mb-4 w-full p-2 bg-red-50 border border-red-200 rounded-2xl flex flex-col gap-3">
                             <div className="flex items-center gap-2">
@@ -241,6 +234,30 @@ export default function Home() {
                             </button>
                         ))}
                     </div>
+
+                    <div className="bg-white p-6 rounded-2xl border border-gray-200 mb-4">
+                        <IpvGauge ipv={metric.ipv} />
+
+                        <div className="border-t border-gray-100 my-4" />
+
+                        <div className="grid grid-cols-3 gap-3">
+                            {[
+                                { label: 'IGS', value: metric.igs },
+                                { label: 'IGN', value: metric.ign },
+                                { label: 'IES', value: metric.ies },
+                            ].map(({ label, value }) => {
+                                const bg    = value <= 60 ? '#FCEBEB' : value < 85 ? '#FAEEDA' : '#E1F5EE';
+                                const color = value <= 60 ? '#E24B4A' : value < 85 ? '#BA7517' : '#1D9E75';
+                                const sub   = value <= 60 ? '#A32D2D' : value < 85 ? '#854F0B' : '#0F6E56';
+                                return (
+                                    <div key={label} className="flex flex-col items-center py-3 rounded-2xl" style={{ background: bg }}>
+                                        <span className="text-[10px] font-bold tracking-widest mb-1" style={{ color: sub }}>{label}</span>
+                                        <span className="text-xl font-bold" style={{ color }}>{Math.round(value)}</span>
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    </div>
                     
                     {
                         periodo == "Personalizado" &&
@@ -284,7 +301,7 @@ export default function Home() {
                     }
 
                     <div className="bg-white p-6 rounded-2xl border border-gray-200 mb-4">
-                        <div className="flex justify-between items-center mb-6">
+                        <div className="flex justify-between items-center">
                             <h3 className="font-bold text-brand-500">Evolução</h3>
                             <div className="flex gap-2 text-[10px] font-medium text-gray-500">
                                 <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-green-400" /> &gt;85</span>
@@ -292,129 +309,21 @@ export default function Home() {
                                 <span className="flex items-center gap-1"><div className="w-2 h-2 rounded-full bg-red-400" /> &lt;60</span>
                             </div>
                         </div>
-
-                        <div className="h-56 w-full">
-                            <ResponsiveContainer width="100%" height="100%">
-                                <LineChart 
-                                    key={periodo}
-                                    data={metricWeek} 
-                                    margin={{ top: 10, bottom: 10, left: 0, right: 10 }}
-                                >
-                                    <XAxis 
-                                        dataKey="day" 
-                                        axisLine={false} 
-                                        tickLine={false} 
-                                        tick={{ fill: '#94a3b8', fontSize: 10 }}
-                                        interval={periodo === 'Semana' ? 0 : 'preserveStartEnd'}
-                                        tickFormatter={(val) => {
-                                            if (periodo === 'Semana') return val;
-                                            if (periodo === 'Mes') return val.includes('/') ? val.split('/')[0] : val;
-                                            if (periodo === 'Ano') return val.substring(0, 3);
-                                            return val;
-                                        }}
-                                    />
-                                    <YAxis 
-                                        domain={[0, 100]}
-                                        axisLine={false}
-                                        tickLine={false}
-                                        tick={{ fill: '#94a3b8', fontSize: 10 }}
-                                        width={30}
-                                    />
-                                    <Line 
-                                        dataKey="ipv" 
-                                        type="monotone"
-                                        strokeWidth={2}
-                                        dot={(props: any) => {
-                                            const { cx, cy, index } = props;
-                                            const data = metricWeek[index];
-                                            return (
-                                                <circle 
-                                                    key={`dot-${index}`}
-                                                    cx={cx} 
-                                                    cy={cy} 
-                                                    r={periodo === 'Semana' ? 6 : periodo === 'Mes' ? 4 : 3} 
-                                                    fill={GetBarColor(data?.ipv)} 
-                                                    stroke="#1e293b" 
-                                                    strokeWidth={2} 
-                                                />
-                                            );
-                                        }}
-                                        activeDot={{ r: 8 }}
-                                        stroke="#94a3b8"
-                                        label={periodo === 'Semana' ? {
-                                            content: (props: any) => {
-                                                const { x, y, index } = props;
-                                                const data = metricWeek[index!];
-                                                return (
-                                                    <g>
-                                                        <text x={x} y={y - 12} fill="#fff" fontSize="10" fontWeight="bold" textAnchor="middle">{data.ipv.toFixed(0)}%</text>
-                                                    </g>
-                                                );
-                                            }
-                                        } : undefined}
-                                    />
-                                </LineChart>
-                                {/* <BarChart 
-                                    key={periodo} // FORÇA A ATUALIZAÇÃO DO GRÁFICO
-                                    data={metricWeek} 
-                                    margin={{ top: 10, bottom: 10 }}
-                                >
-                                    <XAxis 
-                                        dataKey="day" 
-                                        axisLine={false} 
-                                        tickLine={false} 
-                                        tick={{ fill: '#94a3b8', fontSize: 10 }}
-                                        interval={periodo === 'Semana' ? 0 : 'preserveStartEnd'}
-                                        tickFormatter={(val) => {
-                                            // Lógica de limpeza da label baseada no período
-                                            if (periodo === 'Semana') return val;
-                                            if (periodo === 'Mes') return val.includes('/') ? val.split('/')[0] : val;
-                                            if (periodo === 'Ano') return val.substring(0, 3);
-                                            return val;
-                                        }}
-                                    />
-                                    <YAxis hide domain={[0, 100]} />
-                                    <Bar 
-                                        dataKey="ipv" 
-                                        radius={[10, 10, 10, 10]} 
-                                        barSize={
-                                            periodo === 'Semana' ? 40 : 
-                                            periodo === 'Mes' ? 12 : 
-                                            periodo === 'Ano' ? 8 : 4
-                                        }
-                                    >
-                                        {metricWeek.map((entry, index) => (
-                                            <Cell key={`cell-${index}`} fill={GetBarColor(entry.ipv)} />
-                                        ))}
-
-                                        {periodo === 'Semana' && (
-                                            <LabelList
-                                                dataKey="ipv"
-                                                content={(props: any) => {
-                                                    const { x, y, width, height, index } = props;
-                                                    const data = metricWeek[index!];
-                                                    if (!height || Number(height) < 60) return null;
-                                                    const centerX = Number(x) + Number(width) / 2;
-                                                    const startY = Number(y) + 20;
-                                                    return (
-                                                        <g>
-                                                            <text x={centerX} y={startY} fill="#fff" fontSize="10" fontWeight="bold" textAnchor="middle">{data.ipv.toFixed(0)}%</text>
-                                                            <line x1={Number(x) + 5} y1={startY + 5} x2={Number(x) + Number(width) - 5} y2={startY + 5} stroke="rgba(255,255,255,0.3)" />
-                                                            <text x={centerX} y={startY + 15} fill="#fff" fontSize="8" textAnchor="middle">S:{data.igs.toFixed(0)}</text>
-                                                            <text x={centerX} y={startY + 25} fill="#fff" fontSize="8" textAnchor="middle">N:{data.ign.toFixed(0)}</text>
-                                                            <text x={centerX} y={startY + 35} fill="#fff" fontSize="8" textAnchor="middle">M:{data.ies.toFixed(0)}</text>
-                                                        </g>
-                                                    );
-                                                }}
-                                            />
-                                        )}
-                                    </Bar>
-                                </BarChart> */}
-                            </ResponsiveContainer>
-                        </div>
                     </div>
 
                     <div className="bg-white p-6 rounded-2xl border border-gray-200 mb-4">
+                        <div className="h-56 w-full">
+                            <LollipopChart data={metricWeek} periodo={periodo} />
+                        </div>
+                    </div>
+                    
+                    <div className="bg-white p-6 rounded-2xl border border-gray-200 mb-4">
+                        <div className="h-56 w-full">
+                            <LineChartCustom data={metricWeek} periodo={periodo} />
+                        </div>
+                    </div>
+
+                    <div className="bg-white p-6 rounded-2xl border border-gray-200 mb-4 hidden">
                         <div className="relative h-48 w-48 mx-auto mb-4">
                             <ResponsiveContainer width="100%" height="100%">
                                 <PieChart>
