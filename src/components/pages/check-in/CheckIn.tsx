@@ -48,10 +48,10 @@ export const CheckIn = () => {
                     chekinIGN: true, chekinIGNPoint: 5,
                     chekinIES: true, chekinIESPoint: 5,
                 }, configApi());
-                setAnimacao("noite");
+                setAnimacao("completo");
             } else if (!body.id) {
                 await api.post(`/vitals`, { ...body, chekinIGS: true, chekinIGSPoint: 5 }, configApi());
-                setAnimacao("completo");
+                setAnimacao("manha");
             } else {
                 await api.put(`/vitals`, {
                     ...body,
