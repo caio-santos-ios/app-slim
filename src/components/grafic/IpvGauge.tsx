@@ -1,15 +1,13 @@
 export const IpvGauge = ({ ipv }: { ipv: number }) => {
     const cx = 150, cy = 155, Re = 120, Ri = 88;
     const safe = Math.min(100, Math.max(0, ipv));
-    const needleAngle = (safe / 100) * 180 - 90; // -90° a +90°
+    const needleAngle = (safe / 100) * 180 - 90;
 
-    // Ponto no arco: θ em graus matemáticos (0=direita, anti-horário)
     const pt = (r: number, deg: number) => ({
         x: +(cx + r * Math.cos((deg * Math.PI) / 180)).toFixed(2),
-        y: +(cy - r * Math.sin((deg * Math.PI) / 180)).toFixed(2),
+        y: +(cy - r * Math.sin((deg * Math.PI) / 180)).toFixed(2)
     });
 
-    // Zonas: 0–60% = vermelho (180°→72°), 60–85% = amarelo (72°→27°), 85–100% = verde (27°→0°)
     const zones = [
         { from: 180, to: 72,  fill: '#E24B4A', label: 'Baixo', lx: 78,  ly: 128 },
         { from: 72,  to: 27,  fill: '#EF9F27', label: 'Médio', lx: 155, ly: 72  },
@@ -28,6 +26,13 @@ export const IpvGauge = ({ ipv }: { ipv: number }) => {
         : safe < 85
         ? { bg: '#FAEEDA', text: '#BA7517', sub: '#854F0B' }
         : { bg: '#E1F5EE', text: '#1D9E75', sub: '#0F6E56' };
+
+    // Labels posicionados fora do arco nos divisores
+    const labelOffset = Re + 16;
+    const l0   = { x: 18,                         y: 158 };
+    const l60  = pt(labelOffset, 72);
+    const l85  = pt(labelOffset, 27);
+    const l100 = { x: 282,                        y: 158 };
 
     return (
         <svg viewBox="0 0 300 175" style={{ width: '100%', maxWidth: 320, height: 200 }}>
@@ -56,14 +61,8 @@ export const IpvGauge = ({ ipv }: { ipv: number }) => {
             })}
 
             {/* Ticks */}
-            {/* {Array.from({ length: 11 }, (_, i) => i * 18).map(r => (
-                <line key={r} x1={cx} y1={cy - Re + 8} x2={cx} y2={cy - Re}
-                    stroke="white" strokeWidth="1.5" opacity="0.8"
-                    transform={`rotate(${r} ${cx} ${cy})`}/>
-            ))} */}
-
             {Array.from({ length: 11 }, (_, i) => {
-                const deg = 180 - i * 18; // 180° a 0° (esquerda pra direita)
+                const deg = 180 - i * 18;
                 const outer = pt(Re, deg);
                 const inner = pt(Re - 10, deg);
                 return (
@@ -75,10 +74,11 @@ export const IpvGauge = ({ ipv }: { ipv: number }) => {
                 );
             })}
 
-            {/* Labels */}
-            <text x="18"  y="158" fontSize="9" fill="#94a3b8" textAnchor="middle" fontFamily="system-ui,sans-serif">0</text>
-            <text x="150" y="24"  fontSize="9" fill="#94a3b8" textAnchor="middle" fontFamily="system-ui,sans-serif">50</text>
-            <text x="282" y="158" fontSize="9" fill="#94a3b8" textAnchor="middle" fontFamily="system-ui,sans-serif">100</text>
+            {/* Labels: 0, 60, 85, 100 */}
+            <text x={l0.x}   y={l0.y}   fontSize="9" fill="#94a3b8" textAnchor="middle" fontFamily="system-ui,sans-serif">0</text>
+            <text x={l60.x}  y={l60.y}  fontSize="9" fill="#94a3b8" textAnchor="middle" fontFamily="system-ui,sans-serif">60</text>
+            <text x={l85.x}  y={l85.y}  fontSize="9" fill="#94a3b8" textAnchor="middle" fontFamily="system-ui,sans-serif">85</text>
+            <text x={l100.x} y={l100.y} fontSize="9" fill="#94a3b8" textAnchor="middle" fontFamily="system-ui,sans-serif">100</text>
 
             {/* Fundo interno */}
             <circle cx={cx} cy={cy} r={Ri - 3} fill="white"/>

@@ -276,29 +276,67 @@ export default function Home() {
                         </div>
                     }
 
-                    {
-                        metric.ipv > 0 &&
-                        <ul  className={`bg-white p-6 rounded-2xl border border-gray-200 mb-4 grid grid-cols-1 gap-4`}>
-                            <li className={`${getColorDass9(dass9.depression)} rounded-2xl p-4 flex justify-between`}>
-                                <span className="text-md font-semibold">Depressão</span>
-                                <div className="flex items-center gap-2">
-                                    <span className="text-sm font-medium">{dass9.depression}</span>
-                                </div>
-                            </li>
-                            <li className={`${getColorDass9(dass9.stress)} rounded-2xl p-4 flex justify-between`}>
-                                <span className="text-md font-semibold">Ansiedade</span>
-                                <div className="flex items-center gap-2">
-                                    <span className="text-sm font-medium">{dass9.stress}</span>
-                                </div>
-                            </li>
-                            <li className={`${getColorDass9(dass9.anxiety)} rounded-2xl p-4 flex justify-between`}>
-                                <span className="text-md font-semibold">Estresse</span>
-                                <div className="flex items-center gap-2">
-                                    <span className="text-sm font-medium">{dass9.anxiety}</span>
-                                </div>
-                            </li>                    
-                        </ul>
-                    }
+                    {metric.ipv > 0 && (
+                        <div className="bg-white p-5 rounded-2xl border border-gray-200 mb-4">
+                            <div className="flex items-center gap-2 mb-4">
+                                <div className="w-1 h-5 rounded-full bg-brand-500" />
+                                <span className="text-sm font-bold text-brand-500 tracking-wide">Saúde Mental</span>
+                            </div>
+
+                            <div className="grid grid-cols-1 gap-3">
+                                {[
+                                    { label: 'Depressão', value: dass9.depression, icon: '🧠' },
+                                    { label: 'Ansiedade', value: dass9.anxiety,   icon: '💭' },
+                                    { label: 'Estresse',  value: dass9.stress,    icon: '⚡' },
+                                ].map(({ label, value, icon }) => {
+                                    const isAlert  = value > 5;
+                                    const isMid    = value >= 3 && value <= 5;
+                                    const isOk     = value < 3;
+
+                                    const bg      = isAlert ? '#FCEBEB' : isMid ? '#FAEEDA' : '#E1F5EE';
+                                    const border  = isAlert ? '#F09595' : isMid ? '#FAC775' : '#9FE1CB';
+                                    const color   = isAlert ? '#A32D2D' : isMid ? '#854F0B' : '#0F6E56';
+                                    const badge   = isAlert ? '#E24B4A' : isMid ? '#EF9F27' : '#1D9E75';
+                                    const badgeBg = isAlert ? '#FCEBEB' : isMid ? '#FAEEDA' : '#E1F5EE';
+                                    const status  = isAlert ? 'Atenção' : isMid ? 'Moderado' : 'Normal';
+
+                                    const pct = Math.min((value / 9) * 100, 100);
+
+                                    return (
+                                        <div
+                                            key={label}
+                                            className="rounded-2xl p-4 flex flex-col gap-3"
+                                            style={{ background: bg, border: `1px solid ${border}` }}
+                                        >
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-2">
+                                                    <span style={{ fontSize: 16 }}>{icon}</span>
+                                                    <span className="text-sm font-bold" style={{ color }}>{label}</span>
+                                                </div>
+                                                <div className="flex items-center gap-2">
+                                                    <span
+                                                        className="text-[10px] font-bold px-2 py-0.5 rounded-full"
+                                                        style={{ background: badgeBg, color: badge, border: `1px solid ${border}` }}
+                                                    >
+                                                        {status}
+                                                    </span>
+                                                    <span className="text-lg font-bold" style={{ color: badge }}>{value}</span>
+                                                </div>
+                                            </div>
+
+                                            {/* Barra de progresso */}
+                                            <div className="w-full h-1.5 rounded-full" style={{ background: border }}>
+                                                <div
+                                                    className="h-1.5 rounded-full transition-all duration-700"
+                                                    style={{ width: `${pct}%`, background: badge }}
+                                                />
+                                            </div>
+                                        </div>
+                                    );
+                                })}
+                            </div>
+                        </div>
+                    )}
 
                     <div className="bg-white p-6 rounded-2xl border border-gray-200 mb-4">
                         <div className="flex justify-between items-center">
@@ -311,13 +349,13 @@ export default function Home() {
                         </div>
                     </div>
 
-                    <div className="bg-white p-6 rounded-2xl border border-gray-200 mb-4">
+                    <div className="bg-brand-500 p-6 rounded-2xl border border-gray-200 mb-4">
                         <div className="h-56 w-full">
                             <LollipopChart data={metricWeek} periodo={periodo} />
                         </div>
                     </div>
                     
-                    <div className="bg-white p-6 rounded-2xl border border-gray-200 mb-4">
+                    <div className="bg-brand-500 p-6 rounded-2xl border border-gray-200 mb-4">
                         <div className="h-56 w-full">
                             <LineChartCustom data={metricWeek} periodo={periodo} />
                         </div>

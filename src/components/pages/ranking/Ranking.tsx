@@ -582,7 +582,7 @@ export default function Ranking() {
             
             <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-bold text-brand-500">Top Beneficiários</span>
-                <span className="text-xs text-brand-300">{ranking.length} participantes</span>
+                {/* <span className="text-xs text-brand-300">{ranking.length} participantes</span> */}
             </div>
 
             {loading ? (
