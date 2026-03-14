@@ -46,10 +46,8 @@ export const Header = () => {
             const result = data.result.data;
             const list: any[] = [];
             
-            result.map((x: any) => {
+            result.forEach((x: any) => {
                 if(x.origin == "Vital") {
-                    console.log(x.origin)
-                    console.log(`${today[0]}-${today[1]}-${today[2]}` == x.sendDate.split("T")[0])
                     if(`${today[0]}-${today[1]}-${today[2]}` == x.sendDate.split("T")[0]) {
                         list.push(x);
                     }

@@ -81,7 +81,7 @@ export const IpvGauge = ({ ipv }: { ipv: number }) => {
             <text x={l100.x} y={l100.y} fontSize="9" fill="#94a3b8" textAnchor="middle" fontFamily="system-ui,sans-serif">100</text>
 
             {/* Fundo interno */}
-            <circle cx={cx} cy={cy} r={Ri - 3} fill="white"/>
+            <circle cx={cx} cy={cy} r={Ri - 3} fill="#1a3a5c"/>
 
             {/* Agulha */}
             <g className="nd">

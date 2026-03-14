@@ -235,10 +235,10 @@ export default function Home() {
                         ))}
                     </div>
 
-                    <div className="bg-white p-6 rounded-2xl border border-gray-200 mb-4">
+                    <div className="bg-brand-500 p-6 rounded-2xl border border-brand-200 mb-4">
                         <IpvGauge ipv={metric.ipv} />
 
-                        <div className="border-t border-gray-100 my-4" />
+                        <div className="border-t border-brand-100 my-4" />
 
                         <div className="grid grid-cols-3 gap-3">
                             {[
@@ -280,7 +280,7 @@ export default function Home() {
                         <div className="bg-white p-5 rounded-2xl border border-gray-200 mb-4">
                             <div className="flex items-center gap-2 mb-4">
                                 <div className="w-1 h-5 rounded-full bg-brand-500" />
-                                <span className="text-sm font-bold text-brand-500 tracking-wide">Saúde Mental</span>
+                                <span className="text-sm font-bold text-brand-500 tracking-wide">Saúde Mental 🧠</span>
                             </div>
 
                             <div className="grid grid-cols-1 gap-3">
@@ -310,7 +310,7 @@ export default function Home() {
                                         >
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center gap-2">
-                                                    <span style={{ fontSize: 16 }}>{icon}</span>
+                                                    <span style={{ fontSize: 16 }}></span>
                                                     <span className="text-sm font-bold" style={{ color }}>{label}</span>
                                                 </div>
                                                 <div className="flex items-center gap-2">

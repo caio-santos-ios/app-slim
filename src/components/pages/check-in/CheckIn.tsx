@@ -136,7 +136,7 @@ export const CheckIn = () => {
 
     const handleAnimacaoDone = () => {
         setAnimacao(null);
-        router.push("/home");
+        router.push("/home/insights");
     };
 
     return (
