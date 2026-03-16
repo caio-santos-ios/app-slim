@@ -45,7 +45,6 @@ export const Header = () => {
             const { data } = await api.get(`/notifications?lt$sendDate=${today[0]}-${today[1]}-${parseInt(today[2]) + 1}&type=NotificationApp&deleted=false&orderBy=sendDate&sort=desc`, configApi());
             const result = data.result.data;
             const list: any[] = [];
-            
             result.forEach((x: any) => {
                 if(x.origin == "Vital") {
                     if(`${today[0]}-${today[1]}-${today[2]}` == x.sendDate.split("T")[0]) {
