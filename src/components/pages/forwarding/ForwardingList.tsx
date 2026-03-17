@@ -70,7 +70,9 @@ export const ForwardingList = () => {
     const saveAppointment: SubmitHandler<TAppointment> = async (body: TAppointment) => {
         try {
             setIsLoading(true);
-            await api.post(`/appointments`, body, configApi());
+            const data: any = {...body, specialtyName: body.specialistName, origin: "app", module: "Bem + Cuidado"}
+
+            await api.post(`/appointments`, data, configApi());
             resolveResponse({status: 200, message: 'Agendado com sucesso!'});
 
             const rapidocId = localStorage.getItem("rapidocId");

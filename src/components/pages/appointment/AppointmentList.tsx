@@ -41,9 +41,10 @@ export const AppointmentList = () => {
     const { reset: resetCancel, register: registerCancel, watch: watchCancel, handleSubmit: handleSubmitCancel } = useForm<TAppointment>();
 
     const save: SubmitHandler<TAppointment> = async (body: TAppointment) => {
+        const data: any = {...body, specialtyName: body.specialistName, origin: "app", module: "Bem + Papo"}
         try {
             setIsLoading(true);
-            await api.post(`/appointments`, {...body, origin: "app"}, configApi());
+            await api.post(`/appointments`, data, configApi());
             resolveResponse({status: 200, message: 'Agendado com sucesso!'});
             const rapidocId = localStorage.getItem("appRapidocId");
             setModalCreate(false);
@@ -92,7 +93,7 @@ export const AppointmentList = () => {
             const {data} = await api.get(`/appointments/specialties`, configApi());
             const result = data.result;
             
-            const psicologia = result?.data.find((x: any) => x.name == "Psicologia")
+            const psicologia = result?.data.find((x: any) => x.name == "Psicologia");
             
             const name = localStorage.getItem("appName");
             const rapidocId = localStorage.getItem("appRapidocId");
