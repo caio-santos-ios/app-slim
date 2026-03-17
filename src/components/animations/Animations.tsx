@@ -244,7 +244,7 @@ export function CheckInManhaAnimation({ onDone }: CheckInProps) {
     const W = canvas.width, H = canvas.height;
 
     let sunY = H + 60;
-    let frame = 0;
+    let frame = 0;1
     let raf: number;
 
     // Pássaros

@@ -19,10 +19,10 @@ export const VitalMental = ({ watch, setValue, className = "max-h-[calc(100dvh-2
     ];
 
     const options = [
-        { value: 0, label: "Não", desc: "Não se aplicou" },
-        { value: 1, label: "Pouco", desc: "Algum grau" },
-        { value: 2, label: "Bastante", desc: "Grau considerável" },
-        { value: 3, label: "Sempre", desc: "Quase sempre" },
+        { value: 1, label: "Não", desc: "Não se aplicou" },
+        { value: 2, label: "Pouco", desc: "Algum grau" },
+        { value: 3, label: "Bastante", desc: "Grau considerável" },
+        { value: 4, label: "Sempre", desc: "Quase sempre" },
     ];
 
     const [questions, setQuestions] = useState<any[]>([]);

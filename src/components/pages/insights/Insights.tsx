@@ -126,7 +126,7 @@ const CardInsightsSono = ({ data }: { data: any }) => {
         <div className="flex flex-col gap-4 mb-2">
             {/* Header */}
             <div className="flex items-center gap-3 p-4 rounded-2xl bg-brand-500">
-                <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-2xl">🌙</div>
+                <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-3xl">🌙</div>
                 <div>
                     <p className="text-white font-bold text-base">Sono de hoje</p>
                     <p className="text-white/70 text-xs">Análise do seu descanso noturno</p>
@@ -144,14 +144,14 @@ const CardInsightsSono = ({ data }: { data: any }) => {
 
             {/* Insight principal */}
             <div className="rounded-2xl p-4 flex flex-col gap-2 bg-brand-50 border border-brand-100">
-                <span className="text-xs font-bold text-brand-500">💡 Insight</span>
-                <p className="text-sm text-brand-500 leading-relaxed font-medium">{insight}</p>
+                <span className="text-xs font-bold text-brand-500 text-center">💡 Insight</span>
+                <p className="text-sm text-brand-500 leading-relaxed font-medium text-center">{insight}</p>
             </div>
 
             {/* Dose de saúde */}
             <div className="rounded-2xl p-4 flex flex-col gap-2" style={{ background: bg, border: `1px solid ${border}` }}>
-                <span className="text-xs font-bold" style={{ color: headerColor }}>💊 Dose de Saúde</span>
-                <p className="text-sm leading-relaxed font-medium" style={{ color: headerColor }}>{dose}</p>
+                <span className="text-xs font-bold text-center" style={{ color: headerColor }}>💊 Dose de Saúde</span>
+                <p className="text-sm leading-relaxed font-medium text-center" style={{ color: headerColor }}>{dose}</p>
             </div>
         </div>
     );
@@ -187,7 +187,7 @@ const CardInsightsNutricao = ({ data }: { data: any }) => {
         <div className="flex flex-col gap-4 mb-2">
             {/* Header */}
             <div className="flex items-center gap-3 p-4 rounded-2xl bg-brand-500">
-                <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-2xl">🥗</div>
+                <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-3xl">🥗</div>
                 <div>
                     <p className="text-white font-bold text-base">Nutrição de hoje</p>
                     <p className="text-white/70 text-xs">Análise dos seus hábitos alimentares</p>
@@ -205,14 +205,14 @@ const CardInsightsNutricao = ({ data }: { data: any }) => {
 
             {/* Insight principal */}
             <div className="rounded-2xl p-4 flex flex-col gap-2 bg-brand-50 border border-brand-100">
-                <span className="text-xs font-bold text-brand-500">💡 Insight</span>
-                <p className="text-sm text-brand-500 leading-relaxed font-medium">{insight}</p>
+                <span className="text-xs font-bold text-brand-500 text-center">💡 Insight</span>
+                <p className="text-sm text-brand-500 leading-relaxed font-medium text-center">{insight}</p>
             </div>
 
             {/* Dose de saúde */}
             <div className="rounded-2xl p-4 flex flex-col gap-2" style={{ background: bg, border: `1px solid ${border}` }}>
-                <span className="text-xs font-bold" style={{ color: headerColor }}>💊 Dose de Saúde</span>
-                <p className="text-sm leading-relaxed font-medium" style={{ color: headerColor }}>{dose}</p>
+                <span className="text-xs font-bold text-center" style={{ color: headerColor }}>💊 Dose de Saúde</span>
+                <p className="text-sm leading-relaxed font-medium text-center" style={{ color: headerColor }}>{dose}</p>
             </div>
         </div>
     );
@@ -261,7 +261,7 @@ const CardInsightsMental = ({ data }: { data: any }) => {
     return (
         <div className="flex flex-col gap-4 mb-2">
             <div className="flex items-center gap-3 p-4 rounded-2xl bg-brand-500">
-                <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-2xl">🧘</div>
+                <div className="w-12 h-12 rounded-xl bg-white/10 flex items-center justify-center text-3xl">🧘</div>
                 <div>
                     <p className="text-white font-bold text-base">Saúde mental de hoje</p>
                     <p className="text-white/70 text-xs">Análise do seu estado emocional</p>
@@ -295,13 +295,13 @@ const CardInsightsMental = ({ data }: { data: any }) => {
             </div>
 
             <div className="rounded-2xl p-4 flex flex-col gap-2 bg-brand-50 border border-brand-100">
-                <span className="text-xs font-bold text-brand-500">💡 Insight</span>
-                <p className="text-sm text-brand-500 leading-relaxed font-medium">{insight}</p>
+                <span className="text-xs font-bold text-brand-500 text-center">💡 Insight</span>
+                <p className="text-sm text-brand-500 leading-relaxed font-medium text-center">{insight}</p>
             </div>
 
             <div className="rounded-2xl p-4 flex flex-col gap-2" style={{ background: classification.bg, border: `1px solid ${classification.border}` }}>
-                <span className="text-xs font-bold" style={{ color: classification.color }}>💊 Dose de Saúde</span>
-                <p className="text-sm leading-relaxed font-medium" style={{ color: classification.color }}>{dose}</p>
+                <span className="text-xs font-bold text-center" style={{ color: classification.color }}>💊 Dose de Saúde</span>
+                <p className="text-sm leading-relaxed font-medium text-center" style={{ color: classification.color }}>{dose}</p>
             </div>
         </div>
     );

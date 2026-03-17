@@ -14,6 +14,7 @@ import { CgEditBlackPoint } from "react-icons/cg";
 import { CheckInManhaAnimation, CheckInNoiteAnimation, LevelUpAnimation } from "@/components/animations/Animations";
 import { IoIosWarning } from "react-icons/io";
 import Button from "@/ui/Button";
+import { SiLevelsdotfyi } from "react-icons/si";
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 
@@ -326,9 +327,9 @@ export default function Ranking() {
                 { data: vitalsData },
                 { data: loggedData },
             ] = await Promise.all([
-                api.get("/customer-recipients?deleted=false", configApi()),
-                api.get("/vitals?deleted=false",                configApi()),
-                api.get("/customer-recipients/logged", configApi()),
+                api.get("/customer-recipients/ranking?deleted=false", configApi()),
+                api.get("/vitals?deleted=false",                      configApi()),
+                api.get("/customer-recipients/logged",                configApi()),
             ]);
 
             const recipients: any[] = recipientsData?.result?.data ?? [];
@@ -400,7 +401,6 @@ export default function Ranking() {
     const calculateStreak = (records: any[]): number => {
         if (!records || records.length === 0) return 0;
 
-        // 1. Extrair datas únicas (YYYY-MM-DD) e ordenar da mais recente para a antiga
         const dates = Array.from(
             new Set(
                 records.map(r => new Date(r.createdAt).toISOString().split('T')[0])
@@ -410,19 +410,16 @@ export default function Ranking() {
         const now = new Date();
         const today = now.toISOString().split('T')[0];
         
-        // Calcular ontem
         const yesterdayDate = new Date();
         yesterdayDate.setDate(now.getDate() - 1);
         const yesterday = yesterdayDate.toISOString().split('T')[0];
 
-        // 2. Se a data mais recente não for hoje nem ontem, o streak zerou
         if (dates[0] !== today && dates[0] !== yesterday) {
             return 0;
         }
 
         let streak = 0;
         
-        // 3. Verificar consecutividade
         for (let i = 0; i < dates.length; i++) {
             const current = new Date(dates[i]);
             
@@ -438,7 +435,6 @@ export default function Ranking() {
             if (diffInDays === 1) {
                 streak++;
             } else {
-                // Buraco detectado na sequência
                 break;
             }
         }
@@ -579,10 +575,36 @@ export default function Ranking() {
                     </AccordionContent>
                 </AccordionItem>
             </Accordion>
+
+            <Accordion multiple={false}>
+                <AccordionItem id="ranking" className="mb-2">
+                    <AccordionTrigger icon={<SiLevelsdotfyi />} subtitle="Veja como pode subir de nível">
+                        Como avançar de nível?
+                    </AccordionTrigger>
+                    <AccordionContent>
+                        <ul className="pt-3 flex flex-col gap-3">
+                            <li className="text-xs text-gray-500 flex items-center gap-3">
+                                <span className="text-xl">⭐</span>
+                                <span className="flex-1">Nível <strong>1</strong></span>
+                                <span className="text-brand-2-500 font-bold whitespace-nowrap">1.000 pts</span>
+                            </li>
+                            <li className="text-xs text-gray-500 flex items-center gap-3">
+                                <span className="text-xl">🌟</span>
+                                <span className="flex-1">Nível <strong>2</strong></span>
+                                <span className="text-brand-2-500 font-bold whitespace-nowrap">2.000 pts</span>
+                            </li>
+                            <li className="text-xs text-gray-500 flex items-center gap-3">
+                                <span className="text-xl">🚀</span>
+                                <span className="flex-1">Nível <strong>3</strong></span>
+                                <span className="text-brand-2-500 font-bold whitespace-nowrap">3.000 pts</span>
+                            </li>
+                        </ul>
+                    </AccordionContent>
+                </AccordionItem>
+            </Accordion>
             
             <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-bold text-brand-500">Top Beneficiários</span>
-                {/* <span className="text-xs text-brand-300">{ranking.length} participantes</span> */}
             </div>
 
             {loading ? (

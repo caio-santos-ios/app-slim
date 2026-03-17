@@ -48,16 +48,12 @@ export default function Home() {
         return "oklch(79.2% 0.209 151.711)";
     };
 
-    const getColorMetric = (metric: number) => {
+    const getColorMetric = (metric: number, isCheckIn: boolean) => {
+        // if(!isCheckIn) return 'text-gray-400'; 
+
         if (metric <= 60) return "text-red-400";
         if (metric > 60 && metric < 85) return "text-yellow-400";
         return "text-green-400";
-    };
-
-    const getColorDass9 = (scoore: number) => {
-        if (scoore > 5) return "border bg-red-100 text-red-600 border-red-600";
-        if (scoore >= 3 && scoore < 5) return "border bg-yellow-100 text-yellow-600 border-yellow-600";
-        return "border bg-green-100 text-green-600 border-green-600";
     };
 
     const getAll = async (currentPeriod: string) => {
@@ -114,12 +110,6 @@ export default function Home() {
         } catch (error) {
             resolveResponse(error);
         }
-    };
-
-    const GetBarColor = (metric: number) => {
-        if (metric <= 60) return "#ff6467";
-        if (metric > 60 && metric < 85) return "#fdc700";
-        return "#06df72";
     };
 
     const activeNotification = async () => {
@@ -324,7 +314,6 @@ export default function Home() {
                                                 </div>
                                             </div>
 
-                                            {/* Barra de progresso */}
                                             <div className="w-full h-1.5 rounded-full" style={{ background: border }}>
                                                 <div
                                                     className="h-1.5 rounded-full transition-all duration-700"
@@ -378,16 +367,16 @@ export default function Home() {
                         </div>
                         <div className="flex justify-center gap-8 mb-4">
                             <div className="text-center bg-gray-100 py-2 px-4 rounded-xl">
-                                <p className={`text-[10px] font-bold ${getColorMetric(metric.igs)}`}>IGS</p>
-                                <p className={`text-xl font-bold ${getColorMetric(metric.igs)}`}>{metric.igs}</p>
+                                <p className={`text-[10px] font-bold ${getColorMetric(metric.igs, metric.chekinIGS)}`}>IGS</p>
+                                <p className={`text-xl font-bold ${getColorMetric(metric.igs, metric.chekinIGS)}`}>{metric.igs}</p>
                             </div>
                             <div className="text-center bg-gray-100 py-2 px-4 rounded-xl">
-                                <p className={`text-[10px] font-bold ${getColorMetric(metric.ign)}`}>IGN</p>
-                                <p className={`text-xl font-bold ${getColorMetric(metric.ign)}`}>{metric.ign}</p>
+                                <p className={`text-[10px] font-bold ${getColorMetric(metric.ign, metric.chekinIGN)}`}>IGN</p>
+                                <p className={`text-xl font-bold ${getColorMetric(metric.ign, metric.chekinIGN)}`}>{metric.ign}</p>
                             </div>
                             <div className="text-center bg-gray-100 py-2 px-4 rounded-xl">
-                                <p className={`text-[10px] font-bold ${getColorMetric(metric.ies)}`}>IES</p>
-                                <p className={`text-xl font-bold ${getColorMetric(metric.ies)}`}>{metric.ies}</p>
+                                <p className={`text-[10px] font-bold ${getColorMetric(metric.ies, metric.chekinIES)}`}>IES</p>
+                                <p className={`text-xl font-bold ${getColorMetric(metric.ies, metric.chekinIES)}`}>{metric.ies}</p>
                             </div>
                         </div>
                     </div>

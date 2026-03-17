@@ -28,7 +28,7 @@ export default function ResetPasswordForm() {
 
   const router = useRouter();
 
-  const { register, handleSubmit, formState: { errors }} = useForm<TResetPassword>();
+  const { setValue, register, handleSubmit, formState: { errors }} = useForm<TResetPassword>();
   
   const requestReset: SubmitHandler<TResetPassword> = async (body: TResetPassword) => {
     if(!body.email) return toast.warn('E-mail é obrigatório', {theme: 'colored'});
@@ -36,10 +36,10 @@ export default function ResetPasswordForm() {
       setIsLoading(true);
       const {data} = await api.put(`/auth/request-forgot-password`, {...body, device: "app", type});
       const result = data.result.data;
-      console.log(result)
       setCode(result.codeAccess);
       setId(result.id);
-      toast.success('Foi enviado um código para o seu e-mail', {theme: 'colored'})
+      toast.success('Foi enviado um código para o seu e-mail', {theme: 'colored'});
+      setValue("codeAccess", "");
     } catch (error) {
       resolveResponse(error);
     } finally {

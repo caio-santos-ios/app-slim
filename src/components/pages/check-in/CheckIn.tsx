@@ -148,36 +148,6 @@ export const CheckIn = () => {
             <div className="bg-white p-2 rounded-2xl border border-gray-200 h-[calc(100dvh-13rem)] overflow-y-auto">
                 {renderStep()}
 
-                {/* <div className="flex gap-4 mt-2 px-2">
-                    {!isFirst && (
-                        <Button
-                            type="button"
-                            variant="outline-primary"
-                            className="flex-1"
-                            onClick={() => setStep(step - 1)}
-                        >
-                            Voltar
-                        </Button>
-                    )}
-
-                    {!isLast ? (
-                        <Button
-                            type="button"
-                            className="flex-1"
-                            onClick={() => setStep(step + 1)}
-                        >
-                            Próximo
-                        </Button>
-                    ) : (
-                        <Button
-                            type="button"
-                            className="flex-1"
-                            onClick={() => save({ ...getValues() })}
-                        >
-                            {permissionStep.length > 1 ? "Finalizar" : "Salvar Check-in"}
-                        </Button>
-                    )}
-                </div> */}
                 {permissionStep.length > 0 && (
                     <div className="flex gap-4 mt-2 px-2">
                         {!isFirst && (
