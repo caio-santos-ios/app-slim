@@ -74,8 +74,7 @@ export const VitalSono = ({ register, watch, setValue, className = "max-h-[calc(
                                 setIsManualMode(false);
                                 setValue("sleepFragmentation", val);
                             }
-                        }}
-                    >
+                        }}>
                         {['Não', '1', '2', '3', '4', 'Outras'].map((h) => (
                             <option key={h} value={h}>{h === 'Não' || h === 'Outras' ? h : `${h}x`}</option>
                         ))}
@@ -111,10 +110,11 @@ export const VitalSono = ({ register, watch, setValue, className = "max-h-[calc(
         }
     ];
 
-    const [orderedQuestions, setOrderedQuestions] = useState<any[]>([]);
+    const [orderedIds, setOrderedIds] = useState<string[]>([]);
 
     useEffect(() => {
-        setOrderedQuestions(shuffle(buildQuestions()));
+        const ids = buildQuestions().map((q) => q.id);
+        setOrderedIds(shuffle(ids));
     }, []);
 
     return (
@@ -127,9 +127,10 @@ export const VitalSono = ({ register, watch, setValue, className = "max-h-[calc(
             </div>
 
             <div className={`${className} overflow-y-auto`}>
-                {orderedQuestions.map((q) => (
-                    <div key={q.id}>{q.render()}</div>
-                ))}
+                {orderedIds.map((id) => {
+                    const q = buildQuestions().find((q) => q.id === id);
+                    return q ? <div key={q.id}>{q.render()}</div> : null;
+                })}
             </div>
         </div>
     );
