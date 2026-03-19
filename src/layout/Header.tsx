@@ -42,7 +42,7 @@ export const Header = () => {
     const fetchNotifications = async () => {
         try {
             const today = new Date().toISOString().split('T')[0].split("-");
-            const { data } = await api.get(`/notifications?lt$sendDate=${today[0]}-${today[1]}-${parseInt(today[2]) + 1}&type=NotificationApp&deleted=false&orderBy=sendDate&sort=desc`, configApi());
+            const { data } = await api.get(`/notifications/app?lt$sendDate=${today[0]}-${today[1]}-${parseInt(today[2]) + 1}&type=NotificationApp&deleted=false&orderBy=sendDate&sort=desc`, configApi());
             const result = data.result.data;
             const list: any[] = [];
             result.forEach((x: any) => {
