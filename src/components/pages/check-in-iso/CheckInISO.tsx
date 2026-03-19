@@ -96,13 +96,15 @@ export const CheckInISO = () => {
           id:                   vitalId,
           chekinISO:            true,
           chekinISOPoint:       score,
-          chekinISOQuestion:    question.question
+          chekinISOQuestion:    question.question,
+          chekinISOResponse:    opt.label
         }, configApi());
       } else {
         await api.post(`/vitals/iso`, {
           chekinISO:            true,
           chekinISOPoint:       score,
-          chekinISOQuestion:    question.question
+          chekinISOQuestion:    question.question,
+          chekinISOResponse:    opt.label
         }, configApi());
       }
 
