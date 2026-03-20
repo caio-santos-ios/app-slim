@@ -196,15 +196,15 @@ export const Header = () => {
                     )}
                 </div>
 
-                <div className="h-20 w-20">
-                    {photo && (
-                        <img
-                            className="h-full w-full object-cover rounded-full"
-                            src={`${uriBase}/${photo}`}
-                            alt="foto de perfil"
-                        />
-                    )}
-                </div>
+                {photo && (
+                    <div className="h-20 w-20">
+                            <img
+                                className="h-full w-full object-cover rounded-full"
+                                src={`${uriBase}/${photo}`}
+                                alt="foto de perfil"
+                            />
+                    </div>
+                )}
             </div>
         </header>
     );

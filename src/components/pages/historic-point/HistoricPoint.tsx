@@ -16,12 +16,11 @@ import Label from "@/components/form/LabelForm";
 import Button from "@/ui/Button";
 import { montserrat } from "../dass21/Dass21";
 import { maskDate } from "@/utils/mask.util";
+import Link from "next/link";
 
 export default function HistoricPoint() {
     const [_, setIsLoading] = useAtom(loadingAtom);
-    const [modal, setModal] = useAtom(VitalModalAtom);
     const [historics, setHistoric] = useState<any[]>([]);
-    const [card, setCard] = useState<any>({id: ''});
     const [startDate, setStartDate] = useState<string>("sem");
     const [endDate, setEndDate] = useState<string>("sem");
 
@@ -90,7 +89,10 @@ export default function HistoricPoint() {
                         <Label label="Data Final" required={false}/>
                         <Input type="date" onInput={(e: any) => setEndDate(e.target.value)} />
                     </div>
-                    <Button onClick={getAll} type="button" variant="secondary" className="col-span-2" size="sm">Buscar</Button>
+                    <Link href="/home/ranking" className="col-span-1">
+                        <Button type="button" variant="outline-secondary" className="w-full" size="sm">Voltar</Button>
+                    </Link>
+                    <Button onClick={getAll} type="button" variant="secondary" className="col-span-1" size="sm">Buscar</Button>
                 </div>
 
                 {

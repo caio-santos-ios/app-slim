@@ -41,6 +41,7 @@ export default function Home() {
     const [endDate, setEndDate] = useState<string>("sem");
     const [cvv, setCVV] = useState(false); 
     const [ready, setReady] = useState(false);
+    const [checkIES, setCheckIES] = useState(false);
 
     const getBarColor = (value: number) => {
         if (value <= 60) return "oklch(70.4% 0.191 22.216)";
@@ -76,9 +77,10 @@ export default function Home() {
                 anxiety: anxietyScore,
                 stress: stressScore
             });
-
+            console.log(result)
             setMetric(result.metric);
             setMetricWeek(result.weekMetric);
+            setCheckIES(result.chekinIES);
         } catch (error) {
             resolveResponse(error);
         }
@@ -139,15 +141,14 @@ export default function Home() {
 
     useEffect(() => {
         if ("serviceWorker" in navigator) {
-            navigator.serviceWorker.register("/aplicativo/sw.js").then((_) => {
-            }).catch((err) => console.error("SW register error:", err));
+            navigator.serviceWorker.register("/aplicativo/sw.js").then((_) => {}).catch((err) => console.error("SW register error:", err));
         }
     }, []);
 
     useEffect(() => {
         if (!ready) return;
         
-        if (!isCheckIn && !nextTelemedicine.date && metric.ies <= 60) {
+        if (checkIES && !isCheckIn && !nextTelemedicine.date && metric.ies <= 60) {
             setCVV(true);
         } else {
             setCVV(false);

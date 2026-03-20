@@ -339,7 +339,7 @@ export default function Ranking() {
             const entries: RankEntry[] = recipients.map((r: any) => {
                 const myVitals    = vitals.filter((v: any) => v.beneficiaryId === r.id);
                 const checkIns    = myVitals.length;
-                const streak      = calculateStreak(myVitals);
+                const streak      = myVitals[myVitals.length - 1].sequenceCheckIn;
                 
                 const totalIGS = myVitals.reduce((a, b) => a + b.chekinIGSPoint, 0);
                 const totalIGN = myVitals.reduce((a, b) => a + b.chekinIGNPoint, 0);
