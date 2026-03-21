@@ -339,7 +339,7 @@ export default function Ranking() {
             const entries: RankEntry[] = recipients.map((r: any) => {
                 const myVitals    = vitals.filter((v: any) => v.beneficiaryId === r.id);
                 const checkIns    = myVitals.length;
-                const streak      = myVitals[myVitals.length - 1].sequenceCheckIn;
+                const streak      = myVitals.length > 0 ? myVitals[myVitals.length - 1].sequenceCheckIn : 0;
                 
                 const totalIGS = myVitals.reduce((a, b) => a + b.chekinIGSPoint, 0);
                 const totalIGN = myVitals.reduce((a, b) => a + b.chekinIGNPoint, 0);
@@ -375,6 +375,7 @@ export default function Ranking() {
             setRanking(sorted);
             setMyEntry(sorted.find((e) => e.id === loggedId) ?? null);
         } catch (error) {
+            console.log(error)
             resolveResponse(error);
         } finally {
             setIsLoading(false);
