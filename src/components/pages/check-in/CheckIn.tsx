@@ -13,8 +13,24 @@ import { VitalMental } from "../vital-mental/VitalMental";
 import { VitalNutricao } from "../vital-nutricao/VitalNutricao";
 import { VitalSono } from "../vital-sono/VitalSono";
 import { CheckInCompletoAnimation, CheckInManhaAnimation, CheckInNoiteAnimation } from "@/components/animations/Animations";
-import { steps } from "framer-motion";
 import Link from "next/link";
+
+// Pauta 10: ciclo de animações — alterna entre manha/noite/completo para não cansar o usuário
+const ANIM_CYCLE_KEY = "checkInAnimCycleIndex";
+type AnimType = "manha" | "noite" | "completo";
+
+function getNextAnimacao(base: AnimType): AnimType {
+    const cycles: AnimType[] = ["manha", "noite", "completo"];
+    try {
+        const stored = localStorage.getItem(ANIM_CYCLE_KEY);
+        const current = stored !== null ? parseInt(stored, 10) : -1;
+        const next = (current + 1) % cycles.length;
+        localStorage.setItem(ANIM_CYCLE_KEY, String(next));
+        return cycles[next];
+    } catch {
+        return base;
+    }
+}
 
 export const CheckIn = () => {
     const [_, setLoading]       = useAtom(loadingAtom);
@@ -48,17 +64,20 @@ export const CheckIn = () => {
                     chekinIGN: true, chekinIGNPoint: 5,
                     chekinIES: true, chekinIESPoint: 5,
                 }, configApi());
-                setAnimacao("completo");
+                // Pauta 10: ciclo de animações — para check-in completo, alterna entre as 3
+                setAnimacao(getNextAnimacao("completo"));
             } else if (!body.id) {
                 await api.post(`/vitals`, { ...body, chekinIGS: true, chekinIGSPoint: 5 }, configApi());
-                setAnimacao("manha");
+                // Pauta 10: ciclo — check-in manhã alterna entre manha e completo
+                setAnimacao(getNextAnimacao("manha"));
             } else {
                 await api.put(`/vitals`, {
                     ...body,
                     chekinIGN: true, chekinIGNPoint: 5,
                     chekinIES: true, chekinIESPoint: 5,
                 }, configApi());
-                setAnimacao("noite");
+                // Pauta 10: ciclo — check-in noite alterna entre noite e completo
+                setAnimacao(getNextAnimacao("noite"));
             }
 
             resolveResponse({ status: 200, message: 'Parabéns!' });

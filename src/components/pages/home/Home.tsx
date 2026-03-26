@@ -39,9 +39,14 @@ export default function Home() {
     const [dass9, setDass9] = useState<any>({});
     const [startDate, setStartDate] = useState<string>("sem");
     const [endDate, setEndDate] = useState<string>("sem");
-    const [cvv, setCVV] = useState(false); 
+    const [cvv, setCVV] = useState(false);
+    const [pad, setPAD] = useState(false);
     const [ready, setReady] = useState(false);
     const [checkIES, setCheckIES] = useState(false);
+    // Pauta 5: KPI card ativo para exibir insight inline
+    const [activeKpi, setActiveKpi] = useState<string | null>(null);
+    // Pauta 11+12: contagem de dias consecutivos com IES < 50
+    const [iesBaixoConsec, setIesBaixoConsec] = useState(0);
 
     const getBarColor = (value: number) => {
         if (value <= 60) return "oklch(70.4% 0.191 22.216)";
@@ -81,6 +86,10 @@ export default function Home() {
             setMetric(result.metric);
             setMetricWeek(result.weekMetric);
             setCheckIES(result.chekinIES);
+            // Pauta 11+12: dias consecutivos com IES < 50 vem da API
+            if (result.iesBaixoConsec !== undefined) {
+                setIesBaixoConsec(result.iesBaixoConsec);
+            }
         } catch (error) {
             resolveResponse(error);
         }
@@ -148,12 +157,20 @@ export default function Home() {
     useEffect(() => {
         if (!ready) return;
         
-        if (checkIES && !isCheckIn && !nextTelemedicine.date && metric.ies <= 60) {
+        // Pauta 11: CVV só aparece na HOME se IES < 50 por 3+ dias consecutivos
+        if (checkIES && !isCheckIn && metric.ies <= 50 && iesBaixoConsec >= 3) {
             setCVV(true);
         } else {
             setCVV(false);
         }
-    }, [isCheckIn, nextTelemedicine, metric, ready]);
+
+        // Pauta 12: indicar uso do PAD se IES < 50 por 2+ dias consecutivos
+        if (checkIES && !isCheckIn && metric.ies <= 50 && iesBaixoConsec >= 2) {
+            setPAD(true);
+        } else {
+            setPAD(false);
+        }
+    }, [isCheckIn, nextTelemedicine, metric, ready, checkIES, iesBaixoConsec]);
 
     useEffect(() => {
         const initial = async () => {
@@ -181,6 +198,22 @@ export default function Home() {
                             </div>
                             <a href="tel:188" className="w-full py-3 bg-red-600 rounded-2xl flex items-center justify-center gap-3 text-white font-bold">
                                 <FiPhone size={20} /> Ligar 188 - CVV (24h)
+                            </a>
+                        </div>
+                    )}
+
+                    {/* Pauta 12: card PAD após 2 dias consecutivos com IES < 50 */}
+                    {pad && !cvv && (
+                        <div className="mb-4 w-full p-3 bg-orange-50 border border-orange-200 rounded-2xl flex flex-col gap-3">
+                            <div className="flex items-center gap-2">
+                                <FiAlertTriangle className="text-orange-400" size={20} />
+                                <span className="text-orange-400 font-bold text-sm">Atenção ao seu bem-estar emocional</span>
+                            </div>
+                            <p className="text-orange-600 text-xs leading-relaxed">
+                                Identificamos que você pode se beneficiar de um suporte adicional. Conheça o <strong>PAD — Programa de Apoio e Desenvolvimento</strong>.
+                            </p>
+                            <a href="tel:188" className="w-full py-2.5 bg-orange-500 rounded-2xl flex items-center justify-center gap-3 text-white font-bold text-sm">
+                                <FiPhone size={16} /> Falar com o PAD
                             </a>
                         </div>
                     )}
@@ -231,23 +264,59 @@ export default function Home() {
 
                         <div className="border-t border-brand-100 my-4" />
 
+                        {/* Pauta 4: legendas dos KPIs | Pauta 5: cards clicáveis */}
                         <div className="grid grid-cols-3 gap-3">
                             {[
-                                { label: 'IGS', value: metric.igs },
-                                { label: 'IGN', value: metric.ign },
-                                { label: 'IES', value: metric.ies },
-                            ].map(({ label, value }) => {
+                                { label: 'IGS', value: metric.igs, legend: 'Sono',    insight: metric.igs < 70 ? 'Privação de sono detectada. Isso reduz sua imunidade e foco.' : 'Boa qualidade de repouso. Continue mantendo sua rotina!', dose: metric.igs < 70 ? 'Desligue telas 30 min antes de dormir e mantenha horário fixo.' : 'Manter rotina de sono consistente.' },
+                                { label: 'IGN', value: metric.ign, legend: 'Nutrição', insight: metric.ign < 70 ? 'Impacto glicêmico e horários sobrecarregando seu metabolismo.' : 'Metabolismo em equilíbrio!', dose: metric.ign < 70 ? 'Alinhe horários de refeição e reduza carga glicêmica.' : 'Seguir plano alimentar atual.' },
+                                { label: 'IES', value: metric.ies, legend: 'Mental',  insight: metric.ies < 70 ? 'Nível de tensão emocional elevado detectado.' : 'Saúde emocional resiliente hoje!', dose: metric.ies < 70 ? 'Pratique 5 min de respiração profunda (4-7-8).' : 'Continue cultivando seu equilíbrio emocional.' },
+                            ].map(({ label, value, legend, insight, dose }) => {
                                 const bg    = value <= 60 ? '#FCEBEB' : value < 85 ? '#FAEEDA' : '#E1F5EE';
                                 const color = value <= 60 ? '#E24B4A' : value < 85 ? '#BA7517' : '#1D9E75';
                                 const sub   = value <= 60 ? '#A32D2D' : value < 85 ? '#854F0B' : '#0F6E56';
+                                const borderColor = value <= 60 ? '#F09595' : value < 85 ? '#FAC775' : '#9FE1CB';
                                 return (
-                                    <div key={label} className="flex flex-col items-center py-3 rounded-2xl" style={{ background: bg }}>
-                                        <span className="text-[10px] font-bold tracking-widest mb-1" style={{ color: sub }}>{label}</span>
+                                    <button
+                                        key={label}
+                                        type="button"
+                                        onClick={() => setActiveKpi(activeKpi === label ? null : label)}
+                                        className="flex flex-col items-center py-3 rounded-2xl transition-all active:scale-95"
+                                        style={{ background: bg, border: activeKpi === label ? `2px solid ${borderColor}` : '2px solid transparent' }}
+                                    >
+                                        {/* Pauta 4: legenda abaixo da sigla */}
+                                        <span className="text-[10px] font-bold tracking-widest mb-0.5" style={{ color: sub }}>{label}</span>
+                                        <span className="text-[9px] font-medium mb-1" style={{ color: sub }}>{legend}</span>
                                         <span className="text-xl font-bold" style={{ color }}>{Math.round(value)}</span>
-                                    </div>
+                                    </button>
                                 );
                             })}
                         </div>
+
+                        {/* Pauta 5: painel de insight + dose que expande ao clicar no card */}
+                        {activeKpi && (() => {
+                            const kpiMap: Record<string, { value: number; legend: string; insight: string; dose: string }> = {
+                                IGS: { value: metric.igs, legend: 'Sono',    insight: metric.igs < 70 ? 'Privação de sono detectada. Isso reduz sua imunidade e foco.' : 'Boa qualidade de repouso. Continue mantendo sua rotina!', dose: metric.igs < 70 ? 'Desligue telas 30 min antes de dormir e mantenha horário fixo.' : 'Manter rotina de sono consistente.' },
+                                IGN: { value: metric.ign, legend: 'Nutrição', insight: metric.ign < 70 ? 'Impacto glicêmico e horários sobrecarregando seu metabolismo.' : 'Metabolismo em equilíbrio!', dose: metric.ign < 70 ? 'Alinhe horários de refeição e reduza carga glicêmica.' : 'Seguir plano alimentar atual.' },
+                                IES: { value: metric.ies, legend: 'Mental',  insight: metric.ies < 70 ? 'Nível de tensão emocional elevado detectado.' : 'Saúde emocional resiliente hoje!', dose: metric.ies < 70 ? 'Pratique 5 min de respiração profunda (4-7-8).' : 'Continue cultivando seu equilíbrio emocional.' },
+                            };
+                            const k = kpiMap[activeKpi];
+                            const color = k.value <= 60 ? '#E24B4A' : k.value < 85 ? '#BA7517' : '#1D9E75';
+                            const bg    = k.value <= 60 ? '#FCEBEB' : k.value < 85 ? '#FAEEDA' : '#E1F5EE';
+                            const border= k.value <= 60 ? '#F09595' : k.value < 85 ? '#FAC775' : '#9FE1CB';
+                            return (
+                                <div className="mt-3 rounded-2xl overflow-hidden animate-in slide-in-from-top duration-200">
+                                    <div className="p-3 flex flex-col gap-2" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xs font-bold text-white/80">💡 Insight — {k.legend}</span>
+                                        </div>
+                                        <p className="text-xs text-white/90 leading-relaxed">{k.insight}</p>
+                                        <div className="h-px bg-white/10 my-1" />
+                                        <span className="text-xs font-bold text-white/80">💊 Dose de Saúde</span>
+                                        <p className="text-xs text-white/90 leading-relaxed">{k.dose}</p>
+                                    </div>
+                                </div>
+                            );
+                        })()}
                     </div>
                     
                     {
@@ -280,18 +349,21 @@ export default function Home() {
                                     { label: 'Ansiedade', value: dass9.anxiety,   icon: '💭' },
                                     { label: 'Estresse',  value: dass9.stress,    icon: '⚡' },
                                 ].map(({ label, value, icon }) => {
-                                    const isAlert  = value > 5;
-                                    const isMid    = value >= 3 && value <= 5;
-                                    const isOk     = value < 3;
+                                    // Pauta 6: thresholds e nomenclatura de níveis ajustados
+                                    const isAlert = value >= 8;
+                                    const isHigh  = value >= 5 && value < 8;
+                                    const isMid   = value >= 3 && value < 5;
+                                    const isOk    = value < 3;
 
-                                    const bg      = isAlert ? '#FCEBEB' : isMid ? '#FAEEDA' : '#E1F5EE';
-                                    const border  = isAlert ? '#F09595' : isMid ? '#FAC775' : '#9FE1CB';
-                                    const color   = isAlert ? '#A32D2D' : isMid ? '#854F0B' : '#0F6E56';
-                                    const badge   = isAlert ? '#E24B4A' : isMid ? '#EF9F27' : '#1D9E75';
-                                    const badgeBg = isAlert ? '#FCEBEB' : isMid ? '#FAEEDA' : '#E1F5EE';
-                                    const status  = isAlert ? 'Atenção' : isMid ? 'Moderado' : 'Normal';
+                                    const bg     = isAlert ? '#FCEBEB' : isHigh ? '#FEF3F2' : isMid ? '#FAEEDA' : '#E1F5EE';
+                                    const border = isAlert ? '#F09595' : isHigh ? '#FCA5A5' : isMid ? '#FAC775' : '#9FE1CB';
+                                    const color  = isAlert ? '#A32D2D' : isHigh ? '#C0392B' : isMid ? '#854F0B' : '#0F6E56';
+                                    const badge  = isAlert ? '#E24B4A' : isHigh ? '#E74C3C' : isMid ? '#EF9F27' : '#1D9E75';
+                                    const badgeBg= isAlert ? '#FCEBEB' : isHigh ? '#FEF3F2' : isMid ? '#FAEEDA' : '#E1F5EE';
+                                    // Pauta 6: rótulos de nível mais claros
+                                    const status = isAlert ? '🔴 Crítico' : isHigh ? '🟠 Elevado' : isMid ? '🟡 Moderado' : '🟢 Normal';
 
-                                    const pct = Math.min((value / 9) * 100, 100);
+                                    const pct = Math.min((value / 12) * 100, 100);
 
                                     return (
                                         <div
@@ -301,7 +373,7 @@ export default function Home() {
                                         >
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center gap-2">
-                                                    <span style={{ fontSize: 16 }}></span>
+                                                    <span style={{ fontSize: 16 }}>{icon}</span>
                                                     <span className="text-sm font-bold" style={{ color }}>{label}</span>
                                                 </div>
                                                 <div className="flex items-center gap-2">

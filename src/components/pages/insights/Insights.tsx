@@ -83,7 +83,27 @@ export const Insights = () => {
         <>
             <h1 className="mb-1.5 block text-md font-bold text-brand-400">Insights</h1>
 
-            <div className="h-[calc(100dvh-15rem)] overflow-y-auto">
+            {/* Pauta 13: tabs de navegação entre os steps disponíveis */}
+            {[1, 2, 3].some(s => [1, 2, 3].includes(s)) && (
+                <div className="flex bg-gray-100 p-1 rounded-2xl mb-3 gap-1">
+                    {[
+                        { s: 1, label: '🌙 Sono' },
+                        { s: 2, label: '🥗 Nutrição' },
+                        { s: 3, label: '🧠 Mental' },
+                    ].map(({ s, label }) => (
+                        <button
+                            key={s}
+                            type="button"
+                            onClick={() => setStep(s)}
+                            className={`flex-1 py-1.5 px-1 text-[11px] font-bold rounded-xl transition-all ${step === s ? 'bg-white text-brand-500 shadow-sm' : 'text-gray-400'}`}
+                        >
+                            {label}
+                        </button>
+                    ))}
+                </div>
+            )}
+
+            <div className="h-[calc(100dvh-18rem)] overflow-y-auto">
                 {renderStep()}
 
                 <Link href="/home/">

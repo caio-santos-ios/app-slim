@@ -118,7 +118,7 @@ export const QuizDass21 = () => {
                 open &&
                 <div className={`${montserrat.className} max-w-lg max-h-[calc(100dvh-13rem)] overflow-y-auto mx-auto bg-white dark:bg-slate-900 p-6 rounded-[2.5rem] shadow-2xl`}>
                 <div className="flex justify-between items-center mb-4">
-                    <span className="text-[10px] font-bold text-brand-2-500 uppercase tracking-tighter">Avaliação DASS-21</span>
+                    <span className="text-[10px] font-bold text-brand-2-500 uppercase tracking-tighter">Avaliação de Saúde Mental</span>
                     <span className="text-[10px] font-bold text-gray-400">{currentStep + 1} / 21</span>
                 </div>
 
@@ -206,10 +206,10 @@ export const QuizDass21 = () => {
                             
                             <div className="flex flex-col">
                                 <h3 className="text-brand-2-800 font-bold text-lg leading-tight">
-                                    Avaliação DASS-21
+                                    Avaliação de Saúde Mental
                                 </h3>
                                 <p className="text-gray-500 dark:text-gray-400 text-sm">
-                                    Um questionário científico para avaliar níveis de depressão, ansiedade e estresse.
+                                    Um questionário para avaliar seus níveis de depressão, ansiedade e estresse.
                                 </p>
                             </div>
                         </div>
