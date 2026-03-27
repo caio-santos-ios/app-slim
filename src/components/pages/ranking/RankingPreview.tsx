@@ -25,18 +25,10 @@ interface RankEntry {
 // ─── Constantes ───────────────────────────────────────────────────────────────
 
 const LEVELS = [
-    { min: 0,    name: "Iniciante",  color: "#a2bcce" },
-    { min: 200,  name: "Explorador", color: "#66cc99" },
-    { min: 500,  name: "Cuidador",   color: "#4db380" },
-    { min: 900,  name: "Protetor",   color: "#457091" },
-    { min: 1400, name: "Guardião",   color: "#1a3a5c" },
+    { min: 0,    name: "Iniciante Saudável",  color: "#a2bcce" },
+    { min: 1000,  name: "Explorador Saudável", color: "#66cc99" },
+    { min: 3000, name: "Guardião da Saúde",   color: "#1a3a5c" },
 ];
-
-const PTS_CHECKIN = 10;
-const PTS_VITAL   = 15;
-const PTS_STREAK  = 5;
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function getLevel(points: number) {
     return [...LEVELS].reverse().find((l) => points >= l.min) ?? LEVELS[0];
@@ -194,11 +186,21 @@ export default function RankingPreview() {
                 const checkIns    = myHistorics.length;
                 const vitalCount  = myVitals.length;
                 const streak      = calcStreak(historics, r.id);
-                const totalIGS = myVitals.reduce((a, b) => a + b.chekinIGSPoint, 0);
-                const totalIGN = myVitals.reduce((a, b) => a + b.chekinIGNPoint, 0);
-                const totalIES = myVitals.reduce((a, b) => a + b.chekinIESPoint, 0);
-                const totalExtrasPoint = myVitals.reduce((a, b) => a + b.extrasPoint, 0);
+                // const totalIGS = myVitals.reduce((a, b) => a + b.chekinIGSPoint, 0);
+                // const totalIGN = myVitals.reduce((a, b) => a + b.chekinIGNPoint, 0);
+                // const totalIES = myVitals.reduce((a, b) => a + b.chekinIESPoint, 0);
+                // const totalExtrasPoint = myVitals.reduce((a, b) => a + b.extrasPoint, 0);
+
+                const totalIGS = myVitals.filter(x => x.chekinIGS).reduce((a, b) => a + b.chekinIGSPoint, 0);
+                const totalIGN = myVitals.filter(x => x.chekinIGN).reduce((a, b) => a + b.chekinIGNPoint, 0);
+                const totalIES = myVitals.filter(x => x.chekinIES).reduce((a, b) => a + b.chekinIESPoint, 0);
                 
+                const totalIGSExtrasPoint = myVitals.filter(x => x.chekinIGS).reduce((a, b) => a + b.extrasPoint, 0);
+                const totalIGNExtrasPoint = myVitals.filter(x => x.chekinIGN).reduce((a, b) => a + b.extrasPoint, 0);
+                const totalIESExtrasPoint = myVitals.filter(x => x.chekinIES).reduce((a, b) => a + b.extrasPoint, 0);
+
+                const totalExtrasPoint = totalIGSExtrasPoint + totalIGNExtrasPoint + totalIESExtrasPoint;
+
                 const points      = totalIGS + totalIGN + totalIES + totalExtrasPoint;
 
                 return {
