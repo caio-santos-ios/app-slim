@@ -36,19 +36,9 @@ interface RankEntry {
 
 const LEVELS = [
     { min: 0,    name: "Iniciante Saudável",  color: "#a2bcce" },
-    { min: 200,  name: "Explorador Saudável", color: "#66cc99" },
-    { min: 500,  name: "Cuidador Ativo",      color: "#4db380" },
-    { min: 900,  name: "Protetor de Vida",    color: "#457091" },
-    { min: 1400, name: "Guardião da Saúde",   color: "#1a3a5c" },
+    { min: 1000,  name: "Explorador Saudável", color: "#66cc99" },
+    { min: 3000, name: "Guardião da Saúde",   color: "#1a3a5c" },
 ];
-
-const TABS = ["Geral", "Check-in", "Sinais Vitais"];
-
-const PTS_CHECKIN = 10;
-const PTS_VITAL   = 15;
-const PTS_STREAK  = 5;
-
-// ─── Helpers ──────────────────────────────────────────────────────────────────
 
 function getLevel(points: number) {
     return [...LEVELS].reverse().find((l) => points >= l.min) ?? LEVELS[0];
@@ -62,7 +52,10 @@ function getLevelIndex(points: number) {
 function getLevelProgress(points: number) {
     const idx = getLevelIndex(points);
     const current = LEVELS[idx].min;
-    const next = LEVELS[idx + 1]?.min ?? current + 500;
+    const next = LEVELS[idx + 1]?.min;
+
+    if (next === undefined) return 100; 
+
     return Math.min(100, Math.round(((points - current) / (next - current)) * 100));
 }
 
@@ -119,24 +112,6 @@ function Avatar({ name, photo, points, size = 44 }: {
     size?: number;
 }) {
     const color = getLevel(points).color;
-
-    // if (photo) {
-    //     return (
-    //         <img
-    //             src={photo}
-    //             alt={name}
-    //             style={{
-    //                 width: size,
-    //                 height: size,
-    //                 borderRadius: "50%",
-    //                 objectFit: "cover",
-    //                 border: `2.5px solid ${color}`,
-    //                 boxShadow: `0 0 0 2px ${color}33`,
-    //                 flexShrink: 0,
-    //             }}
-    //         />
-    //     );
-    // }
 
     return (
         <div style={{
@@ -312,8 +287,8 @@ export default function Ranking() {
     const [loading, setLoading]   = useState(true);
     
     const normalizeLevel = (points: number) => {
-        if(points >= 0 && points < 2000) return 1;
-        if(points >= 2000 && points < 3000) return 2;
+        if(points >= 0 && points < 1000) return 1;
+        if(points >= 1000 && points < 2000) return 2;
         return 3;
     }
 
@@ -340,11 +315,19 @@ export default function Ranking() {
                 const myVitals    = vitals.filter((v: any) => v.beneficiaryId === r.id);
                 const checkIns    = myVitals.length;
                 const streak      = myVitals.length > 0 ? myVitals[myVitals.length - 1].sequenceCheckIn : 0;
+
+                if(r.id == "6981f162ca6987c740c8e42a") {
+                    console.log(myVitals)
+                }
+                const totalIGS = myVitals.filter(x => x.chekinIGS).reduce((a, b) => a + b.chekinIGSPoint, 0);
+                const totalIGN = myVitals.filter(x => x.chekinIGN).reduce((a, b) => a + b.chekinIGNPoint, 0);
+                const totalIES = myVitals.filter(x => x.chekinIES).reduce((a, b) => a + b.chekinIESPoint, 0);
                 
-                const totalIGS = myVitals.reduce((a, b) => a + b.chekinIGSPoint, 0);
-                const totalIGN = myVitals.reduce((a, b) => a + b.chekinIGNPoint, 0);
-                const totalIES = myVitals.reduce((a, b) => a + b.chekinIESPoint, 0);
-                const totalExtrasPoint = myVitals.reduce((a, b) => a + b.extrasPoint, 0);
+                const totalIGSExtrasPoint = myVitals.filter(x => x.chekinIGS).reduce((a, b) => a + b.extrasPoint, 0);
+                const totalIGNExtrasPoint = myVitals.filter(x => x.chekinIGN).reduce((a, b) => a + b.extrasPoint, 0);
+                const totalIESExtrasPoint = myVitals.filter(x => x.chekinIES).reduce((a, b) => a + b.extrasPoint, 0);
+
+                const totalExtrasPoint = totalIGSExtrasPoint + totalIGNExtrasPoint + totalIESExtrasPoint;
                 
                 const points      = totalIGS + totalIGN + totalIES + totalExtrasPoint;
 
@@ -373,9 +356,9 @@ export default function Ranking() {
                 .map((e, i) => ({ ...e, rank: i + 1 }));
 
             setRanking(sorted);
+            console.log(loggedId)
             setMyEntry(sorted.find((e) => e.id === loggedId) ?? null);
         } catch (error) {
-            console.log(error)
             resolveResponse(error);
         } finally {
             setIsLoading(false);
@@ -587,12 +570,12 @@ export default function Ranking() {
                             <li className="text-xs text-gray-500 flex items-center gap-3">
                                 <span className="text-xl">⭐</span>
                                 <span className="flex-1">Nível <strong>1</strong></span>
-                                <span className="text-brand-2-500 font-bold whitespace-nowrap">1.000 pts</span>
+                                <span className="text-brand-2-500 font-bold whitespace-nowrap">Iniciante</span>
                             </li>
                             <li className="text-xs text-gray-500 flex items-center gap-3">
                                 <span className="text-xl">🌟</span>
                                 <span className="flex-1">Nível <strong>2</strong></span>
-                                <span className="text-brand-2-500 font-bold whitespace-nowrap">2.000 pts</span>
+                                <span className="text-brand-2-500 font-bold whitespace-nowrap">1.000 pts</span>
                             </li>
                             <li className="text-xs text-gray-500 flex items-center gap-3">
                                 <span className="text-xl">🚀</span>
