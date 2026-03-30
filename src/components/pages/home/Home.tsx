@@ -262,7 +262,6 @@ export default function Home() {
 
                         <div className="border-t border-brand-100 my-4" />
 
-                        {/* Pauta 4: legendas dos KPIs | Pauta 5: cards clicáveis */}
                         <div className="grid grid-cols-3 gap-3">
                             {[
                                 { label: 'IGS', value: metric.igs, legend: 'Sono',    insight: metric.igs < 70 ? 'Privação de sono detectada. Isso reduz sua imunidade e foco.' : 'Boa qualidade de repouso. Continue mantendo sua rotina!', dose: metric.igs < 70 ? 'Desligue telas 30 min antes de dormir e mantenha horário fixo.' : 'Manter rotina de sono consistente.' },
@@ -281,7 +280,6 @@ export default function Home() {
                                         className="flex flex-col items-center py-3 rounded-2xl transition-all active:scale-95"
                                         style={{ background: bg, border: activeKpi === label ? `2px solid ${borderColor}` : '2px solid transparent' }}
                                     >
-                                        {/* Pauta 4: legenda abaixo da sigla */}
                                         <span className="text-[10px] font-bold tracking-widest mb-0.5" style={{ color: sub }}>{label}</span>
                                         <span className="text-[9px] font-medium mb-1" style={{ color: sub }}>{legend}</span>
                                         <span className="text-xl font-bold" style={{ color }}>{Math.round(value)}</span>
@@ -290,7 +288,6 @@ export default function Home() {
                             })}
                         </div>
 
-                        {/* Pauta 5: painel de insight + dose que expande ao clicar no card */}
                         {activeKpi && (() => {
                             const kpiMap: Record<string, { value: number; legend: string; insight: string; dose: string }> = {
                                 IGS: { value: metric.igs, legend: 'Sono',    insight: metric.igs < 70 ? 'Privação de sono detectada. Isso reduz sua imunidade e foco.' : 'Boa qualidade de repouso. Continue mantendo sua rotina!', dose: metric.igs < 70 ? 'Desligue telas 30 min antes de dormir e mantenha horário fixo.' : 'Manter rotina de sono consistente.' },
@@ -347,7 +344,6 @@ export default function Home() {
                                     { label: 'Ansiedade', value: dass9.anxiety,   icon: '💭' },
                                     { label: 'Estresse',  value: dass9.stress,    icon: '⚡' },
                                 ].map(({ label, value, icon }) => {
-                                    // Pauta 6: thresholds e nomenclatura de níveis ajustados
                                     const isAlert = value >= 8;
                                     const isHigh  = value >= 5 && value < 8;
                                     const isMid   = value >= 3 && value < 5;
@@ -358,7 +354,6 @@ export default function Home() {
                                     const color  = isAlert ? '#A32D2D' : isHigh ? '#C0392B' : isMid ? '#854F0B' : '#0F6E56';
                                     const badge  = isAlert ? '#E24B4A' : isHigh ? '#E74C3C' : isMid ? '#EF9F27' : '#1D9E75';
                                     const badgeBg= isAlert ? '#FCEBEB' : isHigh ? '#FEF3F2' : isMid ? '#FAEEDA' : '#E1F5EE';
-                                    // Pauta 6: rótulos de nível mais claros
                                     const status = isAlert ? '🔴 Crítico' : isHigh ? '🟠 Elevado' : isMid ? '🟡 Moderado' : '🟢 Normal';
 
                                     const pct = Math.min((value / 12) * 100, 100);
