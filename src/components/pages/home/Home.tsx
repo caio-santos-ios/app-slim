@@ -7,44 +7,129 @@ import { VitalCheckInAtom, VitalModalAtom } from "@/jotai/vital/vital.jotai";
 import { configApi, isTokenExpiringSoon, resolveResponse } from "@/service/config.service";
 import { api } from "@/service/api.service";
 import { useEffect, useState } from "react";
-import { ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, ResponsiveContainer, Cell, PieChart, Pie, LabelList } from 'recharts';
 import { FiAlertTriangle, FiPhone } from "react-icons/fi";
-import { FaVideo } from "react-icons/fa";
+import { HiOutlineLightBulb } from "react-icons/hi";
+import { FaVideo, FaRegMoon } from "react-icons/fa";
 import { maskDate } from "@/utils/mask.util";
 import { montserrat } from "../dass21/Dass21";
 import Label from "@/components/form/LabelForm";
 import Input from "@/components/form/input/Input";
 import Button from "@/ui/Button";
 import Link from "next/link";
+import { IoIosNutrition } from "react-icons/io";
+import { LuBrain } from "react-icons/lu";
 import RankingPreview from "../ranking/RankingPreview";
 import { urlBase64ToUint8Array } from "@/utils/push";
 import { LollipopChart } from "@/components/grafic/LollipopChart";
 import { LineChartCustom } from "@/components/grafic/LineChart";
 import { IpvGauge } from "@/components/grafic/IpvGauge";
+import { div } from "framer-motion/client";
 
 const chartData = [
     { value: 10 },
     { value: 100 - 10 }
 ];
 
+// ─── Helpers de Insight e Dose de Saúde (baseados na planilha) ──────────────
+
+type Dass9 = { depression: number; anxiety: number; stress: number };
+
+function getIpvInsight(ipv: number, igsScore: number, ignScore: number) {
+    if (ipv < 60) return {
+        insight: "Sinal Vermelho: Sua biologia está sob estresse severo hoje.",
+        dose:    "AÇÃO URGENTE: Descanse agora, hidrate-se e antecipe seu sono.",
+    };
+    if (ipv < 85) return {
+        insight: "Atenção: Sua rotina precisa de ajustes para evitar fadiga crônica.",
+        dose:    `AÇÃO RECOMENDADA: Foque em corrigir o pilar de ${igsScore < ignScore ? "Sono" : "Nutrição"} amanhã.`,
+    };
+    return {
+        insight: "Excelente: Você está em alta performance vital.",
+        dose:    "AÇÃO: Continue mantendo seus hábitos saudáveis.",
+    };
+}
+
+function getIgsInsight(igs: number, patologia?: string) {
+    if (igs < 70) return {
+        insight: "Privação de sono detectada. Isso reduz sua imunidade e foco amanhã.",
+        dose:    "Tente dormir 30min mais cedo hoje para compensar o déficit.",
+    };
+    if (igs < 90) return {
+        insight: patologia
+            ? `Sua condição de ${patologia} está limitando sua recuperação real. Tente relaxar antes de deitar.`
+            : "Recuperação biológica pode ser melhorada. Tente relaxar antes de deitar.",
+        dose: "Realize 5min de respiração profunda ou meditação antes de deitar.",
+    };
+    return {
+        insight: "Boa qualidade de repouso. Sono contínuo e consistente atingido.",
+        dose:    "Manter rotina de sono.",
+    };
+}
+
+function getIgnInsight(ign: number, patologia?: string) {
+    const isPrioritario = patologia === "Diabetes" || patologia === "Hipertensão";
+    if (ign < 70) return {
+        insight: "O impacto glicêmico e os horários estão sobrecarregando seu metabolismo.",
+        dose:    "Foco do dia: Alinhar horários de refeição e reduzir carga glicêmica.",
+    };
+    if (ign < 85) return {
+        insight: isPrioritario
+            ? `Para seu perfil de ${patologia}, alinhar o horário da ceia é crítico para proteger seu metabolismo.`
+            : "O horário da ceia pode estar impactando sua glicemia. Tente alinhar com o horário alvo.",
+        dose: "Programe sua última refeição para no máximo 2h antes de dormir.",
+    };
+    return {
+        insight: "Metabolismo em equilíbrio. Alinhamento nutricional correto.",
+        dose:    "Seguir plano alimentar.",
+    };
+}
+
+function getIesInsight(dass9: Dass9) {
+    const total = (dass9.depression || 0) + (dass9.anxiety || 0) + (dass9.stress || 0);
+    if (total <= 5) return {
+        insight: "Sua saúde emocional está resiliente. Mantenha as práticas de descompressão.",
+        dose:    "Continue cultivando seu equilíbrio emocional.",
+    };
+    if (total <= 12) return {
+        insight: "Nível moderado de tensão detectado. Atenção ao seu estado emocional.",
+        dose:    "Realize 5min de respiração guiada agora.",
+    };
+    if (total <= 18) return {
+        insight: "Sinais de alerta acentuados. Cuide-se com prioridade.",
+        dose:    "Antecipe seu descanso e evite telas à noite.",
+    };
+    return {
+        insight: "Sobrecarga severa detectada. Priorize protocolos de descompressão profunda.",
+        dose:    "Priorize o protocolo de descompressão e considere falar com um especialista.",
+    };
+}
+
+function getInsightCardStyle(score: number) {
+    if (score < 60) return { bg: "bg-red-50",    border: "border-red-200",    text: "text-red-700",    badge: "bg-red-100 text-red-700" };
+    if (score < 85) return { bg: "bg-yellow-50", border: "border-yellow-200", text: "text-yellow-700", badge: "bg-yellow-100 text-yellow-700" };
+    return              { bg: "bg-green-50",  border: "border-green-200",  text: "text-green-700",  badge: "bg-green-100 text-green-700" };
+}
+
+// ─── Componente Principal ────────────────────────────────────────────────────
+
 export default function Home() {
-    const [isLoading, setIsLoading] = useAtom(loadingAtom);
+    const [_, setIsLoading] = useAtom(loadingAtom);
     const [modal, setModal] = useAtom(VitalModalAtom);
     const [isCheckIn, setIsCheckIn] = useAtom(VitalCheckInAtom);
     const [nextTelemedicine, setNextTelemedicine] = useState<any>({ date: "" });
     const [metric, setMetric] = useState<any>({ igs: 0, ign: 0, ies: 0, ipv: 0 });
     const [metricWeek, setMetricWeek] = useState<any[]>([]);
     const [periodo, setPeriodo] = useState('Semana');
-    const [dass9, setDass9] = useState<any>({});
+    const [dass9, setDass9] = useState<Dass9>({ depression: 0, anxiety: 0, stress: 0 });
     const [startDate, setStartDate] = useState<string>("sem");
     const [endDate, setEndDate] = useState<string>("sem");
+    const [patologia, setPatologia] = useState<string>("");
     const [cvv, setCVV] = useState(false);
     const [pad, setPAD] = useState(false);
     const [ready, setReady] = useState(false);
     const [checkIES, setCheckIES] = useState(false);
-    // Pauta 5: KPI card ativo para exibir insight inline
     const [activeKpi, setActiveKpi] = useState<string | null>(null);
-    // Pauta 11+12: contagem de dias consecutivos com IES < 50
     const [iesBaixoConsec, setIesBaixoConsec] = useState(0);
 
     const getBarColor = (value: number) => {
@@ -53,12 +138,16 @@ export default function Home() {
         return "oklch(79.2% 0.209 151.711)";
     };
 
-    const getColorMetric = (metric: number, isCheckIn: boolean) => {
-        // if(!isCheckIn) return 'text-gray-400'; 
-
+    const getColorMetric = (metric: number) => {
         if (metric <= 60) return "text-red-400";
         if (metric > 60 && metric < 85) return "text-yellow-400";
         return "text-green-400";
+    };
+
+    const getColorDass9 = (scoore: number) => {
+        if (scoore > 5) return "border bg-red-100 text-red-600 border-red-600";
+        if (scoore >= 3 && scoore < 5) return "border bg-yellow-100 text-yellow-600 border-yellow-600";
+        return "border bg-green-100 text-green-600 border-green-600";
     };
 
     const getAll = async (currentPeriod: string) => {
@@ -81,7 +170,7 @@ export default function Home() {
                 anxiety: anxietyScore,
                 stress: stressScore
             });
-            console.log(result)
+
             setMetric(result.metric);
             setMetricWeek(result.weekMetric);
             setCheckIES(result.chekinIES);
@@ -99,6 +188,8 @@ export default function Home() {
             const { data } = await api.get(`/customer-recipients/logged`, configApi());
             const result = data.result.data;
             const isRefresh = isTokenExpiringSoon();
+
+            if (result.patrology) setPatologia(result.patrology);
             
             if(!isRefresh) {
                 const refreshToken = localStorage.getItem("appRefreshToken");
@@ -183,6 +274,19 @@ export default function Home() {
         initial();
     }, [isCheckIn, periodo]);
 
+    const GetBarColor = (metric: number) => {
+        if (metric <= 60) return "#ff6467";
+        if (metric > 60 && metric < 85) return "#fdc700";
+        return "#06df72";
+    };
+
+    // Dados de insight calculados
+    const hasData = metric.ipv > 0;
+    const ipvInfo = getIpvInsight(metric.ipv, metric.igs, metric.ign);
+    const igsInfo = getIgsInsight(metric.igs, patologia);
+    const ignInfo = getIgnInsight(metric.ign, patologia);
+    const iesInfo = getIesInsight(dass9);
+
     return (
         <div className={`${montserrat.className}`}>
             {modal ? <VitalModal /> : (
@@ -207,12 +311,6 @@ export default function Home() {
                                 <FiAlertTriangle className="text-orange-400" size={20} />
                                 <span className="text-orange-400 font-bold text-sm">Atenção ao seu bem-estar emocional</span>
                             </div>
-                            <p className="text-orange-600 text-xs leading-relaxed">
-                                Identificamos que você pode se beneficiar de um suporte adicional. Conheça o <strong>PAD — Programa de Apoio e Desenvolvimento</strong>.
-                            </p>
-                            <a href="tel:188" className="w-full py-2.5 bg-orange-500 rounded-2xl flex items-center justify-center gap-3 text-white font-bold text-sm">
-                                <FiPhone size={16} /> Falar com o PAD
-                            </a>
                         </div>
                     )}
                     
@@ -225,7 +323,6 @@ export default function Home() {
                                     Próxima consulta - {maskDate(nextTelemedicine.date)}
                                 </span>
                             </div>
-                        
                             <span className="text-brand-500 font-bold text-sm">
                                 Horario: {nextTelemedicine.from} até {nextTelemedicine.to}
                             </span>
@@ -235,7 +332,6 @@ export default function Home() {
                             <span className="text-brand-500 font-bold text-sm">
                                 Profissional: {nextTelemedicine.professional}
                             </span>
-
                             <div className="bg-brand-500 border-brand-500 mt-2 w-full py-2 rounded-2xl flex items-center justify-center gap-2 border shadow-sm">
                                 <Link href={nextTelemedicine.beneficiaryUrl}>
                                     <span className="text-brand-100 font-bold text-sm">
@@ -256,6 +352,23 @@ export default function Home() {
                             </button>
                         ))}
                     </div>
+                    
+                    {
+                        periodo == "Personalizado" &&
+                        <div className="grid grid-cols-2 gap-4 mb-4">
+                            <div className="col-span-1">
+                                <Label label="Data Inicial" required={false}/>
+                                <Input type="date" onInput={(e: any) => setStartDate(e.target.value)} />
+                            </div>
+                            <div className="col-span-1">
+                                <Label label="Data Final" required={false}/>
+                                <Input type="date" onInput={(e: any) => setEndDate(e.target.value)} />
+                            </div>
+                            <Button onClick={() => {
+                                getAll(`${startDate}&${endDate}`);
+                            }} type="button" variant="secondary" className="col-span-2" size="sm">Buscar</Button>
+                        </div>
+                    }
 
                     <div className="bg-brand-500 p-6 rounded-2xl border border-brand-200 mb-4">
                         <IpvGauge ipv={metric.ipv} />
@@ -287,49 +400,85 @@ export default function Home() {
                                 );
                             })}
                         </div>
-
-                        {activeKpi && (() => {
-                            const kpiMap: Record<string, { value: number; legend: string; insight: string; dose: string }> = {
-                                IGS: { value: metric.igs, legend: 'Sono',    insight: metric.igs < 70 ? 'Privação de sono detectada. Isso reduz sua imunidade e foco.' : 'Boa qualidade de repouso. Continue mantendo sua rotina!', dose: metric.igs < 70 ? 'Desligue telas 30 min antes de dormir e mantenha horário fixo.' : 'Manter rotina de sono consistente.' },
-                                IGN: { value: metric.ign, legend: 'Nutrição', insight: metric.ign < 70 ? 'Impacto glicêmico e horários sobrecarregando seu metabolismo.' : 'Metabolismo em equilíbrio!', dose: metric.ign < 70 ? 'Alinhe horários de refeição e reduza carga glicêmica.' : 'Seguir plano alimentar atual.' },
-                                IES: { value: metric.ies, legend: 'Mental',  insight: metric.ies < 70 ? 'Nível de tensão emocional elevado detectado.' : 'Saúde emocional resiliente hoje!', dose: metric.ies < 70 ? 'Pratique 5 min de respiração profunda (4-7-8).' : 'Continue cultivando seu equilíbrio emocional.' },
-                            };
-                            const k = kpiMap[activeKpi];
-                            const color = k.value <= 60 ? '#E24B4A' : k.value < 85 ? '#BA7517' : '#1D9E75';
-                            const bg    = k.value <= 60 ? '#FCEBEB' : k.value < 85 ? '#FAEEDA' : '#E1F5EE';
-                            const border= k.value <= 60 ? '#F09595' : k.value < 85 ? '#FAC775' : '#9FE1CB';
-                            return (
-                                <div className="mt-3 rounded-2xl overflow-hidden animate-in slide-in-from-top duration-200">
-                                    <div className="p-3 flex flex-col gap-2" style={{ background: 'rgba(255,255,255,0.08)', border: '1px solid rgba(255,255,255,0.15)' }}>
-                                        <div className="flex items-center gap-2">
-                                            <span className="text-xs font-bold text-white/80">💡 Insight — {k.legend}</span>
-                                        </div>
-                                        <p className="text-xs text-white/90 leading-relaxed">{k.insight}</p>
-                                        <div className="h-px bg-white/10 my-1" />
-                                        <span className="text-xs font-bold text-white/80">💊 Dose de Saúde</span>
-                                        <p className="text-xs text-white/90 leading-relaxed">{k.dose}</p>
-                                    </div>
-                                </div>
-                            );
-                        })()}
                     </div>
-                    
-                    {
-                        periodo == "Personalizado" &&
-                        <div className="grid grid-cols-2 gap-4 mb-4">
-                            <div className="col-span-1">
-                                <Label label="Data Inicial" required={false}/>
-                                <Input type="date" onInput={(e: any) => setStartDate(e.target.value)} />
-                            </div>
-                            <div className="col-span-1">
-                                <Label label="Data Final" required={false}/>
-                                <Input type="date" onInput={(e: any) => setEndDate(e.target.value)} />
-                            </div>
-                            <Button onClick={() => {
-                                getAll(`${startDate}&${endDate}`);
-                            }} type="button" variant="secondary" className="col-span-2" size="sm">Buscar</Button>
+
+                    {hasData && (
+                        <div className="mb-4 flex flex-col gap-3">
+
+                            {/* IPV geral */}
+                            {activeKpi && activeKpi === 'IPV' && (() => {
+                                const s = getInsightCardStyle(metric.ipv);
+                                return (
+                                    <div className={`rounded-2xl border p-4 ${s.bg} ${s.border}`}>
+                                        <p className={`text-xs font-bold uppercase tracking-wide mb-1 ${s.text}`}>
+                                            📊 IPV {metric.ipv} — Performance Vital
+                                        </p>
+                                        <p className={`text-sm font-semibold mb-2 ${s.text}`}>{ipvInfo.insight}</p>
+                                        <div className={`rounded-xl px-3 py-2 ${s.badge}`}>
+                                            <p className="text-xs font-semibold">💊 {ipvInfo.dose}</p>
+                                        </div>
+                                    </div>
+                                );
+                            })()}
+
+                            {/* IGS – Sono */}
+                            {activeKpi && activeKpi === 'IGS' && (() => {
+                                const s = getInsightCardStyle(metric.igs);
+                                return (
+                                    <div className={`rounded-2xl border p-4 ${s.bg} ${s.border}`}>
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <FaRegMoon size={13} className={s.text} />
+                                            <p className={`text-xs font-bold uppercase tracking-wide ${s.text}`}>
+                                                Sono — IGS {metric.igs}
+                                            </p>
+                                        </div>
+                                        <p className={`text-sm font-semibold mb-2 ${s.text}`}>{igsInfo.insight}</p>
+                                        <div className={`rounded-xl px-3 py-2 ${s.badge}`}>
+                                            <p className="text-xs font-semibold">💊 {igsInfo.dose}</p>
+                                        </div>
+                                    </div>
+                                );
+                            })()}
+
+                            {/* IGN – Nutrição */}
+                            {activeKpi && activeKpi === 'IGN' && (() => {
+                                const s = getInsightCardStyle(metric.ign);
+                                return (
+                                    <div className={`rounded-2xl border p-4 ${s.bg} ${s.border}`}>
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <IoIosNutrition size={14} className={s.text} />
+                                            <p className={`text-xs font-bold uppercase tracking-wide ${s.text}`}>
+                                                Nutrição — IGN {metric.ign}
+                                            </p>
+                                        </div>
+                                        <p className={`text-sm font-semibold mb-2 ${s.text}`}>{ignInfo.insight}</p>
+                                        <div className={`rounded-xl px-3 py-2 ${s.badge}`}>
+                                            <p className="text-xs font-semibold">💊 {ignInfo.dose}</p>
+                                        </div>
+                                    </div>
+                                );
+                            })()}
+
+                            {/* IES – Saúde Mental */}
+                            {activeKpi && activeKpi === 'IES' && (() => {
+                                const s = getInsightCardStyle(metric.ies);
+                                return (
+                                    <div className={`rounded-2xl border p-4 ${s.bg} ${s.border}`}>
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <LuBrain size={14} className={s.text} />
+                                            <p className={`text-xs font-bold uppercase tracking-wide ${s.text}`}>
+                                                Saúde Mental — IES {metric.ies}
+                                            </p>
+                                        </div>
+                                        <p className={`text-sm font-semibold mb-2 ${s.text}`}>{iesInfo.insight}</p>
+                                        <div className={`rounded-xl px-3 py-2 ${s.badge}`}>
+                                            <p className="text-xs font-semibold">💊 {iesInfo.dose}</p>
+                                        </div>
+                                    </div>
+                                );
+                            })()}
                         </div>
-                    }
+                    )}
 
                     {metric.ipv > 0 && (
                         <div className="bg-white p-5 rounded-2xl border border-gray-200 mb-4">
@@ -433,16 +582,16 @@ export default function Home() {
                         </div>
                         <div className="flex justify-center gap-8 mb-4">
                             <div className="text-center bg-gray-100 py-2 px-4 rounded-xl">
-                                <p className={`text-[10px] font-bold ${getColorMetric(metric.igs, metric.chekinIGS)}`}>IGS</p>
-                                <p className={`text-xl font-bold ${getColorMetric(metric.igs, metric.chekinIGS)}`}>{metric.igs}</p>
+                                <p className={`text-[10px] font-bold ${getColorMetric(metric.igs)}`}>IGS</p>
+                                <p className={`text-xl font-bold ${getColorMetric(metric.igs)}`}>{metric.igs}</p>
                             </div>
                             <div className="text-center bg-gray-100 py-2 px-4 rounded-xl">
-                                <p className={`text-[10px] font-bold ${getColorMetric(metric.ign, metric.chekinIGN)}`}>IGN</p>
-                                <p className={`text-xl font-bold ${getColorMetric(metric.ign, metric.chekinIGN)}`}>{metric.ign}</p>
+                                <p className={`text-[10px] font-bold ${getColorMetric(metric.ign)}`}>IGN</p>
+                                <p className={`text-xl font-bold ${getColorMetric(metric.ign)}`}>{metric.ign}</p>
                             </div>
                             <div className="text-center bg-gray-100 py-2 px-4 rounded-xl">
-                                <p className={`text-[10px] font-bold ${getColorMetric(metric.ies, metric.chekinIES)}`}>IES</p>
-                                <p className={`text-xl font-bold ${getColorMetric(metric.ies, metric.chekinIES)}`}>{metric.ies}</p>
+                                <p className={`text-[10px] font-bold ${getColorMetric(metric.ies)}`}>IES</p>
+                                <p className={`text-xl font-bold ${getColorMetric(metric.ies)}`}>{metric.ies}</p>
                             </div>
                         </div>
                     </div>
