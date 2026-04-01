@@ -19,6 +19,7 @@ import { ptBR } from "date-fns/locale";
 import { toast } from "react-toastify";
 import { montserrat } from "../dass21/Dass21";
 import { NotData } from "@/components/not-data/NotData";
+import { createMetricAppService } from "@/service/metric-app.service";
 
 export const ForwardingList = () => {
     const [__, setIsLoading] = useAtom(loadingAtom);
@@ -60,6 +61,15 @@ export const ForwardingList = () => {
             setSelectedDay(undefined);
             const rapidocId = localStorage.getItem("rapidocId");
             await getAll(rapidocId ? rapidocId : "");
+            await createMetricAppService({
+                screen: "Bem + Cuidado",
+                action: "Agendamento",
+                function: "Agendamento de Consulta",
+                description: `Agendamento de consulta com a especialidade ${form.specialtyName} para o dia ${form.date} no horário de ${form.time}.`,
+                parent: "customer-recipient",
+                parentId: ""
+            });
+
         } catch (error) {
             resolveResponse(error);
         } finally {
@@ -77,6 +87,14 @@ export const ForwardingList = () => {
 
             const rapidocId = localStorage.getItem("rapidocId");
             await getAppointments(rapidocId ? rapidocId : "");
+            await createMetricAppService({
+                screen: "Bem + Cuidado",
+                action: "Agendamento",  
+                function: "Agendamento de Consulta",
+                description: `Agendamento de consulta com a especialidade ${data.specialtyName} para o dia ${data.date} no horário de ${data.time}.`,
+                parent: "customer-recipient",
+                parentId: ""
+            });
         } catch (error) {
             resolveResponse(error);
         } finally {
@@ -94,6 +112,14 @@ export const ForwardingList = () => {
             setValue("recipientName", name ? name : "");
             setValue("beneficiaryUuid", rapidocId ? rapidocId : "");
             await getSelectSpecialty(result);
+            await createMetricAppService({
+                screen: "Bem + Cuidado",
+                action: "Visualização",
+                function: "Histórico de Agendamentos",  
+                description: `Visualização do histórico de agendamentos do beneficiário, com filtros de data inicial: ${startDate} e data final: ${endDate}.`,
+                parent: "customer-recipient",
+                parentId: ""
+            });
         } catch (error) {
             resolveResponse(error);
         }
@@ -179,6 +205,14 @@ export const ForwardingList = () => {
             setModalCreate(false);
             const rapidocId = localStorage.getItem("appRapidocId");
             await getAll(rapidocId ? rapidocId : "");
+            await createMetricAppService({
+                screen: "Bem + Cuidado",
+                action: "Cancelamento",
+                function: "Cancelamento de Consulta",
+                description: `Cancelamento de consulta com a especialidade ${form.specialtyName} para o dia ${form.date} no horário de ${form.time}.`,
+                parent: "customer-recipient",
+                parentId: ""
+            });
         } catch (error) {
             resolveResponse(error);
         } finally {

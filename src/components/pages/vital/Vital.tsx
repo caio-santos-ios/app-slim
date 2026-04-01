@@ -15,6 +15,7 @@ import Input from "@/components/form/input/Input";
 import Label from "@/components/form/LabelForm";
 import Button from "@/ui/Button";
 import { montserrat } from "../dass21/Dass21";
+import { createMetricAppService } from "@/service/metric-app.service";
 
 export default function Vital() {
     const [_, setIsLoading] = useAtom(loadingAtom);
@@ -31,6 +32,14 @@ export default function Vital() {
             const result = data.result.data;
 
             setHistoric(result);
+            await createMetricAppService({
+                screen: "Bem Vital",
+                action: "Visualização",
+                function: "Histórico de Bem Vital",
+                description: `Visualização do histórico de Bem Vital do beneficiário, com filtros de data inicial: ${startDate} e data final: ${endDate}.`,
+                parent: "customer-recipient",
+                parentId: ""
+            });
         } catch (error) {
             resolveResponse(error);
         } finally {

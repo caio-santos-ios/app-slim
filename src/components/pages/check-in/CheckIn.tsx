@@ -14,6 +14,7 @@ import { VitalNutricao } from "../vital-nutricao/VitalNutricao";
 import { VitalSono } from "../vital-sono/VitalSono";
 import { CheckInCompletoAnimation, CheckInManhaAnimation, CheckInNoiteAnimation } from "@/components/animations/Animations";
 import Link from "next/link";
+import { createMetricAppService } from "@/service/metric-app.service";
 
 // Pauta 10: ciclo de animações — alterna entre manha/noite/completo para não cansar o usuário
 const ANIM_CYCLE_KEY = "checkInAnimCycleIndex";
@@ -66,10 +67,26 @@ export const CheckIn = () => {
                 }, configApi());
                 // Pauta 10: ciclo de animações — para check-in completo, alterna entre as 3
                 setAnimacao(getNextAnimacao("completo"));
+                await createMetricAppService({
+                    screen: "Check-in Completo",
+                    action: "Realização",
+                    function: "Realização do Check-in Completo",
+                    description: "Ao realizar o Check-in Completo, o usuário completa as atividades de sono, nutrição e saúde mental em um único momento, geralmente no período da noite. Esta ação concede pontos para todas as categorias de check-in, incentivando o usuário a manter uma rotina consistente de autocuidado. O ciclo de animações alterna entre manhã, noite e completo para proporcionar uma experiência visual variada e engajadora.",
+                    parent: "customer-recipient",
+                    parentId: ""
+                });
             } else if (!body.id) {
                 await api.post(`/vitals`, { ...body, chekinIGS: true, chekinIGSPoint: 5 }, configApi());
                 // Pauta 10: ciclo — check-in manhã alterna entre manha e completo
                 setAnimacao(getNextAnimacao("manha"));
+                await createMetricAppService({
+                    screen: "Check-in da Manhã",
+                    action: "Realização",
+                    function: "Realização do Check-in da Manhã",
+                    description: "Ao realizar o Check-in da Manhã, o usuário completa as atividades relacionadas ao sono, como informar o horário de dormir, horas de sono, qualidade do sono e fragmentação. Esta ação concede pontos para a categoria de check-in de sono, incentivando o usuário a manter uma rotina saudável de descanso. O ciclo de animações alterna entre manhã e completo para proporcionar uma experiência visual variada e engajadora.",
+                    parent: "customer-recipient",
+                    parentId: ""
+                });
             } else {
                 await api.put(`/vitals`, {
                     ...body,
@@ -78,6 +95,14 @@ export const CheckIn = () => {
                 }, configApi());
                 // Pauta 10: ciclo — check-in noite alterna entre noite e completo
                 setAnimacao(getNextAnimacao("noite"));
+                await createMetricAppService({
+                    screen: "Check-in da Noite",
+                    action: "Realização",
+                    function: "Realização do Check-in da Noite",
+                    description: "Ao realizar o Check-in da Noite, o usuário completa as atividades relacionadas à nutrição e saúde mental, como informar se fez refeições saudáveis e se praticou atividades de autocuidado mental. Esta ação concede pontos para as categorias de check-in de nutrição e saúde mental, incentivando o usuário a manter hábitos saudáveis nessas áreas. O ciclo de animações alterna entre noite e completo para proporcionar uma experiência visual variada e engajadora.",
+                    parent: "customer-recipient",
+                    parentId: ""
+                });
             }
 
             resolveResponse({ status: 200, message: 'Parabéns!' });

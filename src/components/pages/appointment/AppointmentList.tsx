@@ -18,6 +18,7 @@ import "react-day-picker/dist/style.css";
 import { ptBR } from "date-fns/locale";
 import { montserrat } from "../dass21/Dass21";
 import { NotData } from "@/components/not-data/NotData";
+import { createMetricAppService } from "@/service/metric-app.service";
 
 export const AppointmentList = () => {
     const [__, setIsLoading] = useAtom(loadingAtom);
@@ -49,6 +50,15 @@ export const AppointmentList = () => {
             const rapidocId = localStorage.getItem("appRapidocId");
             setModalCreate(false);
             await getAll(rapidocId ? rapidocId : "");
+
+            await createMetricAppService({
+                screen: "Bem + Papo",
+                action: "Agendamento",
+                function: "Agendamento de Consulta",
+                description: `Agendamento de consulta com a especialidade ${body.specialistName} para o dia ${body.date} no horário de ${body.time}.`,
+                parent: "customer-recipient",
+                parentId: ""
+            });
         } catch (error) {
             resolveResponse(error);
         } finally {
@@ -67,6 +77,14 @@ export const AppointmentList = () => {
             setModalCreate(false);
             const rapidocId = localStorage.getItem("appRapidocId");
             await getAll(rapidocId ? rapidocId : "");
+            await createMetricAppService({
+                screen: "Bem + Papo",
+                action: "Cancelamento",
+                function: "Cancelamento de Consulta",
+                description: `Cancelamento de consulta com a especialidade ${form.specialtyName} para o dia ${form.date} no horário de ${form.time}.`,
+                parent: "customer-recipient",
+                parentId: ""
+            });
         } catch (error) {
             resolveResponse(error);
         } finally {
@@ -80,6 +98,14 @@ export const AppointmentList = () => {
             const {data} = await api.get(`/appointments/user/${rapidocId}`, configApi());
             const result = data.result.data;
             await getSelectSpecialty(result);
+            await createMetricAppService({
+                screen: "Bem + Papo",
+                action: "Visualização",
+                function: "Histórico de Agendamentos",
+                description: `Visualização do histórico de agendamentos do beneficiário, com filtros de data inicial: ${startDate} e data final: ${endDate}.`,
+                parent: "customer-recipient",
+                parentId: ""
+            });
         } catch (error) {
             resolveResponse(error);
         } finally {

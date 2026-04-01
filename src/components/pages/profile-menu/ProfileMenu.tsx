@@ -17,6 +17,7 @@ import { MdOutlineWaterDrop } from "react-icons/md"
 import { useRouter } from "next/navigation";
 import { montserrat } from "../dass21/Dass21";
 import { HiOutlinePencilSquare } from "react-icons/hi2";
+import { createMetricAppService } from "@/service/metric-app.service";
 
 export const ProfileMenu = () => {
     const [_, setIsLoading] = useAtom(loadingAtom);
@@ -38,6 +39,14 @@ export const ProfileMenu = () => {
             if (result.photo) {
                 setImagePreview(`${uriBase}/${result.photo}`);
             }
+            await createMetricAppService({
+                screen: "Meu Perfil",
+                action: "Visualização",
+                function: "Visualização do Perfil do Usuário",
+                description: "Ao acessar a seção 'Meu Perfil', o usuário pode visualizar suas informações pessoais, como nome, foto de perfil, peso, altura, IMC e meta de água. Esta tela serve como um hub central para o gerenciamento das informações do usuário, permitindo que ele mantenha seus dados atualizados e tenha uma visão clara de suas métricas vitais relacionadas à saúde.",
+                parent: "customer-recipient",
+                parentId: ""
+            });
         } catch (error) {
             resolveResponse(error);
         } finally {

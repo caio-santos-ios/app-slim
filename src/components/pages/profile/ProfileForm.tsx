@@ -14,6 +14,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { montserrat } from "../dass21/Dass21";
+import { createMetricAppService } from "@/service/metric-app.service";
 
 export const ProfileForm = () => {
     const [_, setIsLoading] = useAtom(loadingAtom);
@@ -27,6 +28,14 @@ export const ProfileForm = () => {
             const {data} = await api.put(`/customer-recipients/profile`, body, configApi());
             const result = data.result;  
             resolveResponse({status: 200, ...result});
+            await createMetricAppService({
+                screen: "Perfil",
+                action: "Atualização",
+                function: "Atualização dos dados pessoais.",
+                description: "Ao atualizar o Perfil, o usuário pode modificar suas informações pessoais.",
+                parentId: "",
+                parent: "customer-recipient"
+            });
         } catch (error) {
             resolveResponse(error);
         } finally {
@@ -41,7 +50,14 @@ export const ProfileForm = () => {
             const result = data.result.data;  
             reset(result)
             setAge(calcularIdade(result.dateOfBirth));
-            // calcularIdade(watch("dateOfBirth"))
+            await createMetricAppService({
+                screen: "Perfil",
+                action: "Visualização",
+                function: "Exibir dados pessoais.",
+                description: "Ao acessar o Perfil, o usuário visualiza seus dados pessoais.",
+                parentId: "",
+                parent: "customer-recipient"
+            });
         } catch (error) {
             resolveResponse(error);
         } finally {

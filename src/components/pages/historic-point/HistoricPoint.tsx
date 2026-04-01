@@ -17,6 +17,7 @@ import Button from "@/ui/Button";
 import { montserrat } from "../dass21/Dass21";
 import { maskDate } from "@/utils/mask.util";
 import Link from "next/link";
+import { createMetricAppService } from "@/service/metric-app.service";
 
 export default function HistoricPoint() {
     const [_, setIsLoading] = useAtom(loadingAtom);
@@ -62,6 +63,14 @@ export default function HistoricPoint() {
             });
 
             setHistoric(list);
+            await createMetricAppService({
+                screen: "Histórico de Pontos",
+                action: "Visualização",
+                function: "Histórico de Pontos do Usuário",
+                description: `Visualização do histórico de pontos do usuário, com filtros de data inicial: ${startDate} e data final: ${endDate}. O histórico de pontos exibe as atividades realizadas pelo usuário, como check-ins de sono, nutrição e saúde mental, juntamente com os pontos ganhos e bônus por sequência. Esta funcionalidade permite que o usuário acompanhe seu progresso ao longo do tempo e identifique padrões em suas atividades relacionadas à saúde.`,
+                parent: "customer-recipient",
+                parentId: ""
+            });
         } catch (error) {
             resolveResponse(error);
         } finally {

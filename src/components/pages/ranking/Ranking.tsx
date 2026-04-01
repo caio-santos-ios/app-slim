@@ -15,6 +15,7 @@ import { CheckInManhaAnimation, CheckInNoiteAnimation, LevelUpAnimation } from "
 import { IoIosWarning } from "react-icons/io";
 import Button from "@/ui/Button";
 import { SiLevelsdotfyi } from "react-icons/si";
+import { createMetricAppService } from "@/service/metric-app.service";
 
 // ─── Tipos ────────────────────────────────────────────────────────────────────
 
@@ -356,8 +357,15 @@ export default function Ranking() {
                 .map((e, i) => ({ ...e, rank: i + 1 }));
 
             setRanking(sorted);
-            console.log(loggedId)
             setMyEntry(sorted.find((e) => e.id === loggedId) ?? null);
+            await createMetricAppService({
+                screen: "Ranking",
+                action: "Visualização",
+                function: "Exibir o ranking de saúde dos usuários.",
+                description: "Ao acessar o Ranking, o usuário pode visualizar sua posição em relação aos outros participantes com base em seus pontos acumulados. O ranking é atualizado em tempo real e reflete as atividades recentes dos usuários, incentivando a competição saudável e o engajamento contínuo para melhorar a saúde e o bem-estar geral.",
+                parentId: "",
+                parent: "customer-recipient"
+            });
         } catch (error) {
             resolveResponse(error);
         } finally {

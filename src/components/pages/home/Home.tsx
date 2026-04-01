@@ -25,6 +25,7 @@ import { LollipopChart } from "@/components/grafic/LollipopChart";
 import { LineChartCustom } from "@/components/grafic/LineChart";
 import { IpvGauge } from "@/components/grafic/IpvGauge";
 import { div } from "framer-motion/client";
+import { createMetricAppService } from "@/service/metric-app.service";
 
 const chartData = [
     { value: 10 },
@@ -270,6 +271,15 @@ export default function Home() {
             setIsLoading(false);
             setReady(true); 
             activeNotification();
+
+            await createMetricAppService({
+                screen: "Home",
+                action: "Visualização",
+                function: "Exibir dados vitais e insights na Tela Inicial.",
+                description: "Ao acessar a Home, o usuário visualiza um painel completo com suas métricas vitais (IPV, IGS, IGN, IES), insights personalizados baseados nessas métricas, alertas de saúde mental (como CVV e PAD), informações sobre próximas consultas de telemedicina e gráficos de evolução. A Home serve como um hub central para o monitoramento da saúde do usuário e oferece recomendações acionáveis para melhorar seu bem-estar geral.",
+                parentId: "",
+                parent: "customer-recipient"
+            });
         };
         initial();
     }, [isCheckIn, periodo]);

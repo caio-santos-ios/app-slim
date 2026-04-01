@@ -18,6 +18,7 @@ import "react-day-picker/dist/style.css";
 import { ptBR } from "date-fns/locale";
 import { toast } from "react-toastify";
 import { montserrat } from "../dass21/Dass21";
+import { createMetricAppService } from "@/service/metric-app.service";
 
 export const ForwardingAten = () => {
     const [__, setIsLoading] = useAtom(loadingAtom);
@@ -35,13 +36,34 @@ export const ForwardingAten = () => {
             } else {
                 toast.info("Link de atendimento não disponível.");
             }
+            await createMetricAppService({
+                screen: "Bem + Cuidado",
+                action: "Solicitação",
+                function: "Solicitação de Atendimento",
+                description: "Visualização da página de solicitação de atendimento.",
+                parent: "customer-recipient",
+                parentId: ""
+            });
         } catch (error) {
             resolveResponse(error);
         } finally {
             setIsLoading(false);
         }
     };
-    
+
+    useEffect(() => {
+        const checkAtendimento = async () => {
+            await createMetricAppService({
+                screen: "Bem + Cuidado",
+                action: "Acesso",
+                function: "Acesso à Tela de Atendimento",
+                description: "Usuário acessou a página de atendimento para verificar o status do atendimento solicitado.",
+                parent: "customer-recipient",
+                parentId: ""
+            });
+        };
+        checkAtendimento();
+    }, []);
     return (
         <div className={`${montserrat.className}`}>
             <div className="mb-4 h-[50dvh] flex flex-col justify-end items-center">
