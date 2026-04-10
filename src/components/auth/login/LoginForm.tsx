@@ -38,6 +38,7 @@ export const LoginForm = () => {
             localStorage.setItem("appRefreshToken", result.refreshToken);
             localStorage.setItem("appExpires", result.expires);
             localStorage.setItem("appTab", "home");
+            localStorage.setItem("appTypeContractor", result.typeContractor);
             
             if(result.firstAccess) {
                 router.push("/first-access");
